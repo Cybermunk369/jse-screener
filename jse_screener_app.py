@@ -1,6 +1,8 @@
 """
-JSE Screener v1 - the boring version.
-Valuation + momentum ranking only. No insider signal yet (that's v2).
+JSE Screener v1.1 - added Sharpe ratio ranking.
+Valuation + momentum still drive Combined Score. Sharpe is a separate,
+sortable column - not folded into Combined Score (deliberate choice,
+change if you want it merged).
 
 Run locally:
     pip3 install streamlit yfinance pandas
@@ -10,6 +12,10 @@ Run locally:
 import streamlit as st
 import yfinance as yf
 import pandas as pd
+import numpy as np
+
+RISK_FREE_RATE = 0.08  # SA risk-free proxy, matches jse_project.py convention
+TRADING_DAYS = 252
 
 JSE_TICKERS = {
     "NPN.JO": "Naspers",
@@ -45,11 +51,21 @@ def get_jse_data(tickers: dict) -> pd.DataFrame:
 
             info = t.info
 
-            latest_close_rand = hist["Close"].iloc[-1] / 100
-            price_6mo_ago_rand = hist["Close"].iloc[0] / 100
+            close_rand = hist["Close"] / 100  # ZAc -> ZAR
+            latest_close_rand = close_rand.iloc[-1]
+            price_6mo_ago_rand = close_rand.iloc[0]
             momentum_pct = (
                 (latest_close_rand - price_6mo_ago_rand) / price_6mo_ago_rand * 100
             )
+
+            # --- Sharpe ratio, from the same price history already fetched ---
+            daily_returns = close_rand.pct_change().dropna()
+            if len(daily_returns) >= 2 and daily_returns.std() != 0:
+                annual_return = daily_returns.mean() * TRADING_DAYS
+                annual_vol = daily_returns.std() * np.sqrt(TRADING_DAYS)
+                sharpe = (annual_return - RISK_FREE_RATE) / annual_vol
+            else:
+                sharpe = None
 
             rows.append({
                 "Ticker": ticker.replace(".JO", ""),
@@ -62,6 +78,7 @@ def get_jse_data(tickers: dict) -> pd.DataFrame:
                 ),
                 "Sector": info.get("sector", "N/A"),
                 "6mo Momentum %": round(momentum_pct, 1),
+                "Sharpe Ratio": round(sharpe, 2) if sharpe is not None else None,
             })
         except Exception:
             continue
@@ -91,7 +108,22 @@ def add_momentum_score(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def add_sharpe_score(df: pd.DataFrame) -> pd.DataFrame:
+    valid = df["Sharpe Ratio"].dropna()
+    if len(valid) == 0 or valid.max() == valid.min():
+        df["Sharpe Score"] = 50
+        return df
+    df["Sharpe Score"] = df["Sharpe Ratio"].apply(
+        lambda s: 50 if pd.isna(s) else round(
+            (s - valid.min()) / (valid.max() - valid.min()) * 100
+        )
+    )
+    return df
+
+
 def add_combined_score(df: pd.DataFrame) -> pd.DataFrame:
+    # Deliberately valuation + momentum only. Sharpe stays a separate,
+    # sortable signal until there's a real reason to fold it in.
     df["Combined Score"] = (
         (df["Valuation Score"] + df["Momentum Score"]) / 2
     ).round(0)
@@ -99,8 +131,8 @@ def add_combined_score(df: pd.DataFrame) -> pd.DataFrame:
 
 
 st.set_page_config(page_title="JSE Screener", layout="wide")
-st.title("JSE Screener — v1")
-st.caption("Valuation + momentum ranking across JSE large-caps. Free data, updated hourly.")
+st.title("JSE Screener — v1.1")
+st.caption("Valuation + momentum ranking, plus Sharpe ratio as a separate signal. Free data, updated hourly.")
 
 with st.spinner("Fetching JSE data..."):
     df = get_jse_data(JSE_TICKERS)
@@ -111,6 +143,7 @@ if df.empty:
 
 df = add_valuation_score(df)
 df = add_momentum_score(df)
+df = add_sharpe_score(df)
 df = add_combined_score(df)
 
 col1, col2, col3 = st.columns(3)
@@ -120,7 +153,7 @@ with col1:
 with col2:
     sort_by = st.selectbox(
         "Sort by",
-        ["Combined Score", "Valuation Score", "Momentum Score", "6mo Momentum %", "P/E"],
+        ["Combined Score", "Sharpe Ratio", "Valuation Score", "Momentum Score", "6mo Momentum %", "P/E"],
     )
 with col3:
     min_score = st.slider("Minimum Combined Score", 0, 100, 0)
@@ -134,8 +167,8 @@ filtered = filtered.sort_values(sort_by, ascending=False)
 st.dataframe(
     filtered[[
         "Ticker", "Name", "Price (R)", "P/E", "Market Cap (R bn)",
-        "Sector", "6mo Momentum %", "Valuation Score",
-        "Momentum Score", "Combined Score",
+        "Sector", "6mo Momentum %", "Sharpe Ratio", "Valuation Score",
+        "Momentum Score", "Sharpe Score", "Combined Score",
     ]],
     use_container_width=True,
     hide_index=True,
@@ -143,7 +176,10 @@ st.dataframe(
 
 st.caption(
     f"{len(filtered)} of {len(df)} stocks shown. "
+    "Sharpe Ratio: risk-adjusted return (annualized, 6mo history, "
+    f"{RISK_FREE_RATE*100:.0f}% risk-free rate assumed). "
     "Valuation Score: lower P/E scores higher. "
     "Momentum Score: stronger 6mo price gain scores higher. "
+    "Combined Score currently reflects Valuation + Momentum only. "
     "Not investment advice."
 )
