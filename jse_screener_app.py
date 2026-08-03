@@ -245,7 +245,16 @@ display_cols = [
 display_df = filtered[display_cols].reset_index(drop=True)
 
 styled = style_table(display_df, momentum_max_abs, sharpe_max_abs)
-st.dataframe(styled, use_container_width=True, hide_index=True)
+st.dataframe(
+    styled,
+    use_container_width=True,
+    hide_index=True,
+    column_config={
+        "Ticker": st.column_config.Column(pinned=True),
+        "Name": st.column_config.Column(pinned=True),
+        "Price (R)": st.column_config.NumberColumn(pinned=True),
+    },
+)
 
 st.caption(
     f"{len(filtered)} of {len(df)} stocks shown. "
