@@ -1,5 +1,5 @@
 """
-JSE Screener v1.3 - color-coded ratios and scores.
+JSE Screener v1.3 - color-coded ratios and scores, pinned columns.
 Green shades for positive (darker = stronger), red shades for negative
 (darker = stronger). No new signals added - display only.
 
@@ -253,8 +253,6 @@ st.dataframe(
         "Ticker": st.column_config.Column(pinned=True, width="small"),
         "Name": st.column_config.Column(pinned=True, width="medium"),
         "Price (R)": st.column_config.NumberColumn(pinned=True, width="small"),
-    },
-)
     },
 )
 
