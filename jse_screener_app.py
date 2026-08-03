@@ -247,12 +247,14 @@ display_df = filtered[display_cols].reset_index(drop=True)
 styled = style_table(display_df, momentum_max_abs, sharpe_max_abs)
 st.dataframe(
     styled,
-    use_container_width=True,
+    use_container_width=False,
     hide_index=True,
     column_config={
-        "Ticker": st.column_config.Column(pinned=True),
-        "Name": st.column_config.Column(pinned=True),
-        "Price (R)": st.column_config.NumberColumn(pinned=True),
+        "Ticker": st.column_config.Column(pinned=True, width="small"),
+        "Name": st.column_config.Column(pinned=True, width="medium"),
+        "Price (R)": st.column_config.NumberColumn(pinned=True, width="small"),
+    },
+)
     },
 )
 
