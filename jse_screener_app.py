@@ -248,10 +248,11 @@ filtered = filtered[filtered["Combined Score"] >= min_score]
 filtered = filtered.sort_values(sort_by, ascending=False)
 
 display_cols = [
-    "Ticker", "Name", "Price (R)", "P/E", "Market Cap (R bn)",
-    "Sector", "FX Exposure", "6mo Momentum %", "Sharpe Ratio",
+    "Ticker", "Name", "Price (R)", "Market Cap (R bn)",
+    "Sector", "FX Exposure", "P/E", "6mo Momentum %", "Sharpe Ratio",
     "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
 ]
+
 display_df = filtered[display_cols].reset_index(drop=True)
 
 styled = style_table(display_df, momentum_max_abs, sharpe_max_abs)
