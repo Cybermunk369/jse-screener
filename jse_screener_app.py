@@ -1,11 +1,10 @@
 """
-JSE Screener v1.2 - added Rand Hedge classification.
-Static classification (business-geography judgment call, not derived
-from live financial data - yfinance has no revenue-geography field).
-Sanity-check this list against your own knowledge; edit freely.
+JSE Screener v1.3 - color-coded ratios and scores.
+Green shades for positive (darker = stronger), red shades for negative
+(darker = stronger). No new signals added - display only.
 
 Run locally:
-    pip3 install streamlit yfinance pandas
+    pip3 install streamlit yfinance pandas numpy
     python3 -m streamlit run jse_screener_app.py
 """
 
@@ -38,26 +37,25 @@ JSE_TICKERS = {
     "GFI.JO": "Gold Fields",
 }
 
-# Static judgment call - see docstring. Not derived from live data.
 FX_EXPOSURE = {
-    "NPN.JO": "Rand Hedge",   # Tencent/int'l tech assets
-    "SOL.JO": "Mixed",        # SA-based, but dollar-linked chemical pricing
-    "CPI.JO": "Domestic",     # SA retail banking only
-    "AGL.JO": "Rand Hedge",   # int'l gold mining, dollar gold price
-    "SHP.JO": "Domestic",     # SA/regional retail, rand-denominated
-    "FSR.JO": "Domestic",     # predominantly SA banking
-    "MTN.JO": "Mixed",        # pan-African/Middle East, heavy Nigeria exposure
-    "SBK.JO": "Mixed",        # SA + significant pan-African banking
-    "ABG.JO": "Domestic",     # predominantly SA, some pan-African
-    "NED.JO": "Domestic",     # predominantly SA banking
-    "CLS.JO": "Domestic",     # SA retail pharmacy
-    "WHL.JO": "Mixed",        # SA + Australia (David Jones/Country Road)
-    "PRX.JO": "Rand Hedge",   # int'l tech investment vehicle
-    "BID.JO": "Rand Hedge",   # predominantly offshore foodservice (UK/Aus/Europe)
-    "REM.JO": "Mixed",        # diversified investment holding
-    "VOD.JO": "Mixed",        # SA + African operations (Egypt, DRC, etc.)
-    "IMP.JO": "Rand Hedge",   # dollar-priced PGM basket
-    "GFI.JO": "Rand Hedge",   # int'l gold mining, dollar gold price
+    "NPN.JO": "Rand Hedge",
+    "SOL.JO": "Mixed",
+    "CPI.JO": "Domestic",
+    "AGL.JO": "Rand Hedge",
+    "SHP.JO": "Domestic",
+    "FSR.JO": "Domestic",
+    "MTN.JO": "Mixed",
+    "SBK.JO": "Mixed",
+    "ABG.JO": "Domestic",
+    "NED.JO": "Domestic",
+    "CLS.JO": "Domestic",
+    "WHL.JO": "Mixed",
+    "PRX.JO": "Rand Hedge",
+    "BID.JO": "Rand Hedge",
+    "REM.JO": "Mixed",
+    "VOD.JO": "Mixed",
+    "IMP.JO": "Rand Hedge",
+    "GFI.JO": "Rand Hedge",
 }
 
 
@@ -73,7 +71,7 @@ def get_jse_data(tickers: dict) -> pd.DataFrame:
 
             info = t.info
 
-            close_rand = hist["Close"] / 100  # ZAc -> ZAR
+            close_rand = hist["Close"] / 100
             latest_close_rand = close_rand.iloc[-1]
             price_6mo_ago_rand = close_rand.iloc[0]
             momentum_pct = (
@@ -150,11 +148,55 @@ def add_combined_score(df):
     return df
 
 
+def _shade(value, max_abs, positive_rgb_light, positive_rgb_dark,
+           negative_rgb_light, negative_rgb_dark):
+    if pd.isna(value) or max_abs == 0:
+        return ""
+    intensity = min(abs(value) / max_abs, 1.0)
+    light = positive_rgb_light if value >= 0 else negative_rgb_light
+    dark = positive_rgb_dark if value >= 0 else negative_rgb_dark
+    r = int(light[0] + intensity * (dark[0] - light[0]))
+    g = int(light[1] + intensity * (dark[1] - light[1]))
+    b = int(light[2] + intensity * (dark[2] - light[2]))
+    text_color = "white" if intensity > 0.55 else "black"
+    return f"background-color: rgb({r},{g},{b}); color: {text_color}"
+
+
+def color_ratio(value, max_abs):
+    return _shade(
+        value, max_abs,
+        positive_rgb_light=(220, 237, 200), positive_rgb_dark=(27, 94, 32),
+        negative_rgb_light=(255, 224, 224), negative_rgb_dark=(127, 29, 29),
+    )
+
+
+def color_score(value):
+    if pd.isna(value):
+        return ""
+    return color_ratio(value - 50, 50)
+
+
+def style_table(display_df, momentum_max_abs, sharpe_max_abs):
+    styler = display_df.style
+
+    styler = styler.map(
+        lambda v: color_ratio(v, momentum_max_abs), subset=["6mo Momentum %"]
+    )
+    styler = styler.map(
+        lambda v: color_ratio(v, sharpe_max_abs), subset=["Sharpe Ratio"]
+    )
+    for col in ["Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score"]:
+        styler = styler.map(color_score, subset=[col])
+
+    return styler
+
+
 st.set_page_config(page_title="JSE Screener", layout="wide")
-st.title("JSE Screener — v1.2")
+st.title("JSE Screener — v1.3")
 st.caption(
-    "Valuation + momentum ranking, Sharpe ratio, and Rand hedge/domestic "
-    "classification. Free data, updated hourly."
+    "Valuation + momentum ranking, Sharpe ratio, Rand hedge/domestic "
+    "classification. Green = positive/strong, red = negative/weak, "
+    "darker = more extreme. Free data, updated hourly."
 )
 
 with st.spinner("Fetching JSE data..."):
@@ -168,6 +210,9 @@ df = add_valuation_score(df)
 df = add_momentum_score(df)
 df = add_sharpe_score(df)
 df = add_combined_score(df)
+
+momentum_max_abs = df["6mo Momentum %"].abs().max() or 1
+sharpe_max_abs = df["Sharpe Ratio"].abs().max() or 1
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
@@ -192,15 +237,15 @@ if fx_filter != "All":
 filtered = filtered[filtered["Combined Score"] >= min_score]
 filtered = filtered.sort_values(sort_by, ascending=False)
 
-st.dataframe(
-    filtered[[
-        "Ticker", "Name", "Price (R)", "P/E", "Market Cap (R bn)",
-        "Sector", "FX Exposure", "6mo Momentum %", "Sharpe Ratio",
-        "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
-    ]],
-    use_container_width=True,
-    hide_index=True,
-)
+display_cols = [
+    "Ticker", "Name", "Price (R)", "P/E", "Market Cap (R bn)",
+    "Sector", "FX Exposure", "6mo Momentum %", "Sharpe Ratio",
+    "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
+]
+display_df = filtered[display_cols].reset_index(drop=True)
+
+styled = style_table(display_df, momentum_max_abs, sharpe_max_abs)
+st.dataframe(styled, use_container_width=True, hide_index=True)
 
 st.caption(
     f"{len(filtered)} of {len(df)} stocks shown. "
@@ -208,8 +253,7 @@ st.caption(
     "not derived from financial filings - treat as approximate. "
     "Sharpe Ratio: risk-adjusted return (annualized, 6mo history, "
     f"{RISK_FREE_RATE*100:.0f}% risk-free rate assumed). "
-    "Valuation Score: lower P/E scores higher. "
-    "Momentum Score: stronger 6mo price gain scores higher. "
+    "Scores: green above 50, red below 50, darker = further from 50. "
     "Combined Score reflects Valuation + Momentum only. "
     "Not investment advice."
 )
