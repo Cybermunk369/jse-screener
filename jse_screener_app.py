@@ -1,7 +1,7 @@
 """
 JSE Screener v1.3 - color-coded ratios and scores, pinned columns.
-Green shades for positive (darker = stronger), red shades for negative
-(darker = stronger). No new signals added - display only.
+Bold colored text (not background fill) for positive/negative
+ratios and scores. Green = positive/strong, red = negative/weak.
 
 Run locally:
     pip3 install streamlit yfinance pandas numpy
@@ -158,15 +158,14 @@ def _shade(value, max_abs, positive_rgb_light, positive_rgb_dark,
     r = int(light[0] + intensity * (dark[0] - light[0]))
     g = int(light[1] + intensity * (dark[1] - light[1]))
     b = int(light[2] + intensity * (dark[2] - light[2]))
-    text_color = "white" if intensity > 0.55 else "black"
-    return f"background-color: rgb({r},{g},{b}); color: {text_color}"
+    return f"color: rgb({r},{g},{b}); font-weight: bold; background-color: transparent"
 
 
 def color_ratio(value, max_abs):
     return _shade(
         value, max_abs,
-        positive_rgb_light=(220, 237, 200), positive_rgb_dark=(27, 94, 32),
-        negative_rgb_light=(255, 224, 224), negative_rgb_dark=(127, 29, 29),
+        positive_rgb_light=(76, 175, 80), positive_rgb_dark=(20, 90, 24),
+        negative_rgb_light=(239, 83, 80), negative_rgb_dark=(127, 29, 29),
     )
 
 
