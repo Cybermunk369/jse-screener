@@ -1,7 +1,23 @@
 {
-  "generated_utc": "2026-09-22 17:16:04",
-  "generated_sast": "2026-09-22 19:16:04",
-  "tickers_requested": 18,
-  "tickers_loaded": 18,
-  "failures": []
+  "generated_utc": "2026-09-22 17:30:42",
+  "generated_sast": "2026-09-22 19:30:42",
+  "tickers_requested": 63,
+  "tickers_loaded": 60,
+  "min_adv_rand": 5000000,
+  "failures": [
+    {
+      "ticker": "MCG.JO",
+      "reason": "ValueError: no price history"
+    }
+  ],
+  "excluded": [
+    {
+      "ticker": "RMH.JO",
+      "reason": "illiquid (ADV R0.2m)"
+    },
+    {
+      "ticker": "ACL.JO",
+      "reason": "illiquid (ADV R0.9m)"
+    }
+  ]
 }
