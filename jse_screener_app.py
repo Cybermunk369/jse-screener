@@ -191,31 +191,41 @@ def color_score(value):
         return ""
     return color_ratio(value - 50, 50)
 
-def style_table(display_df, momentum_max_abs, sharpe_max_abs):
-    styler = display_df.style
+COLUMN_FORMATS = {
+    "Price (R)": "{:.2f}",
+    "P/E": "{:.2f}",
+    "Market Cap (R bn)": "{:,.1f}",
+    "6mo Momentum %": "{:.1f}",
+    "Sharpe Ratio": "{:.2f}",
+    "Valuation Score": "{:.0f}",
+    "Momentum Score": "{:.0f}",
+    "Sharpe Score": "{:.0f}",
+    "Combined Score": "{:.0f}",
+}
 
-    styler = styler.map(
-        lambda v: color_ratio(v, momentum_max_abs), subset=["6mo Momentum %"]
+def style_table(display_df, momentum_max_abs, sharpe_max_abs):
+    """Streamlit's Arrow serialisation ignores Styler.na_rep and prints 'None'
+    for missing numbers, which looks like a bug in a financial table. So values
+    are pre-formatted to strings here and colours applied via a parallel style
+    matrix of the same shape."""
+    styles = pd.DataFrame("", index=display_df.index, columns=display_df.columns)
+
+    styles["6mo Momentum %"] = display_df["6mo Momentum %"].map(
+        lambda v: color_ratio(v, momentum_max_abs)
     )
-    styler = styler.map(
-        lambda v: color_ratio(v, sharpe_max_abs), subset=["Sharpe Ratio"]
+    styles["Sharpe Ratio"] = display_df["Sharpe Ratio"].map(
+        lambda v: color_ratio(v, sharpe_max_abs)
     )
     for col in ["Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score"]:
-        styler = styler.map(color_score, subset=[col])
+        styles[col] = display_df[col].map(color_score)
 
-    styler = styler.format({
-        "Price (R)": "{:.2f}",
-        "P/E": "{:.2f}",
-        "Market Cap (R bn)": "{:,.1f}",
-        "6mo Momentum %": "{:.1f}",
-        "Sharpe Ratio": "{:.2f}",
-        "Valuation Score": "{:.0f}",
-        "Momentum Score": "{:.0f}",
-        "Sharpe Score": "{:.0f}",
-        "Combined Score": "{:.0f}",
-    }, na_rep="—")
+    text = display_df.copy()
+    for col, spec in COLUMN_FORMATS.items():
+        text[col] = display_df[col].map(
+            lambda v, s=spec: "—" if pd.isna(v) else s.format(v)
+        )
 
-    return styler
+    return text.style.apply(lambda _: styles, axis=None)
 
 st.set_page_config(page_title="JSE Screener", layout="wide")
 st.title("JSE Screener — v1.4")
@@ -291,7 +301,9 @@ st.dataframe(
     column_config={
         "Ticker": st.column_config.Column(pinned=True, width="small"),
         "Name": st.column_config.Column(pinned=True, width="medium"),
-        "Price (R)": st.column_config.NumberColumn(pinned=True, width="small"),
+        # Values are pre-formatted strings, so this is a plain Column not a
+        # NumberColumn.
+        "Price (R)": st.column_config.Column(pinned=True, width="small"),
     },
 )
 
