@@ -148,9 +148,9 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 # ---------------------------------------------------------------- app
 
 st.set_page_config(page_title="JSE Screener", layout="wide")
-st.title("JSE Screener — v1.7")
+st.title("JSE Screener — v1.8")
 st.caption(
-    "Valuation + momentum ranking, Sharpe ratio, Rand hedge/domestic "
+    "Valuation + momentum + Sharpe ranking, Rand hedge/domestic "
     "classification. Scores are percentile ranks across the universe (0-100). "
     "Green = strong, red = weak, stronger colour = further from the middle."
 )
@@ -250,7 +250,8 @@ st.caption(
     f"{len(filtered)} of {len(df)} stocks shown. "
     "Scores are percentile ranks within the loaded universe, so they shift as "
     "the universe changes. Where P/E is missing or negative the Valuation Score "
-    "is left blank and the Combined Score reflects momentum only. "
+    "is left blank and its weight in the Combined Score shifts to Momentum and "
+    "Sharpe. "
     "ADV is 20-day average daily value traded; names below the liquidity "
     "floor are dropped before scoring, because momentum and Sharpe computed on "
     "barely-traded prices are not weak signals but false ones. "
@@ -259,6 +260,7 @@ st.caption(
     "Sharpe Ratio: risk-adjusted return (annualized, 6mo daily history, "
     f"{RISK_FREE_RATE*100:.0f}% risk-free rate assumed) - a 6-month window is a "
     "noisy estimate. "
-    "Combined Score reflects Valuation + Momentum only. "
+    "Combined Score is a 40/40/20 weighted blend of Valuation, Momentum, "
+    "and Sharpe. "
     "Not investment advice."
 )
