@@ -1,5 +1,5 @@
 """
-JSE Screener v1.5 - reads precomputed data.
+JSE Screener v1.6 - expanded universe with a liquidity screen.
 
 Data is refreshed once a day by fetch_data.py, run from
 .github/workflows/refresh.yml after the JSE close. This app just reads
@@ -26,6 +26,7 @@ from fetch_data import DATA_FILE, META_FILE, JSE_TICKERS, RISK_FREE_RATE
 DISPLAY_COLS = [
     "Ticker", "Name", "Price (R)", "Market Cap (R bn)",
     "Sector", "FX Exposure", "P/E", "6mo Momentum %", "Sharpe Ratio",
+    "ADV (R m)",
     "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
 ]
 
@@ -35,6 +36,7 @@ COLUMN_FORMATS = {
     "Market Cap (R bn)": "{:,.1f}",
     "6mo Momentum %": "{:.1f}",
     "Sharpe Ratio": "{:.2f}",
+    "ADV (R m)": "{:,.1f}",
     "Valuation Score": "{:.0f}",
     "Momentum Score": "{:.0f}",
     "Sharpe Score": "{:.0f}",
@@ -136,7 +138,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 # ---------------------------------------------------------------- app
 
 st.set_page_config(page_title="JSE Screener", layout="wide")
-st.title("JSE Screener — v1.5")
+st.title("JSE Screener — v1.6")
 st.caption(
     "Valuation + momentum ranking, Sharpe ratio, Rand hedge/domestic "
     "classification. Scores are percentile ranks across the universe (0-100). "
@@ -152,10 +154,18 @@ df, meta = load_precomputed()
 if df is not None:
     failures = [(f["ticker"], f["reason"]) for f in meta.get("failures", [])]
     stamp = meta.get("generated_sast")
-    st.caption(
+    excluded = meta.get("excluded", [])
+    adv_floor = meta.get("min_adv_rand", 5_000_000)
+    note = (
         f"🕒 Data as of **{stamp} SAST**, refreshed daily after the JSE close."
         if stamp else "🕒 Precomputed data."
     )
+    if excluded:
+        note += (
+            f"  ·  {len(excluded)} name(s) screened out for illiquidity "
+            f"(under R{adv_floor/1e6:.0f}m average daily value traded) or stale prices."
+        )
+    st.caption(note)
 else:
     st.info(
         "No precomputed data file yet — fetching live this once. The daily "
@@ -187,7 +197,7 @@ with st.sidebar:
     sort_by = st.selectbox(
         "Sort by",
         ["Combined Score", "Sharpe Ratio", "Valuation Score", "Momentum Score",
-         "6mo Momentum %", "P/E"],
+         "6mo Momentum %", "P/E", "Market Cap (R bn)", "ADV (R m)"],
     )
     min_score = st.slider("Minimum Combined Score", 0, 100, 0)
 
@@ -223,6 +233,9 @@ st.caption(
     "Scores are percentile ranks within the loaded universe, so they shift as "
     "the universe changes. Where P/E is missing or negative the Valuation Score "
     "shows — and the Combined Score reflects momentum only. "
+    "ADV is 20-day average daily value traded; names below the liquidity "
+    "floor are dropped before scoring, because momentum and Sharpe computed on "
+    "barely-traded prices are not weak signals but false ones. "
     "FX Exposure is a manual classification based on business geography, "
     "not derived from financial filings - treat as approximate. "
     "Sharpe Ratio: risk-adjusted return (annualized, 6mo daily history, "
