@@ -57,6 +57,10 @@ MAX_SHRINK = 0.70               # vs the current universe
 # the two is the exact bug that once made every market cap 100x too small.
 ANCHORS = ["NPN.JO", "FSR.JO", "SBK.JO", "SHP.JO", "MTN.JO"]
 ANCHOR_CAP_RANGE = (1e10, 1e13)  # R10bn to R10tn
+# Yahoo's market cap is occasionally wrong for thinly covered JSE names. Where
+# the quote also carries price and shares outstanding, the two must agree to
+# within this factor or the name is dropped as unreliable.
+CAP_CHECK_TOLERANCE = 3.0
 
 # Things Yahoo sometimes tags as EQUITY that are not ordinary shares.
 NON_ORDINARY = re.compile(
@@ -176,6 +180,27 @@ def check_anchors(by_symbol):
         )
 
 
+def _is_num(x):
+    return isinstance(x, (int, float)) and not isinstance(x, bool)
+
+
+def _price_rand(q):
+    """JSE lines are quoted in cents (ZAc); convert to rand."""
+    px = q.get("regularMarketPrice")
+    if not _is_num(px) or px <= 0:
+        return None
+    return px if q.get("currency") == "ZAR" else px / 100
+
+
+def _metrics(q):
+    """(average daily value traded in rand, price x shares in rand)."""
+    px = _price_rand(q)
+    vol, shares = q.get("averageDailyVolume3Month"), q.get("sharesOutstanding")
+    traded = px * vol if px and _is_num(vol) else None
+    implied = px * shares if px and _is_num(shares) and shares > 0 else None
+    return traded, implied
+
+
 def apply_rules(quotes, overrides):
     """Returns (kept, dropped) where dropped is [(symbol, name, reason)]."""
     by_symbol = {}
@@ -186,10 +211,12 @@ def apply_rules(quotes, overrides):
 
     check_anchors(by_symbol)
 
-    kept, dropped = [], []
+    candidates, dropped = [], []
     for sym, q in by_symbol.items():
         raw_name = q.get("longName") or q.get("shortName") or sym
         cap = q.get("marketCap")
+        traded, implied = _metrics(q)
+        ratio = cap / implied if _is_num(cap) and implied else None
 
         if not sym.endswith(".JO"):
             reason = "not a .JO listing"
@@ -197,10 +224,13 @@ def apply_rules(quotes, overrides):
             reason = f"quoteType {q.get('quoteType')}"
         elif NON_ORDINARY.search(raw_name) or NON_ORDINARY.search(q.get("shortName") or ""):
             reason = "not an ordinary share"
-        elif not isinstance(cap, (int, float)):
+        elif not _is_num(cap):
             reason = "no market cap"
         elif cap < MIN_MARKET_CAP_RAND:
             continue  # the normal case - not worth listing
+        elif ratio and not 1 / CAP_CHECK_TOLERANCE <= ratio <= CAP_CHECK_TOLERANCE:
+            reason = (f"market cap R{cap/1e9:,.1f}bn vs price x shares "
+                      f"R{implied/1e9:,.1f}bn - unreliable")
         elif overrides.get(sym, {}).get("exclude"):
             reason = "excluded in universe_overrides.csv"
         else:
@@ -211,12 +241,31 @@ def apply_rules(quotes, overrides):
             continue
 
         ov = overrides.get(sym, {})
-        kept.append({
+        candidates.append({
             "ticker": sym,
             "name": ov.get("name") or clean_name(raw_name) or sym,
             "fx_exposure": ov.get("fx_exposure") or "Unclassified",
             "market_cap_rbn": round(cap / 1e9, 1),
+            "_key": clean_name(raw_name).lower(),
+            "_raw_name": raw_name,
+            "_traded": traded,
+            "_ratio": ratio,
         })
+
+    # One line per company. Dual-listed groups (Investec Ltd / plc) and extra
+    # share classes (Sasol BEE, Fairvest A / B) would otherwise appear twice
+    # and count twice in every percentile rank. Keep the most traded line.
+    groups = {}
+    for c in candidates:
+        groups.setdefault(c["_key"], []).append(c)
+    kept = []
+    for group in groups.values():
+        group.sort(key=lambda c: (c["_traded"] or 0, c["market_cap_rbn"]), reverse=True)
+        winner = group[0]
+        kept.append(winner)
+        for other in group[1:]:
+            dropped.append((other["ticker"], other["_raw_name"],
+                            f"second line of {winner['ticker']} (less traded)"))
 
     kept.sort(key=lambda r: r["market_cap_rbn"], reverse=True)
     return kept, dropped
@@ -238,7 +287,10 @@ def write_outputs(kept, meta):
     os.makedirs(DATA_DIR, exist_ok=True)
     with open(UNIVERSE_FILE, "w", newline="", encoding="utf-8") as fh:
         writer = csv.DictWriter(
-            fh, fieldnames=["ticker", "name", "fx_exposure", "market_cap_rbn"]
+            fh,
+            fieldnames=["ticker", "name", "fx_exposure", "market_cap_rbn"],
+            extrasaction="ignore",
+            lineterminator="\n",
         )
         writer.writeheader()
         writer.writerows(kept)
@@ -268,14 +320,25 @@ def main(dry_run=False):
 
     print(f"\nUniverse: {len(kept)} JSE ordinary shares with market cap >= "
           f"R{MIN_MARKET_CAP_RAND/1e9:.0f}bn\n")
-    print(f"  {'ticker':<9} {'mkt cap':>10}  {'fx':<13} name")
+    # "traded" is Yahoo's 3-month average; the daily refresh applies the
+    # actual R5m liquidity screen on a 20-day window. "cap chk" is market cap
+    # divided by price x shares (1.00 = consistent, - = not available).
+    print(f"  {'ticker':<9} {'mkt cap':>10}  {'traded/day':>10}  {'cap chk':>7}  "
+          f"{'fx':<13} name")
     for r in kept:
-        print(f"  {r['ticker']:<9} R{r['market_cap_rbn']:>8,.1f}bn  "
-              f"{r['fx_exposure']:<13} {r['name']}")
+        traded = f"R{r['_traded']/1e6:,.1f}m" if r["_traded"] else "-"
+        ratio = f"{r['_ratio']:.2f}" if r["_ratio"] else "-"
+        print(f"  {r['ticker']:<9} R{r['market_cap_rbn']:>8,.1f}bn  {traded:>10}  "
+              f"{ratio:>7}  {r['fx_exposure']:<13} {r['name']}")
 
     if dropped:
         print(f"\nAbove the floor but dropped ({len(dropped)}):")
-        for sym, name, reason in dropped:
+        # Most interesting first: data problems and duplicates, then the
+        # long tail of ETFs / notes / structured products.
+        order = {"market": 0, "second": 1, "excluded": 2}
+        for sym, name, reason in sorted(
+            dropped, key=lambda d: order.get(d[2].split()[0], 9)
+        ):
             print(f"  {sym:<9} {reason:<36} {name}")
     print(f"\nAdded vs current universe ({len(added)}): {', '.join(added) or '-'}")
     print(f"Removed vs current universe ({len(removed)}): {', '.join(removed) or '-'}")
