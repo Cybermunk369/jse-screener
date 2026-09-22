@@ -1,18 +1,102 @@
 {
-  "generated_utc": "2026-09-22 19:23:53",
-  "generated_sast": "2026-09-22 21:23:53",
-  "tickers_requested": 62,
-  "tickers_loaded": 60,
+  "generated_utc": "2026-09-22 20:01:19",
+  "generated_sast": "2026-09-22 22:01:19",
+  "tickers_requested": 131,
+  "tickers_loaded": 108,
   "min_adv_rand": 5000000,
   "failures": [],
   "excluded": [
     {
-      "ticker": "RMH.JO",
-      "reason": "illiquid (ADV R0.2m)"
+      "ticker": "SHC.JO",
+      "reason": "illiquid (ADV R4.7m)"
     },
     {
-      "ticker": "ACL.JO",
-      "reason": "illiquid (ADV R0.9m)"
+      "ticker": "CNP.JO",
+      "reason": "too new (78 trading days, need 100)"
+    },
+    {
+      "ticker": "KRO.JO",
+      "reason": "illiquid (ADV R1.3m)"
+    },
+    {
+      "ticker": "APH.JO",
+      "reason": "illiquid (ADV R0.3m)"
+    },
+    {
+      "ticker": "SSU.JO",
+      "reason": "illiquid (ADV R4.9m)"
+    },
+    {
+      "ticker": "ITE.JO",
+      "reason": "illiquid (ADV R2.1m)"
+    },
+    {
+      "ticker": "AFH.JO",
+      "reason": "illiquid (ADV R0.7m)"
+    },
+    {
+      "ticker": "DIB.JO",
+      "reason": "illiquid (ADV R4.6m)"
+    },
+    {
+      "ticker": "CCD.JO",
+      "reason": "illiquid (ADV R1.7m)"
+    },
+    {
+      "ticker": "THA.JO",
+      "reason": "illiquid (ADV R1.2m)"
+    },
+    {
+      "ticker": "ISO.JO",
+      "reason": "illiquid (ADV R4.4m)"
+    },
+    {
+      "ticker": "TSG.JO",
+      "reason": "illiquid (ADV R2.1m)"
+    },
+    {
+      "ticker": "ACS.JO",
+      "reason": "illiquid (ADV R0.0m)"
+    },
+    {
+      "ticker": "CAA.JO",
+      "reason": "illiquid (ADV R1.5m)"
+    },
+    {
+      "ticker": "EMI.JO",
+      "reason": "illiquid (ADV R2.4m)"
+    },
+    {
+      "ticker": "PWR.JO",
+      "reason": "illiquid (ADV R0.1m)"
+    },
+    {
+      "ticker": "RCL.JO",
+      "reason": "illiquid (ADV R2.7m)"
+    },
+    {
+      "ticker": "LSK.JO",
+      "reason": "illiquid (ADV R1.0m)"
+    },
+    {
+      "ticker": "MKR.JO",
+      "reason": "illiquid (ADV R0.4m)"
+    },
+    {
+      "ticker": "RBO.JO",
+      "reason": "illiquid (ADV R1.0m)"
+    },
+    {
+      "ticker": "SBP.JO",
+      "reason": "illiquid (ADV R0.3m)"
+    },
+    {
+      "ticker": "FBR.JO",
+      "reason": "illiquid (ADV R4.4m)"
+    },
+    {
+      "ticker": "WVR.JO",
+      "reason": "illiquid (ADV R0.2m)"
     }
   ]
 }
