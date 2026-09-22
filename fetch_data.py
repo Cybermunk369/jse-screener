@@ -44,10 +44,12 @@ MIN_ADV_RAND = 5_000_000      # 20-day average daily value traded
 ADV_WINDOW = 20
 STALE_DAYS = 5                # identical closes for this many days = not trading
 
-# Refresh must not silently shrink the table. Compared against the previous
-# run rather than a flat percentage, so adding unvalidated tickers to the
-# universe cannot fail the job, but losing existing coverage will.
-MAX_COVERAGE_DROP = 0.90
+# Refresh must not silently shrink the table. The gate is on the share of the
+# universe that hit a data error (bad response, no history) - not on the row
+# count vs the last run - because the universe is now rule-based and rebuilt
+# quarterly, so it can legitimately shrink. Names screened out on purpose
+# (illiquid, stale, too new) are not data errors and do not count.
+MAX_FAILURE_RATE = 0.10
 
 # Anchored to this file's directory, not the working directory. Streamlit
 # Cloud and GitHub Actions do not guarantee the same cwd, and a relative path
@@ -58,6 +60,7 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 DATA_FILE = os.path.join(DATA_DIR, "screener.csv")
 META_FILE = os.path.join(DATA_DIR, "metadata.json")
 UNIVERSE_FILE = os.path.join(DATA_DIR, "universe.csv")
+UNIVERSE_META_FILE = os.path.join(DATA_DIR, "universe_meta.json")
 
 SAST = timezone(timedelta(hours=2))
 
@@ -98,7 +101,8 @@ def load_universe(path=UNIVERSE_FILE):
         return dict(FALLBACK_UNIVERSE)
 
     universe = {}
-    with open(path, newline="", encoding="utf-8") as fh:
+    # utf-8-sig tolerates the byte-order mark Excel adds when saving a CSV.
+    with open(path, newline="", encoding="utf-8-sig") as fh:
         for row in csv.DictReader(fh):
             ticker = (row.get("ticker") or "").strip()
             if not ticker or ticker.startswith("#"):
@@ -132,8 +136,10 @@ def fetch_one(ticker, name, fx_exposure):
         raise ValueError("no price history")
     if len(hist) < MIN_HISTORY_DAYS:
         # A short window would be ranked head-to-head against full 6-month
-        # windows, which is not a like-for-like comparison.
-        raise ValueError(f"only {len(hist)} bars")
+        # windows, which is not a like-for-like comparison. With a rule-based
+        # universe this is usually a recent listing, so it is a screen rather
+        # than a data error.
+        raise Excluded(f"too new ({len(hist)} trading days, need {MIN_HISTORY_DAYS})")
 
     # JSE prices come back in ZAc (cents).
     close_rand = hist["Close"] / 100
@@ -292,17 +298,6 @@ def build_dataset(universe=None, verbose=False):
 
 # ---------------------------------------------------------------- output
 
-def previous_loaded():
-    """How many tickers the last successful refresh produced, if known."""
-    if not os.path.exists(META_FILE):
-        return None
-    try:
-        with open(META_FILE) as fh:
-            return json.load(fh).get("tickers_loaded")
-    except (ValueError, OSError):
-        return None
-
-
 def write_outputs(df, failures, excluded, requested):
     os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -343,7 +338,7 @@ def validate():
     print(f"{'='*58}")
 
     if excluded:
-        print("\nExcluded by the liquidity/staleness screens:")
+        print("\nScreened out (illiquid, stale, or too new):")
         for ticker, reason in excluded:
             print(f"  {ticker:<10} {reason}")
 
@@ -356,6 +351,13 @@ def validate():
 
 
 def main():
+    # Never refresh from the built-in fallback list: that would quietly
+    # replace a full table with 18 names.
+    if not os.path.exists(UNIVERSE_FILE):
+        print(f"FAILED: {UNIVERSE_FILE} not found. Keeping the existing data file.",
+              file=sys.stderr)
+        return 1
+
     universe = load_universe()
     requested = len(universe)
     print(f"Fetching {requested} JSE tickers from {UNIVERSE_FILE}...")
@@ -366,21 +368,17 @@ def main():
     print(f"\nTradeable {loaded}/{requested} "
           f"({len(excluded)} screened out, {len(failures)} failed).")
 
-    # Quality gate. A bad fetch must not overwrite a good table with a thin
-    # one, so this compares against the previous run rather than a flat
-    # percentage - that way adding new, unvalidated tickers to the universe
-    # can never fail the job, but losing existing coverage will.
+    # Quality gate. A bad fetch (e.g. Yahoo rate-limiting the runner) must not
+    # overwrite a good table with a thin one.
     if loaded == 0:
         print("FAILED: no tickers loaded. Keeping the existing data file.",
               file=sys.stderr)
         return 1
 
-    prior = previous_loaded()
-    if prior and loaded < prior * MAX_COVERAGE_DROP:
+    if len(failures) > requested * MAX_FAILURE_RATE:
         print(
-            f"FAILED: coverage dropped from {prior} to {loaded} "
-            f"(below {MAX_COVERAGE_DROP:.0%} of the last run). "
-            "Keeping the existing data file.",
+            f"FAILED: {len(failures)} of {requested} tickers hit a data error "
+            f"(limit {MAX_FAILURE_RATE:.0%}). Keeping the existing data file.",
             file=sys.stderr,
         )
         for ticker, reason in failures:
