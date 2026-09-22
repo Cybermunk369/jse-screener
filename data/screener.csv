@@ -1,0 +1,19 @@
+Ticker,Name,Price (R),Market Cap (R bn),Sector,FX Exposure,P/E,6mo Momentum %,Sharpe Ratio,Valuation Score,Momentum Score,Sharpe Score,Combined Score
+NPN,Naspers,748.59,560.04,Consumer Cyclical,Rand Hedge,7.518984,-15.5,-0.81,94.0,17.0,17.0,56.0
+SOL,Sasol,221.0,141.67,Basic Materials,Mixed,11.7992525,6.0,0.37,65.0,56.0,61.0,60.0
+CPI,Capitec,4494.12,520.52,Financial Services,Domestic,30.912918,9.6,0.61,12.0,72.0,72.0,42.0
+AGL,Anglo American,896.0,960.05,Basic Materials,Rand Hedge,,30.2,1.39,,100.0,94.0,100.0
+SHP,Shoprite,320.16,173.14,Consumer Cyclical,Domestic,21.42972,19.3,1.44,18.0,94.0,100.0,56.0
+FSR,FirstRand,94.15,523.61,Financial Services,Domestic,13.684593,7.2,0.38,59.0,67.0,67.0,63.0
+MTN,MTN Group,197.31,361.68,Communication Services,Mixed,20.510395,2.4,0.07,24.0,44.0,44.0,34.0
+SBK,Standard Bank,308.8,500.04,Financial Services,Mixed,9.821882,3.1,0.04,71.0,50.0,39.0,60.0
+ABG,Absa Group,222.09,183.91,Financial Services,Domestic,7.945975,-5.2,-0.6,88.0,33.0,28.0,60.0
+NED,Nedbank,297.08,135.74,Financial Services,Domestic,15.635789,13.0,0.89,35.0,83.0,83.0,59.0
+CLS,Clicks Group,211.4,48.98,Healthcare,Domestic,14.971671,-26.9,-2.01,41.0,6.0,11.0,24.0
+WHL,Woolworths Holdings,37.76,33.19,Consumer Cyclical,Mixed,14.523077,-26.1,-2.68,53.0,11.0,6.0,32.0
+PRX,Prosus,701.29,1467.24,Consumer Cyclical,Rand Hedge,8.248529,-12.5,-0.78,82.0,22.0,22.0,52.0
+BID,Bid Corporation,444.6,148.61,Consumer Defensive,Rand Hedge,16.726862,9.9,0.74,29.0,78.0,78.0,54.0
+REM,Remgro,209.49,116.63,Financial Services,Mixed,83.13096,17.1,1.31,6.0,89.0,89.0,48.0
+VOD,Vodacom,151.89,293.42,Communication Services,Mixed,14.604808,6.4,0.3,47.0,61.0,56.0,54.0
+IMP,Impala Platinum,206.03,184.93,Basic Materials,Rand Hedge,5.994472,-8.8,-0.05,100.0,28.0,33.0,64.0
+GFI,Gold Fields,682.58,608.11,Basic Materials,Rand Hedge,8.547208,0.9,0.15,76.0,39.0,50.0,58.0
