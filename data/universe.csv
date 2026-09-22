@@ -1,0 +1,64 @@
+ticker,name,fx_exposure
+ABG.JO,Absa Group,Domestic
+AGL.JO,Anglo American,Rand Hedge
+ANG.JO,AngloGold Ashanti,Rand Hedge
+ANH.JO,AB InBev,Rand Hedge
+APN.JO,Aspen Pharmacare,Mixed
+BHG.JO,BHP Group,Rand Hedge
+BID.JO,Bid Corporation,Rand Hedge
+BVT.JO,Bidvest Group,Domestic
+BTI.JO,British American Tobacco,Rand Hedge
+CPI.JO,Capitec,Domestic
+CLS.JO,Clicks Group,Domestic
+DSY.JO,Discovery,Domestic
+EXX.JO,Exxaro Resources,Rand Hedge
+FSR.JO,FirstRand,Domestic
+GLN.JO,Glencore,Rand Hedge
+GFI.JO,Gold Fields,Rand Hedge
+GRT.JO,Growthpoint Properties,Domestic
+IMP.JO,Impala Platinum,Rand Hedge
+INL.JO,Investec Ltd,Mixed
+INP.JO,Investec PLC,Mixed
+MNP.JO,Mondi,Rand Hedge
+MRP.JO,Mr Price Group,Domestic
+MTN.JO,MTN Group,Mixed
+MCG.JO,MultiChoice Group,Mixed
+NPN.JO,Naspers,Rand Hedge
+NED.JO,Nedbank,Domestic
+NRP.JO,NEPI Rockcastle,Rand Hedge
+NPH.JO,Northam Platinum,Rand Hedge
+OMU.JO,Old Mutual,Domestic
+PRX.JO,Prosus,Rand Hedge
+RNI.JO,Reinet Investments,Rand Hedge
+REM.JO,Remgro,Mixed
+RMH.JO,RMB Holdings,Domestic
+SLM.JO,Sanlam,Domestic
+SOL.JO,Sasol,Mixed
+SHP.JO,Shoprite,Domestic
+SBK.JO,Standard Bank,Mixed
+VAL.JO,Valterra Platinum,Rand Hedge
+VOD.JO,Vodacom,Mixed
+WHL.JO,Woolworths Holdings,Mixed
+ADH.JO,ADvTECH,Domestic
+AFE.JO,AECI,Domestic
+AFT.JO,Afrimat,Domestic
+ACL.JO,ArcelorMittal SA,Domestic
+ARI.JO,African Rainbow Minerals,Rand Hedge
+AVI.JO,AVI Limited,Domestic
+DRD.JO,DRDGOLD,Rand Hedge
+HAR.JO,Harmony Gold,Rand Hedge
+HYP.JO,Hyprop Investments,Domestic
+KAP.JO,KAP Limited,Domestic
+KIO.JO,Kumba Iron Ore,Rand Hedge
+LHC.JO,Life Healthcare,Domestic
+MTM.JO,Momentum Group,Domestic
+NTC.JO,Netcare,Domestic
+OCE.JO,Oceana Group,Mixed
+PIK.JO,Pick n Pay Stores,Domestic
+RDF.JO,Redefine Properties,Domestic
+SAP.JO,Sappi,Rand Hedge
+SPP.JO,SPAR Group,Mixed
+SSW.JO,Sibanye-Stillwater,Rand Hedge
+TBS.JO,Tiger Brands,Domestic
+TFG.JO,The Foschini Group,Mixed
+TRU.JO,Truworths International,Mixed
