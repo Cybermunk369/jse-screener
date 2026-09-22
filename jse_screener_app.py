@@ -1,5 +1,12 @@
 """
-JSE Screener v1.7 - numeric columns sort correctly.
+JSE Screener v1.9 - rule-based universe.
+
+The stock list is no longer hand-picked: build_universe.py takes every JSE
+ordinary share with a market cap of at least R5bn, rebuilt quarterly by
+.github/workflows/universe.yml. The daily liquidity screen still applies on
+top. v1.8 folded Sharpe into the Combined Score (40/40/20).
+
+v1.7 - numeric columns sort correctly.
 
 v1.6 pre-formatted every numeric column to a display string (so missing
 values could show "-" instead of Streamlit's "None"). That silently broke
@@ -34,7 +41,9 @@ import pandas as pd
 import streamlit as st
 
 import fetch_data
-from fetch_data import DATA_FILE, META_FILE, JSE_TICKERS, RISK_FREE_RATE
+from fetch_data import (
+    DATA_FILE, META_FILE, UNIVERSE_META_FILE, JSE_TICKERS, RISK_FREE_RATE,
+)
 
 DISPLAY_COLS = [
     "Ticker", "Name", "Price (R)", "Market Cap (R bn)",
@@ -82,6 +91,16 @@ def load_precomputed():
             meta = {}
 
     return df, meta
+
+
+@st.cache_data(ttl=900)
+def load_universe_meta():
+    """How the stock list was built. Empty dict if it has not been built yet."""
+    try:
+        with open(UNIVERSE_META_FILE) as fh:
+            return json.load(fh)
+    except (OSError, ValueError):
+        return {}
 
 
 @st.cache_data(ttl=3600)
@@ -148,7 +167,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 # ---------------------------------------------------------------- app
 
 st.set_page_config(page_title="JSE Screener", layout="wide")
-st.title("JSE Screener — v1.8")
+st.title("JSE Screener — v1.9")
 st.caption(
     "Valuation + momentum + Sharpe ranking, Rand hedge/domestic "
     "classification. Scores are percentile ranks across the universe (0-100). "
@@ -173,9 +192,21 @@ if df is not None:
     if excluded:
         note += (
             f"  ·  {len(excluded)} name(s) screened out for illiquidity "
-            f"(under R{adv_floor/1e6:.0f}m average daily value traded) or stale prices."
+            f"(under R{adv_floor/1e6:.0f}m average daily value traded), stale "
+            "prices, or too little history."
         )
     st.caption(note)
+
+    universe_meta = load_universe_meta()
+    rule = universe_meta.get("rule", {})
+    if rule.get("min_market_cap_rand"):
+        built = (universe_meta.get("generated_sast") or "")[:10]
+        st.caption(
+            f"🧭 Universe: every JSE ordinary share with a market cap of "
+            f"R{rule['min_market_cap_rand']/1e9:.0f}bn or more "
+            f"({universe_meta.get('count', '?')} names), rebuilt quarterly"
+            + (f" — last rebuilt {built}." if built else ".")
+        )
 else:
     st.info(
         "No precomputed data file yet — fetching live this once. The daily "
