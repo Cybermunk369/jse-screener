@@ -227,7 +227,7 @@ if df is None or df.empty:
 
 if failures:
     st.warning(
-        f"{len(failures)} of {meta.get('tickers_requested', len(JSE_TICKERS))} "
+        f"{len(failures)} of {(meta or {}).get('tickers_requested', len(JSE_TICKERS))} "
         "tickers are missing from this refresh: "
         + ", ".join(f"{t.replace('.JO', '')}" for t, _ in failures)
     )
@@ -281,6 +281,24 @@ st.dataframe(
     use_container_width=True,
     hide_index=True,
     column_config=column_config,
+)
+
+# The table's own toolbar download uses the browser's "Save as" (File System
+# Access) API where the browser claims to support it. Some embedded browsers
+# expose that API but can't write through it, which leaves an empty file. This
+# button is built server-side and served as an ordinary download instead, and
+# exports exactly the filtered, sorted view. utf-8-sig so Excel reads it right.
+data_date = ((meta or {}).get("generated_sast") or "")[:10] or "latest"
+export_df = display_df.copy()
+for col in ["Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score"]:
+    export_df[col] = export_df[col].round().astype("Int64")   # 98, not 98.0
+export_df["P/E"] = export_df["P/E"].round(2)
+st.download_button(
+    "⬇ Download CSV",
+    data=export_df.to_csv(index=False).encode("utf-8-sig"),
+    file_name=f"jse_screener_{data_date}.csv",
+    mime="text/csv",
+    help="Exports the table as currently filtered and sorted.",
 )
 
 st.caption(
