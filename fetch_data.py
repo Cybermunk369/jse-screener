@@ -2,8 +2,8 @@
 fetch_data.py - offline data refresh for the JSE Screener.
 
 Run on a schedule by .github/workflows/refresh.yml after the JSE close. It
-fetches prices and fundamentals, computes scores, and writes data/screener.csv.
-The Streamlit app then just reads that file.
+fetches prices and fundamentals, applies liquidity screens, computes scores,
+and writes data/screener.csv. The Streamlit app then just reads that file.
 
 Why: fetching at page load meant every cold start hammered Yahoo from
 Streamlit Cloud's shared IPs, which is what caused the rate limiting. Doing the
@@ -14,9 +14,11 @@ Also importable - the app falls back to build_dataset() if the data file is
 missing, so the app never depends on the pipeline having run yet.
 
 Usage:
-    python fetch_data.py
+    python fetch_data.py              # refresh data/screener.csv
+    python fetch_data.py --validate   # test the universe, write nothing
 """
 
+import csv
 import json
 import os
 import sys
@@ -31,68 +33,91 @@ RISK_FREE_RATE = 0.08
 TRADING_DAYS = 252
 MIN_HISTORY_DAYS = 100        # ~6 months of JSE trading days, with slack
 FETCH_RETRIES = 3
-FETCH_PAUSE_SECONDS = 0.5     # be polite to Yahoo when the universe grows
-MIN_SUCCESS_RATE = 0.80       # below this the refresh fails and keeps old data
+FETCH_PAUSE_SECONDS = 0.5     # be polite to Yahoo as the universe grows
+
+# Liquidity screen. The JSE's small-cap tail is genuinely untradeable - shares
+# that print the same close for days because nothing traded. Momentum and
+# Sharpe computed on stale prices are not weak signals, they are fake ones, so
+# these names are dropped BEFORE scoring. Leaving them in would also corrupt
+# every percentile rank in the table.
+MIN_ADV_RAND = 5_000_000      # 20-day average daily value traded
+ADV_WINDOW = 20
+STALE_DAYS = 5                # identical closes for this many days = not trading
+
+# Refresh must not silently shrink the table. Compared against the previous
+# run rather than a flat percentage, so adding unvalidated tickers to the
+# universe cannot fail the job, but losing existing coverage will.
+MAX_COVERAGE_DROP = 0.90
 
 DATA_DIR = "data"
 DATA_FILE = os.path.join(DATA_DIR, "screener.csv")
 META_FILE = os.path.join(DATA_DIR, "metadata.json")
+UNIVERSE_FILE = os.path.join(DATA_DIR, "universe.csv")
 
 SAST = timezone(timedelta(hours=2))
 
-JSE_TICKERS = {
-    "NPN.JO": "Naspers",
-    "SOL.JO": "Sasol",
-    "CPI.JO": "Capitec",
-    "AGL.JO": "Anglo American",
-    "SHP.JO": "Shoprite",
-    "FSR.JO": "FirstRand",
-    "MTN.JO": "MTN Group",
-    "SBK.JO": "Standard Bank",
-    "ABG.JO": "Absa Group",
-    "NED.JO": "Nedbank",
-    "CLS.JO": "Clicks Group",
-    "WHL.JO": "Woolworths Holdings",
-    "PRX.JO": "Prosus",
-    "BID.JO": "Bid Corporation",
-    "REM.JO": "Remgro",
-    "VOD.JO": "Vodacom",
-    "IMP.JO": "Impala Platinum",
-    "GFI.JO": "Gold Fields",
-}
-
-FX_EXPOSURE = {
-    "NPN.JO": "Rand Hedge",
-    "SOL.JO": "Mixed",
-    "CPI.JO": "Domestic",
-    "AGL.JO": "Rand Hedge",
-    "SHP.JO": "Domestic",
-    "FSR.JO": "Domestic",
-    "MTN.JO": "Mixed",
-    "SBK.JO": "Mixed",
-    "ABG.JO": "Domestic",
-    "NED.JO": "Domestic",
-    "CLS.JO": "Domestic",
-    "WHL.JO": "Mixed",
-    "PRX.JO": "Rand Hedge",
-    "BID.JO": "Rand Hedge",
-    "REM.JO": "Mixed",
-    "VOD.JO": "Mixed",
-    "IMP.JO": "Rand Hedge",
-    "GFI.JO": "Rand Hedge",
+# Fallback universe, used only if data/universe.csv is missing.
+FALLBACK_UNIVERSE = {
+    "NPN.JO": ("Naspers", "Rand Hedge"),
+    "SOL.JO": ("Sasol", "Mixed"),
+    "CPI.JO": ("Capitec", "Domestic"),
+    "AGL.JO": ("Anglo American", "Rand Hedge"),
+    "SHP.JO": ("Shoprite", "Domestic"),
+    "FSR.JO": ("FirstRand", "Domestic"),
+    "MTN.JO": ("MTN Group", "Mixed"),
+    "SBK.JO": ("Standard Bank", "Mixed"),
+    "ABG.JO": ("Absa Group", "Domestic"),
+    "NED.JO": ("Nedbank", "Domestic"),
+    "CLS.JO": ("Clicks Group", "Domestic"),
+    "WHL.JO": ("Woolworths Holdings", "Mixed"),
+    "PRX.JO": ("Prosus", "Rand Hedge"),
+    "BID.JO": ("Bid Corporation", "Rand Hedge"),
+    "REM.JO": ("Remgro", "Mixed"),
+    "VOD.JO": ("Vodacom", "Mixed"),
+    "IMP.JO": ("Impala Platinum", "Rand Hedge"),
+    "GFI.JO": ("Gold Fields", "Rand Hedge"),
 }
 
 COLUMNS = [
     "Ticker", "Name", "Price (R)", "Market Cap (R bn)", "Sector", "FX Exposure",
-    "P/E", "6mo Momentum %", "Sharpe Ratio",
+    "P/E", "6mo Momentum %", "Sharpe Ratio", "ADV (R m)",
     "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
 ]
 
 
+# ---------------------------------------------------------------- universe
+
+def load_universe(path=UNIVERSE_FILE):
+    """Read data/universe.csv -> {ticker: (name, fx_exposure)}."""
+    if not os.path.exists(path):
+        return dict(FALLBACK_UNIVERSE)
+
+    universe = {}
+    with open(path, newline="", encoding="utf-8") as fh:
+        for row in csv.DictReader(fh):
+            ticker = (row.get("ticker") or "").strip()
+            if not ticker or ticker.startswith("#"):
+                continue
+            universe[ticker] = (
+                (row.get("name") or ticker).strip(),
+                (row.get("fx_exposure") or "Unclassified").strip() or "Unclassified",
+            )
+    return universe or dict(FALLBACK_UNIVERSE)
+
+
+# Kept for backwards compatibility with anything importing these names.
+JSE_TICKERS = {t: n for t, (n, _) in load_universe().items()}
+FX_EXPOSURE = {t: fx for t, (_, fx) in load_universe().items()}
+
+
 # ---------------------------------------------------------------- fetching
 
-def fetch_one(ticker, name):
-    """Fetch a single ticker. Returns a row dict, or raises."""
+class Excluded(Exception):
+    """Ticker fetched fine but failed a screen - not a data error."""
+
+
+def fetch_one(ticker, name, fx_exposure):
+    """Fetch and screen a single ticker. Returns a row dict, or raises."""
     t = yf.Ticker(ticker)
 
     # auto_adjust=False so Close stays the actual traded price for display,
@@ -105,10 +130,16 @@ def fetch_one(ticker, name):
         # windows, which is not a like-for-like comparison.
         raise ValueError(f"only {len(hist)} bars")
 
-    info = t.info
-
     # JSE prices come back in ZAc (cents).
     close_rand = hist["Close"] / 100
+
+    if close_rand.tail(STALE_DAYS).nunique() == 1:
+        raise Excluded(f"stale price ({STALE_DAYS}d unchanged)")
+
+    adv_rand = float((close_rand * hist["Volume"]).tail(ADV_WINDOW).mean())
+    if not np.isfinite(adv_rand) or adv_rand < MIN_ADV_RAND:
+        raise Excluded(f"illiquid (ADV R{adv_rand/1e6:.1f}m)")
+
     adj_series = hist["Adj Close"] if "Adj Close" in hist.columns else hist["Close"]
     adj_rand = adj_series / 100
 
@@ -122,6 +153,7 @@ def fetch_one(ticker, name):
     else:
         sharpe = None
 
+    info = t.info
     market_cap = info.get("marketCap")
 
     return {
@@ -132,22 +164,34 @@ def fetch_one(ticker, name):
         # marketCap is already in ZAR - do NOT divide by 100.
         "Market Cap (R bn)": round(market_cap / 1e9, 2) if market_cap else None,
         "Sector": info.get("sector", "N/A"),
-        "FX Exposure": FX_EXPOSURE.get(ticker, "Unclassified"),
+        "FX Exposure": fx_exposure,
         "6mo Momentum %": round(float(momentum_pct), 1),
         "Sharpe Ratio": round(float(sharpe), 2) if sharpe is not None else None,
+        "ADV (R m)": round(adv_rand / 1e6, 1),
     }
 
 
-def fetch_all(tickers, verbose=True):
-    """Fetch every ticker with retries. Returns (rows, failures)."""
-    rows, failures = [], []
+def fetch_all(universe, verbose=True):
+    """Fetch every ticker with retries.
 
-    for i, (ticker, name) in enumerate(tickers.items(), start=1):
+    Returns (rows, failures, excluded). `failures` are data errors worth
+    worrying about; `excluded` are names that were screened out on purpose.
+    """
+    rows, failures, excluded = [], [], []
+    total = len(universe)
+
+    for i, (ticker, (name, fx)) in enumerate(universe.items(), start=1):
         last_error = None
         for attempt in range(1, FETCH_RETRIES + 1):
             try:
-                rows.append(fetch_one(ticker, name))
+                rows.append(fetch_one(ticker, name, fx))
                 last_error = None
+                break
+            except Excluded as e:
+                excluded.append((ticker, str(e)))
+                last_error = None
+                if verbose:
+                    print(f"  [{i}/{total}] {ticker} excluded - {e}")
                 break
             except Exception as e:
                 last_error = f"{type(e).__name__}: {e}"
@@ -157,13 +201,13 @@ def fetch_all(tickers, verbose=True):
         if last_error:
             failures.append((ticker, last_error))
             if verbose:
-                print(f"  [{i}/{len(tickers)}] {ticker} FAILED - {last_error}")
-        elif verbose:
-            print(f"  [{i}/{len(tickers)}] {ticker} ok")
+                print(f"  [{i}/{total}] {ticker} FAILED - {last_error}")
+        elif verbose and not (excluded and excluded[-1][0] == ticker):
+            print(f"  [{i}/{total}] {ticker} ok")
 
         time.sleep(FETCH_PAUSE_SECONDS)
 
-    return rows, failures
+    return rows, failures, excluded
 
 
 # ---------------------------------------------------------------- scoring
@@ -208,13 +252,13 @@ def score(df):
     return df
 
 
-def build_dataset(tickers=None, verbose=False):
+def build_dataset(universe=None, verbose=False):
     """Fetch and score in one step. Returns (DataFrame, failures).
 
     The app uses this as a fallback when the precomputed file is absent.
     """
-    tickers = tickers or JSE_TICKERS
-    rows, failures = fetch_all(tickers, verbose=verbose)
+    universe = universe or load_universe()
+    rows, failures, _ = fetch_all(universe, verbose=verbose)
     if not rows:
         return pd.DataFrame(columns=COLUMNS), failures
     return score(pd.DataFrame(rows)), failures
@@ -222,7 +266,18 @@ def build_dataset(tickers=None, verbose=False):
 
 # ---------------------------------------------------------------- output
 
-def write_outputs(df, failures, requested):
+def previous_loaded():
+    """How many tickers the last successful refresh produced, if known."""
+    if not os.path.exists(META_FILE):
+        return None
+    try:
+        with open(META_FILE) as fh:
+            return json.load(fh).get("tickers_loaded")
+    except (ValueError, OSError):
+        return None
+
+
+def write_outputs(df, failures, excluded, requested):
     os.makedirs(DATA_DIR, exist_ok=True)
 
     df = df.reindex(columns=COLUMNS)
@@ -234,7 +289,9 @@ def write_outputs(df, failures, requested):
         "generated_sast": now_utc.astimezone(SAST).strftime("%Y-%m-%d %H:%M:%S"),
         "tickers_requested": requested,
         "tickers_loaded": int(len(df)),
+        "min_adv_rand": MIN_ADV_RAND,
         "failures": [{"ticker": t, "reason": r} for t, r in failures],
+        "excluded": [{"ticker": t, "reason": r} for t, r in excluded],
     }
     with open(META_FILE, "w") as fh:
         json.dump(meta, fh, indent=2)
@@ -243,33 +300,76 @@ def write_outputs(df, failures, requested):
     return meta
 
 
+def validate():
+    """Test every ticker in the universe and report. Writes nothing.
+
+    Use this after editing data/universe.csv, before relying on a refresh.
+    """
+    universe = load_universe()
+    print(f"Validating {len(universe)} tickers from {UNIVERSE_FILE}...\n")
+
+    rows, failures, excluded = fetch_all(universe)
+
+    print("\n" + "=" * 58)
+    print(f"  tradeable : {len(rows)}")
+    print(f"  excluded  : {len(excluded)}  (screened out on purpose)")
+    print(f"  failed    : {len(failures)}  (bad ticker or data error)")
+    print("=" * 58)
+
+    if excluded:
+        print("\nExcluded by the liquidity/staleness screens:")
+        for ticker, reason in excluded:
+            print(f"  {ticker:<10} {reason}")
+
+    if failures:
+        print("\nFailed - check these ticker codes:")
+        for ticker, reason in failures:
+            print(f"  {ticker:<10} {reason}")
+
+    return 0 if rows else 1
+
+
 def main():
-    requested = len(JSE_TICKERS)
-    print(f"Fetching {requested} JSE tickers...")
+    universe = load_universe()
+    requested = len(universe)
+    print(f"Fetching {requested} JSE tickers from {UNIVERSE_FILE}...")
 
-    rows, failures = fetch_all(JSE_TICKERS)
+    rows, failures, excluded = fetch_all(universe)
     loaded = len(rows)
-    rate = loaded / requested if requested else 0
 
-    print(f"\nLoaded {loaded}/{requested} ({rate:.0%}).")
+    print(f"\nTradeable {loaded}/{requested} "
+          f"({len(excluded)} screened out, {len(failures)} failed).")
 
-    # Quality gate: a bad fetch must not overwrite good data with a thin file.
-    # Failing here leaves the previous day's committed data in place.
-    if rate < MIN_SUCCESS_RATE:
+    # Quality gate. A bad fetch must not overwrite a good table with a thin
+    # one, so this compares against the previous run rather than a flat
+    # percentage - that way adding new, unvalidated tickers to the universe
+    # can never fail the job, but losing existing coverage will.
+    if loaded == 0:
+        print("FAILED: no tickers loaded. Keeping the existing data file.",
+              file=sys.stderr)
+        return 1
+
+    prior = previous_loaded()
+    if prior and loaded < prior * MAX_COVERAGE_DROP:
         print(
-            f"FAILED: success rate {rate:.0%} is below the {MIN_SUCCESS_RATE:.0%} "
-            "threshold. Keeping the existing data file.",
+            f"FAILED: coverage dropped from {prior} to {loaded} "
+            f"(below {MAX_COVERAGE_DROP:.0%} of the last run). "
+            "Keeping the existing data file.",
             file=sys.stderr,
         )
         for ticker, reason in failures:
             print(f"  {ticker}: {reason}", file=sys.stderr)
         return 1
 
-    meta = write_outputs(score(pd.DataFrame(rows)), failures, requested)
+    meta = write_outputs(score(pd.DataFrame(rows)), failures, excluded, requested)
     print(f"Wrote {DATA_FILE} and {META_FILE} at {meta['generated_sast']} SAST.")
 
+    if excluded:
+        print(f"\n{len(excluded)} screened out:")
+        for ticker, reason in excluded:
+            print(f"  {ticker}: {reason}")
     if failures:
-        print(f"{len(failures)} ticker(s) missing from this refresh:")
+        print(f"\n{len(failures)} failed:")
         for ticker, reason in failures:
             print(f"  {ticker}: {reason}")
 
@@ -277,4 +377,6 @@ def main():
 
 
 if __name__ == "__main__":
+    if "--validate" in sys.argv:
+        sys.exit(validate())
     sys.exit(main())
