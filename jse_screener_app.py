@@ -57,7 +57,6 @@ FX_EXPOSURE = {
     "GFI.JO": "Rand Hedge",
 }
 
-
 @st.cache_data(ttl=3600)
 def get_jse_data(tickers: dict) -> pd.DataFrame:
     rows = []
@@ -104,7 +103,6 @@ def get_jse_data(tickers: dict) -> pd.DataFrame:
 
     return pd.DataFrame(rows)
 
-
 def add_valuation_score(df):
     valid = df["P/E"].dropna()
     if len(valid) == 0:
@@ -115,7 +113,6 @@ def add_valuation_score(df):
     ).round(0)
     return df
 
-
 def add_momentum_score(df):
     mom = df["6mo Momentum %"]
     if mom.max() == mom.min():
@@ -125,7 +122,6 @@ def add_momentum_score(df):
         (mom - mom.min()) / (mom.max() - mom.min()) * 100
     ).round(0)
     return df
-
 
 def add_sharpe_score(df):
     valid = df["Sharpe Ratio"].dropna()
@@ -139,13 +135,11 @@ def add_sharpe_score(df):
     )
     return df
 
-
 def add_combined_score(df):
     df["Combined Score"] = (
         (df["Valuation Score"] + df["Momentum Score"]) / 2
     ).round(0)
     return df
-
 
 def _shade(value, max_abs, positive_rgb_light, positive_rgb_dark,
            negative_rgb_light, negative_rgb_dark):
@@ -159,7 +153,6 @@ def _shade(value, max_abs, positive_rgb_light, positive_rgb_dark,
     b = int(light[2] + intensity * (dark[2] - light[2]))
     return f"color: rgb({r},{g},{b}); font-weight: bold; background-color: transparent"
 
-
 def color_ratio(value, max_abs):
     return _shade(
         value, max_abs,
@@ -167,12 +160,10 @@ def color_ratio(value, max_abs):
         negative_rgb_light=(239, 83, 80), negative_rgb_dark=(127, 29, 29),
     )
 
-
 def color_score(value):
     if pd.isna(value):
         return ""
     return color_ratio(value - 50, 50)
-
 
 def style_table(display_df, momentum_max_abs, sharpe_max_abs):
     styler = display_df.style
@@ -200,13 +191,16 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
     return styler
 
-
 st.set_page_config(page_title="JSE Screener", layout="wide")
 st.title("JSE Screener — v1.3")
 st.caption(
     "Valuation + momentum ranking, Sharpe ratio, Rand hedge/domestic "
     "classification. Green = positive/strong, red = negative/weak, "
     "darker = more extreme. Free data, updated hourly."
+)
+st.caption(
+    "📊 Momentum signal backtested across ~54 monthly periods "
+    "(IC ≈ 0.10, ~63% win rate) — a modest but genuine edge, not a strong one."
 )
 
 with st.spinner("Fetching JSE data..."):
@@ -224,19 +218,16 @@ df = add_combined_score(df)
 momentum_max_abs = df["6mo Momentum %"].abs().max() or 1
 sharpe_max_abs = df["Sharpe Ratio"].abs().max() or 1
 
-col1, col2, col3, col4 = st.columns(4)
-with col1:
+with st.sidebar:
+    st.header("Filters")
     sectors = ["All"] + sorted(df["Sector"].dropna().unique().tolist())
     sector_filter = st.selectbox("Sector", sectors)
-with col2:
     fx_options = ["All"] + sorted(df["FX Exposure"].unique().tolist())
     fx_filter = st.selectbox("FX Exposure", fx_options)
-with col3:
     sort_by = st.selectbox(
         "Sort by",
         ["Combined Score", "Sharpe Ratio", "Valuation Score", "Momentum Score", "6mo Momentum %", "P/E"],
     )
-with col4:
     min_score = st.slider("Minimum Combined Score", 0, 100, 0)
 
 filtered = df.copy()
