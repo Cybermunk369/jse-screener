@@ -98,7 +98,7 @@ def load_universe(path=UNIVERSE_FILE):
         return dict(FALLBACK_UNIVERSE)
 
     universe = {}
-    with open(path, newline="", encoding="utf-8-sig") as fh:
+    with open(path, newline="", encoding="utf-8") as fh:
         for row in csv.DictReader(fh):
             ticker = (row.get("ticker") or "").strip()
             if not ticker or ticker.startswith("#"):
@@ -239,13 +239,34 @@ def add_sharpe_score(df):
     return df
 
 
-def add_combined_score(df):
-    """Mean of Valuation and Momentum. Where one input is missing the other
-    carries it - the missing input renders as a dash in the app so the user can
-    see the score rests on partial data."""
-    df["Combined Score"] = (
-        df[["Valuation Score", "Momentum Score"]].mean(axis=1, skipna=True).round(0)
-    )
+# Valuation and Momentum carry equal, dominant weight; Sharpe is a smaller
+# risk-adjustment overlay. Momentum is the only one of the three with a
+# backtest behind it (see the app's momentum caption) - Valuation and Sharpe
+# are included on theoretical grounds, not a verified edge, which is why
+# Sharpe gets the smallest slice rather than an equal third.
+COMBINED_SCORE_WEIGHTS = {
+    "Valuation Score": 0.4,
+    "Momentum Score": 0.4,
+    "Sharpe Score": 0.2,
+}
+
+
+def add_combined_score(df, weights=None):
+    """Weighted mean of Valuation, Momentum, and Sharpe Score. Weights are
+    renormalized across whichever inputs are present for a given row, so a
+    missing Valuation Score (bad or negative P/E) doesn't get silently
+    treated as 0 - Momentum and Sharpe pick up its share proportionally
+    instead of the row just being penalised twice."""
+    weights = weights or COMBINED_SCORE_WEIGHTS
+    cols = list(weights.keys())
+    w = pd.Series(weights)
+    scores = df[cols]
+    present = scores.notna()
+    weighted_sum = scores.fillna(0).mul(w, axis=1).sum(axis=1)
+    weight_total = present.mul(w, axis=1).sum(axis=1)
+    combined = (weighted_sum / weight_total).round(0)
+    combined[weight_total == 0] = np.nan
+    df["Combined Score"] = combined
     return df
 
 
@@ -315,11 +336,11 @@ def validate():
 
     rows, failures, excluded = fetch_all(universe)
 
-    print("\n" + "=" * 58)
+    print(f"\n{'='*58}")
     print(f"  tradeable : {len(rows)}")
     print(f"  excluded  : {len(excluded)}  (screened out on purpose)")
     print(f"  failed    : {len(failures)}  (bad ticker or data error)")
-    print("=" * 58)
+    print(f"{'='*58}")
 
     if excluded:
         print("\nExcluded by the liquidity/staleness screens:")
