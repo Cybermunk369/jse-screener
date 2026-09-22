@@ -49,7 +49,12 @@ STALE_DAYS = 5                # identical closes for this many days = not tradin
 # universe cannot fail the job, but losing existing coverage will.
 MAX_COVERAGE_DROP = 0.90
 
-DATA_DIR = "data"
+# Anchored to this file's directory, not the working directory. Streamlit
+# Cloud and GitHub Actions do not guarantee the same cwd, and a relative path
+# that silently misses just falls back to the built-in universe - which is
+# exactly the kind of quiet wrong answer this app must not give.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
 DATA_FILE = os.path.join(DATA_DIR, "screener.csv")
 META_FILE = os.path.join(DATA_DIR, "metadata.json")
 UNIVERSE_FILE = os.path.join(DATA_DIR, "universe.csv")
@@ -93,7 +98,7 @@ def load_universe(path=UNIVERSE_FILE):
         return dict(FALLBACK_UNIVERSE)
 
     universe = {}
-    with open(path, newline="", encoding="utf-8") as fh:
+    with open(path, newline="", encoding="utf-8-sig") as fh:
         for row in csv.DictReader(fh):
             ticker = (row.get("ticker") or "").strip()
             if not ticker or ticker.startswith("#"):
