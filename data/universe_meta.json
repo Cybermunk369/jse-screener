@@ -1,0 +1,1207 @@
+{
+  "generated_utc": "2026-09-22 19:59:01",
+  "generated_sast": "2026-09-22 21:59:01",
+  "rule": {
+    "exchange": "JNB",
+    "min_market_cap_rand": 5000000000,
+    "instruments": "ordinary shares (ETFs, prefs, notes excluded)",
+    "source": "Yahoo Finance screener via yfinance"
+  },
+  "count": 131,
+  "added": [
+    "ACS.JO",
+    "AEL.JO",
+    "AFH.JO",
+    "APH.JO",
+    "ARL.JO",
+    "ATT.JO",
+    "BAT.JO",
+    "BLU.JO",
+    "BOX.JO",
+    "BTN.JO",
+    "BYI.JO",
+    "CAA.JO",
+    "CCD.JO",
+    "CFR.JO",
+    "CML.JO",
+    "CNP.JO",
+    "DCP.JO",
+    "DIB.JO",
+    "DTC.JO",
+    "EMI.JO",
+    "EQU.JO",
+    "FBR.JO",
+    "FFB.JO",
+    "FTB.JO",
+    "GND.JO",
+    "HCI.JO",
+    "HMN.JO",
+    "ISO.JO",
+    "ITE.JO",
+    "JSE.JO",
+    "KRO.JO",
+    "KST.JO",
+    "LSK.JO",
+    "LTE.JO",
+    "MKR.JO",
+    "MSP.JO",
+    "MTH.JO",
+    "NY1.JO",
+    "OMN.JO",
+    "OPA.JO",
+    "OUT.JO",
+    "PAN.JO",
+    "PHP.JO",
+    "PMR.JO",
+    "PPC.JO",
+    "PPH.JO",
+    "PWR.JO",
+    "QLT.JO",
+    "RBO.JO",
+    "RBX.JO",
+    "RCL.JO",
+    "RES.JO",
+    "RLO.JO",
+    "S32.JO",
+    "SAC.JO",
+    "SBP.JO",
+    "SDO.JO",
+    "SEA.JO",
+    "SHC.JO",
+    "SNT.JO",
+    "SPG.JO",
+    "SRE.JO",
+    "SSS.JO",
+    "SSU.JO",
+    "SUI.JO",
+    "TGA.JO",
+    "THA.JO",
+    "TKG.JO",
+    "TSG.JO",
+    "VKE.JO",
+    "WBC.JO",
+    "WBO.JO",
+    "WVR.JO"
+  ],
+  "removed": [
+    "ACL.JO",
+    "AFT.JO",
+    "INL.JO",
+    "RMH.JO"
+  ],
+  "unclassified": [],
+  "dropped": [
+    {
+      "ticker": "SOLBE1.JO",
+      "reason": "market cap R92.1bn vs price x shares R0.5bn - unreliable"
+    },
+    {
+      "ticker": "FTA.JO",
+      "reason": "market cap R40.3bn vs price x shares R1.2bn - unreliable"
+    },
+    {
+      "ticker": "CATP.JO",
+      "reason": "market cap R32.0bn vs price x shares R0.0bn - unreliable"
+    },
+    {
+      "ticker": "CPIP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "INPP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "DSBP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SBPP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "INPR.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NTCP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "AFEP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "GNDP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "27FGMF.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "27FGSE.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "27FLCE.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "27FSMF.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "91DINC.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "91GINC.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AAGEET.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "AASAET.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ABAM1.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "ADXWWE.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AGOGB.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AGOGE.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMC002.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMC009.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMPSTI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "APACXJ.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AQUA.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ASETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ASETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ASIETF.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BBETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BBETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BCETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BCETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BGFMAI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BKETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BKETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BRETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BRETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "CARTBL.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "COGCAP.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "COGEM.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "COGES.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "COGMAN.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "COGOE.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "COOPTI.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "COUSDI.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "CSGOVI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "CSP500.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "CSPROP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "CSYSB.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "CTOP50.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "EASY3.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "EASY5.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "EASY7.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "EASYAI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "EASYBF.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "EASYGE.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETF500.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETF5IT.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFBND.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFEMA.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFGGB.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFGLD.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFGRE.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFPLD.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFPLT.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFRHO.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFSAB.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFSAP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFSRI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFSWX.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFT40.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFUSD.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ETFWLD.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FNB500.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FNBEMG.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FNBEQF.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FNBINF.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FNBMID.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FNBT40.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FNBWDM.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FNBWGB.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "GCT.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "GLD.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "GLOBAL.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "GLODIV.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "GLPROP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "INCOME.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "IVYAI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "JPETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "JPETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "LLETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "LLETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "LVETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "LVETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NEWGBP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NGPLD.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NGPLT.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NNETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NNETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NVETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NVETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ORBIGG.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "ORBT30.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "OYSTER.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "PAETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "PAETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "PANDA.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "PBLNCD.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "PCWGE.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "PIPETF.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "PMXINC.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "PREGIP.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "PROWWF.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "PTETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "PTETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "PWMEXI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "RFFI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "RWAGP.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "RWDVF.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "RWGPR.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "RWINC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SAALG.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "SQRL.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "SRI.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "STX40.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STX500.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXACW.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXCAP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXCHN.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXDIV.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXEME.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXEMG.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXESG.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXEUR.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXFIN.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXGBD.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXGLB.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXGLP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXGOV.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXGVI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXIFR.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXILB.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXINC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXIND.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXJGE.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXJPN.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXLVL.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXMMT.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXNAM.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXNDA.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXNDQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXPRO.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXQUA.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXRAF.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXRES.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXSAI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXSHA.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXTRA.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXVEQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXWDM.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "STXWIS.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYFANG.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYG4IR.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYG500.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGCN.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGEMF.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGESG.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGEU.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGH.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGJP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGT40.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGUK.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGUS.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SYGWD.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "TBIGTF.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "TBIMAI.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "VUNGLE.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "WNXT40.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "WTOP20.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ABAM2.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "ADETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ADETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ADXOPP.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "ALETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "ALETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "AMC001.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMC004.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMC005.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMC006.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMC007.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMC011.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "AMC012.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMC018.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMC021.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "AMETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "AMETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "APETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "APETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "AVETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "AVETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BAMGCF.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "BAMHUM.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "BHETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BHETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "BRNDZ.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "CCMGCZ.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "CLPASI.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "COETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "COETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "DCCUS2.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "DCCUSD.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "DNKGLO.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "DNKOPP.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "EGETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "EGETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FAETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FAETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FDETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FDETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "FNBGEG.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "FNBGSE.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "FNBLSP.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "GIMLPC.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "GSETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "GSETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "MCETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "MCETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "MERGE.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "MRPWMB.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "MSETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "MSETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "MWETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "MWETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NEWEUR.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NEWPLT.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NEWSLV.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NEWUSD.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NFETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "NFETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "OILGAS.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "PCMCOP.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "PPETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "PPETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SAAGG.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "SBCOP.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SBOIL.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "SBTGFP.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "SRETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "TSETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "TSETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "UA8GRO.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UABSPA.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UBFAMU.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UBRAND.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UBROBO.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UBSSXF.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UBSUKX.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UCIGEP.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UEFPCA.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "UEFPCL.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UMMIEA.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UMMIES.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UNICRN.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UNPWGP.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UOMWPA.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UPCHPA.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "USPACE.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "UUQUAD.JO",
+      "reason": "no market cap"
+    },
+    {
+      "ticker": "VSETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "VSETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "WWETNC.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "WWETNQ.JO",
+      "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "INL.JO",
+      "reason": "second line of INP.JO (less traded)"
+    },
+    {
+      "ticker": "N91.JO",
+      "reason": "second line of NY1.JO (less traded)"
+    }
+  ]
+}

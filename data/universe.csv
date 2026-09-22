@@ -1,63 +1,132 @@
-ticker,name,fx_exposure
-ABG.JO,Absa Group,Domestic
-AGL.JO,Anglo American,Rand Hedge
-ANG.JO,AngloGold Ashanti,Rand Hedge
-ANH.JO,AB InBev,Rand Hedge
-APN.JO,Aspen Pharmacare,Mixed
-BHG.JO,BHP Group,Rand Hedge
-BID.JO,Bid Corporation,Rand Hedge
-BVT.JO,Bidvest Group,Domestic
-BTI.JO,British American Tobacco,Rand Hedge
-CPI.JO,Capitec,Domestic
-CLS.JO,Clicks Group,Domestic
-DSY.JO,Discovery,Domestic
-EXX.JO,Exxaro Resources,Rand Hedge
-FSR.JO,FirstRand,Domestic
-GLN.JO,Glencore,Rand Hedge
-GFI.JO,Gold Fields,Rand Hedge
-GRT.JO,Growthpoint Properties,Domestic
-IMP.JO,Impala Platinum,Rand Hedge
-INL.JO,Investec Ltd,Mixed
-INP.JO,Investec PLC,Mixed
-MNP.JO,Mondi,Rand Hedge
-MRP.JO,Mr Price Group,Domestic
-MTN.JO,MTN Group,Mixed
-NPN.JO,Naspers,Rand Hedge
-NED.JO,Nedbank,Domestic
-NRP.JO,NEPI Rockcastle,Rand Hedge
-NPH.JO,Northam Platinum,Rand Hedge
-OMU.JO,Old Mutual,Domestic
-PRX.JO,Prosus,Rand Hedge
-RNI.JO,Reinet Investments,Rand Hedge
-REM.JO,Remgro,Mixed
-RMH.JO,RMB Holdings,Domestic
-SLM.JO,Sanlam,Domestic
-SOL.JO,Sasol,Mixed
-SHP.JO,Shoprite,Domestic
-SBK.JO,Standard Bank,Mixed
-VAL.JO,Valterra Platinum,Rand Hedge
-VOD.JO,Vodacom,Mixed
-WHL.JO,Woolworths Holdings,Mixed
-ADH.JO,ADvTECH,Domestic
-AFE.JO,AECI,Domestic
-AFT.JO,Afrimat,Domestic
-ACL.JO,ArcelorMittal SA,Domestic
-ARI.JO,African Rainbow Minerals,Rand Hedge
-AVI.JO,AVI Limited,Domestic
-DRD.JO,DRDGOLD,Rand Hedge
-HAR.JO,Harmony Gold,Rand Hedge
-HYP.JO,Hyprop Investments,Domestic
-KAP.JO,KAP Limited,Domestic
-KIO.JO,Kumba Iron Ore,Rand Hedge
-LHC.JO,Life Healthcare,Domestic
-MTM.JO,Momentum Group,Domestic
-NTC.JO,Netcare,Domestic
-OCE.JO,Oceana Group,Mixed
-PIK.JO,Pick n Pay Stores,Domestic
-RDF.JO,Redefine Properties,Domestic
-SAP.JO,Sappi,Rand Hedge
-SPP.JO,SPAR Group,Mixed
-SSW.JO,Sibanye-Stillwater,Rand Hedge
-TBS.JO,Tiger Brands,Domestic
-TFG.JO,The Foschini Group,Mixed
-TRU.JO,Truworths International,Mixed
+ticker,name,fx_exposure,market_cap_rbn
+BHG.JO,BHP Group,Rand Hedge,3574.4
+ANH.JO,AB InBev,Rand Hedge,2520.1
+CFR.JO,Richemont,Rand Hedge,1986.7
+BTI.JO,British American Tobacco,Rand Hedge,1963.9
+PRX.JO,Prosus,Rand Hedge,1467.2
+GLN.JO,Glencore,Rand Hedge,1363.0
+AGL.JO,Anglo American,Rand Hedge,960.1
+ANG.JO,AngloGold Ashanti,Rand Hedge,833.8
+GFI.JO,Gold Fields,Rand Hedge,608.1
+NPN.JO,Naspers,Rand Hedge,560.0
+FSR.JO,FirstRand,Domestic,523.6
+CPI.JO,Capitec,Domestic,520.7
+SBK.JO,Standard Bank,Mixed,501.1
+MTN.JO,MTN Group,Mixed,361.7
+VAL.JO,Valterra Platinum,Rand Hedge,357.6
+VOD.JO,Vodacom,Mixed,293.4
+S32.JO,South32,Rand Hedge,251.4
+HAR.JO,Harmony Gold,Rand Hedge,194.7
+IMP.JO,Impala Platinum,Rand Hedge,184.9
+ABG.JO,Absa Group,Domestic,183.9
+DSY.JO,Discovery,Domestic,179.8
+SHP.JO,Shoprite,Domestic,173.1
+SLM.JO,Sanlam,Domestic,171.5
+BID.JO,Bid Corporation,Rand Hedge,148.6
+SOL.JO,Sasol,Mixed,141.7
+NED.JO,Nedbank,Domestic,135.7
+OUT.JO,OUTsurance Group,Mixed,133.6
+SSW.JO,Sibanye-Stillwater,Rand Hedge,127.7
+REM.JO,Remgro,Mixed,116.6
+NPH.JO,Northam Platinum,Rand Hedge,111.6
+NRP.JO,NEPI Rockcastle,Rand Hedge,103.8
+INP.JO,Investec,Mixed,87.4
+RNI.JO,Reinet Investments,Rand Hedge,83.6
+MNP.JO,Mondi,Rand Hedge,80.3
+BVT.JO,Bidvest Group,Domestic,78.2
+KIO.JO,Kumba Iron Ore,Rand Hedge,73.3
+APN.JO,Aspen Pharmacare,Mixed,69.0
+PPH.JO,Pepkor,Domestic,68.1
+PAN.JO,Pan African Resources,Rand Hedge,59.9
+SHC.JO,Shaftesbury Capital,Rand Hedge,56.1
+OMU.JO,Old Mutual,Domestic,55.8
+CNP.JO,Canal+,Rand Hedge,55.1
+GRT.JO,Growthpoint Properties,Domestic,54.7
+QLT.JO,Quilter,Rand Hedge,53.8
+PHP.JO,Primary Health Properties,Rand Hedge,52.4
+MTM.JO,Momentum Group,Domestic,49.8
+CLS.JO,Clicks Group,Domestic,49.4
+SNT.JO,Santam,Domestic,44.3
+HMN.JO,Hammerson,Rand Hedge,44.0
+RDF.JO,Redefine Properties,Domestic,42.6
+EXX.JO,Exxaro Resources,Rand Hedge,42.1
+MRP.JO,Mr Price Group,Domestic,42.0
+NY1.JO,Ninety One,Mixed,40.6
+KST.JO,PSG Financial Services,Domestic,40.5
+TBS.JO,Tiger Brands,Domestic,40.0
+BOX.JO,Boxer Retail,Domestic,37.6
+DRD.JO,DRDGOLD,Rand Hedge,36.4
+VKE.JO,Vukile Property Fund,Mixed,36.1
+WHL.JO,Woolworths Holdings,Mixed,33.8
+ARI.JO,African Rainbow Minerals,Rand Hedge,33.1
+KRO.JO,Karooooo,Mixed,33.0
+FFB.JO,Fortress Real Estate,Mixed,32.8
+SRE.JO,Sirius Real Estate,Rand Hedge,31.4
+PMR.JO,Premier Group,Domestic,30.2
+AVI.JO,AVI Limited,Domestic,28.8
+ADH.JO,ADvTECH,Domestic,28.4
+TKG.JO,Telkom,Domestic,26.5
+RES.JO,Resilient REIT,Domestic,26.1
+HYP.JO,Hyprop Investments,Domestic,25.8
+DCP.JO,Dis-Chem,Domestic,23.0
+BYI.JO,Bytes Technology,Rand Hedge,22.6
+APH.JO,Alphamin Resources,Rand Hedge,21.3
+NTC.JO,Netcare,Domestic,20.6
+DTC.JO,Datatec,Rand Hedge,20.0
+GND.JO,Grindrod,Mixed,19.7
+OMN.JO,Omnia,Mixed,19.1
+OPA.JO,Optasia,Rand Hedge,19.1
+MTH.JO,Motus,Mixed,18.5
+LTE.JO,Lighthouse Properties,Rand Hedge,17.4
+LHC.JO,Life Healthcare,Domestic,17.1
+TFG.JO,The Foschini Group,Mixed,15.8
+EQU.JO,Equites Property Fund,Domestic,15.7
+TRU.JO,Truworths International,Mixed,15.4
+FTB.JO,Fairvest,Domestic,15.2
+CML.JO,Coronation Fund Managers,Domestic,15.2
+TGA.JO,Thungela Resources,Rand Hedge,14.9
+PIK.JO,Pick n Pay Stores,Domestic,14.3
+MSP.JO,MAS,Rand Hedge,13.7
+SDO.JO,Stadio,Domestic,13.6
+SSU.JO,Southern Sun,Domestic,13.3
+JSE.JO,JSE Ltd,Domestic,12.9
+ATT.JO,Attacq,Domestic,12.7
+HCI.JO,Hosken Consolidated,Domestic,12.4
+WBC.JO,We Buy Cars,Domestic,11.9
+PPC.JO,PPC,Domestic,11.7
+AEL.JO,Altron,Domestic,11.1
+SUI.JO,Sun International,Domestic,10.8
+AFE.JO,AECI,Domestic,10.7
+ITE.JO,Italtile,Domestic,9.9
+SAC.JO,SA Corporate Real Estate,Domestic,9.7
+AFH.JO,Alexander Forbes,Domestic,9.6
+RLO.JO,Reunert,Domestic,9.1
+SPP.JO,SPAR Group,Mixed,8.7
+OCE.JO,Oceana Group,Mixed,8.3
+BAT.JO,Brait,Mixed,8.2
+DIB.JO,Dipula Properties,Domestic,8.2
+CCD.JO,Cell C,Domestic,8.2
+SSS.JO,Stor-Age Property REIT,Mixed,8.2
+THA.JO,Tharisa,Rand Hedge,8.0
+SAP.JO,Sappi,Rand Hedge,7.8
+ISO.JO,ASP Isotopes,Rand Hedge,7.8
+BTN.JO,Burstone Group,Mixed,7.7
+RBX.JO,Raubex,Domestic,7.6
+ARL.JO,Astral Foods,Domestic,7.5
+WBO.JO,WBHO,Domestic,7.5
+TSG.JO,Tsogo Sun,Domestic,7.3
+BLU.JO,Blu Label,Domestic,7.2
+ACS.JO,Acsion,Domestic,7.1
+KAP.JO,KAP Limited,Domestic,7.1
+CAA.JO,CA Sales,Domestic,6.8
+EMI.JO,Emira Property Fund,Domestic,6.6
+SEA.JO,Spear REIT,Domestic,6.5
+PWR.JO,PowerFleet,Rand Hedge,6.4
+RCL.JO,RCL Foods,Domestic,6.1
+LSK.JO,Lesaka Technologies,Domestic,6.1
+SPG.JO,Super Group,Mixed,6.1
+MKR.JO,Montauk Renewables,Rand Hedge,5.7
+RBO.JO,Rainbow Chicken,Domestic,5.6
+SBP.JO,Sabvest Capital,Mixed,5.5
+FBR.JO,Famous Brands,Domestic,5.2
+WVR.JO,Weaver Fintech,Domestic,5.1
