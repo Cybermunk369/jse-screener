@@ -41,8 +41,14 @@ import pandas as pd
 import streamlit as st
 
 import fetch_data
-from fetch_data import (
-    DATA_FILE, META_FILE, UNIVERSE_META_FILE, JSE_TICKERS, RISK_FREE_RATE,
+from fetch_data import DATA_FILE, META_FILE, JSE_TICKERS, RISK_FREE_RATE
+
+# Resolved here rather than imported: Streamlit Cloud can re-run this script
+# after a deploy while still holding an older fetch_data module in memory, and
+# a name that module doesn't have yet takes the whole app down on import.
+UNIVERSE_META_FILE = getattr(
+    fetch_data, "UNIVERSE_META_FILE",
+    os.path.join(os.path.dirname(DATA_FILE), "universe_meta.json"),
 )
 
 DISPLAY_COLS = [
