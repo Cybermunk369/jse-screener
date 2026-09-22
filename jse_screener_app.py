@@ -1,5 +1,18 @@
 """
-JSE Screener v1.6 - expanded universe with a liquidity screen.
+JSE Screener v1.7 - numeric columns sort correctly.
+
+v1.6 pre-formatted every numeric column to a display string (so missing
+values could show "-" instead of Streamlit's "None"). That silently broke
+the table's built-in column-header sort: Streamlit picks a text or numeric
+comparator based on the column's declared type, and a string column sorts
+lexicographically ("100.75" comes before "9.50"). Price and Market Cap were
+sorting wrong as a result. Columns are numeric again here, formatted via
+column_config.NumberColumn instead of pre-formatted strings, so header-click
+sort compares numbers. The trade-off: missing values now show Streamlit's
+native "None" rather than an em-dash, which is a real Streamlit limitation
+(confirmed empirically - na_rep, nullable dtypes, and TextColumn overrides
+on numeric data all still show "None", and only a Text-typed column can
+show custom missing-value text - but a Text column sorts as a string).
 
 Data is refreshed once a day by fetch_data.py, run from
 .github/workflows/refresh.yml after the JSE close. This app just reads
@@ -30,17 +43,21 @@ DISPLAY_COLS = [
     "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
 ]
 
+# printf-style specs for st.column_config.NumberColumn (not Python .format() -
+# these need to be sprintf syntax so Streamlit renders the number itself while
+# keeping the underlying dtype numeric, which is what keeps header-click sort
+# comparing numbers instead of strings).
 COLUMN_FORMATS = {
-    "Price (R)": "{:.2f}",
-    "P/E": "{:.2f}",
-    "Market Cap (R bn)": "{:,.1f}",
-    "6mo Momentum %": "{:.1f}",
-    "Sharpe Ratio": "{:.2f}",
-    "ADV (R m)": "{:,.1f}",
-    "Valuation Score": "{:.0f}",
-    "Momentum Score": "{:.0f}",
-    "Sharpe Score": "{:.0f}",
-    "Combined Score": "{:.0f}",
+    "Price (R)": "%.2f",
+    "P/E": "%.2f",
+    "Market Cap (R bn)": "%,.1f",
+    "6mo Momentum %": "%.1f",
+    "Sharpe Ratio": "%.2f",
+    "ADV (R m)": "%,.1f",
+    "Valuation Score": "%.0f",
+    "Momentum Score": "%.0f",
+    "Sharpe Score": "%.0f",
+    "Combined Score": "%.0f",
 }
 
 
@@ -111,10 +128,9 @@ def color_score(value):
 
 
 def style_table(display_df, momentum_max_abs, sharpe_max_abs):
-    """Streamlit's Arrow serialisation ignores Styler.na_rep and prints 'None'
-    for missing numbers, which looks like a bug in a financial table. So values
-    are pre-formatted to strings here and colours applied via a parallel style
-    matrix of the same shape."""
+    """Colours are applied via a parallel style matrix of the same shape, on
+    top of the numeric display_df (not a stringified copy) - see the module
+    docstring for why values stay numeric instead of being pre-formatted."""
     styles = pd.DataFrame("", index=display_df.index, columns=display_df.columns)
 
     styles["6mo Momentum %"] = display_df["6mo Momentum %"].map(
@@ -126,19 +142,13 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
     for col in ["Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score"]:
         styles[col] = display_df[col].map(color_score)
 
-    text = display_df.copy()
-    for col, spec in COLUMN_FORMATS.items():
-        text[col] = display_df[col].map(
-            lambda v, s=spec: "—" if pd.isna(v) else s.format(v)
-        )
-
-    return text.style.apply(lambda _: styles, axis=None)
+    return display_df.style.apply(lambda _: styles, axis=None)
 
 
 # ---------------------------------------------------------------- app
 
 st.set_page_config(page_title="JSE Screener", layout="wide")
-st.title("JSE Screener — v1.6")
+st.title("JSE Screener — v1.7")
 st.caption(
     "Valuation + momentum ranking, Sharpe ratio, Rand hedge/domestic "
     "classification. Scores are percentile ranks across the universe (0-100). "
@@ -180,8 +190,8 @@ if df is None or df.empty:
 
 if failures:
     st.warning(
-        f"{len(failures)} of {len(JSE_TICKERS)} tickers are missing from this "
-        "refresh: "
+        f"{len(failures)} of {meta.get('tickers_requested', len(JSE_TICKERS))} "
+        "tickers are missing from this refresh: "
         + ", ".join(f"{t.replace('.JO', '')}" for t, _ in failures)
     )
 
@@ -215,24 +225,32 @@ filtered = filtered.sort_values(sort_by, ascending=False)
 display_df = filtered[DISPLAY_COLS].reset_index(drop=True)
 
 styled = style_table(display_df, momentum_max_abs, sharpe_max_abs)
+
+# Every numeric column gets a NumberColumn (numeric dtype + numeric sort
+# comparator) with its display format, instead of pre-formatted strings.
+column_config = {
+    "Ticker": st.column_config.Column(pinned=True, width="small"),
+    "Name": st.column_config.Column(pinned=True, width="medium"),
+}
+for col, spec in COLUMN_FORMATS.items():
+    column_config[col] = st.column_config.NumberColumn(
+        format=spec,
+        pinned=(col == "Price (R)"),
+        width="small" if col == "Price (R)" else None,
+    )
+
 st.dataframe(
     styled,
     use_container_width=True,
     hide_index=True,
-    column_config={
-        "Ticker": st.column_config.Column(pinned=True, width="small"),
-        "Name": st.column_config.Column(pinned=True, width="medium"),
-        # Values are pre-formatted strings, so these are plain Columns rather
-        # than NumberColumns.
-        "Price (R)": st.column_config.Column(pinned=True, width="small"),
-    },
+    column_config=column_config,
 )
 
 st.caption(
     f"{len(filtered)} of {len(df)} stocks shown. "
     "Scores are percentile ranks within the loaded universe, so they shift as "
     "the universe changes. Where P/E is missing or negative the Valuation Score "
-    "shows — and the Combined Score reflects momentum only. "
+    "is left blank and the Combined Score reflects momentum only. "
     "ADV is 20-day average daily value traded; names below the liquidity "
     "floor are dropped before scoring, because momentum and Sharpe computed on "
     "barely-traded prices are not weak signals but false ones. "
