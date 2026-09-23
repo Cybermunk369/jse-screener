@@ -1,11 +1,20 @@
 {
-  "generated_utc": "2026-09-23 19:09:25",
-  "generated_sast": "2026-09-23 21:09:25",
+  "generated_utc": "2026-09-23 19:32:29",
+  "generated_sast": "2026-09-23 21:32:29",
   "tickers_requested": 131,
-  "tickers_loaded": 110,
+  "tickers_loaded": 107,
   "min_adv_rand": 5000000,
-  "failures": [],
+  "failures": [
+    {
+      "ticker": "RDF.JO",
+      "reason": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    }
+  ],
   "excluded": [
+    {
+      "ticker": "SHC.JO",
+      "reason": "bad price history (101x jump in one day)"
+    },
     {
       "ticker": "CNP.JO",
       "reason": "too new (79 trading days, need 100)"
@@ -17,6 +26,10 @@
     {
       "ticker": "APH.JO",
       "reason": "illiquid (ADV R0.3m)"
+    },
+    {
+      "ticker": "OPA.JO",
+      "reason": "bad price history (100x jump in one day)"
     },
     {
       "ticker": "SSU.JO",
