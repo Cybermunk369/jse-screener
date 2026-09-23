@@ -5,7 +5,9 @@ Title and a summary strip first, then tabs: Screener, Watchlist, How it works.
 The methodology notes moved out of the way into "How it works". The table shows
 the essential columns by default (all columns on request), missing values show
 as a dash via the table's placeholder setting (the numbers stay numeric, so
-sorting is unaffected), and one-tap quick views replace hunting through filters.
+sorting is unaffected - the v1.7 note below calling "None" unavoidable was
+wrong; that setting had been missed), and one-tap quick views replace hunting
+through filters.
 The sidebar "watchlist only" toggle became the Watchlist tab.
 
 v1.11 - watchlist search box and "watchlist only" view.
