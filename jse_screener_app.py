@@ -1,5 +1,12 @@
 """
-JSE Screener v1.9 - rule-based universe.
+JSE Screener v1.10 - watchlist.
+
+Click the ★ in a row to star a stock; starred stocks stay at the top of the
+table (then the chosen sort applies). The watchlist is kept in the page
+address (?watch=SHP,NPN) because there are no accounts yet - bookmarking the
+page saves it. The table is an st.data_editor with only the ★ column editable.
+
+v1.9 - rule-based universe.
 
 The stock list is no longer hand-picked: build_universe.py takes every JSE
 ordinary share with a market cap of at least R5bn, rebuilt quarterly by
@@ -173,7 +180,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 # ---------------------------------------------------------------- app
 
 st.set_page_config(page_title="JSE Screener", layout="wide")
-st.title("JSE Screener — v1.9")
+st.title("JSE Screener — v1.10")
 st.caption(
     "Valuation + momentum + Sharpe ranking, Rand hedge/domestic "
     "classification. Scores are percentile ranks across the universe (0-100). "
@@ -235,6 +242,44 @@ if failures:
 momentum_max_abs = safe_max_abs(df["6mo Momentum %"])
 sharpe_max_abs = safe_max_abs(df["Sharpe Ratio"])
 
+# ---------------------------------------------------------------- watchlist
+# There are no user accounts yet, so the watchlist is kept in the page address
+# (?watch=SHP,NPN): a bookmark saves it, a link shares it. Session state is the
+# working copy for this visit.
+if "watchlist" not in st.session_state:
+    st.session_state.watchlist = [
+        t for t in st.query_params.get("watch", "").upper().split(",")
+        if t.strip().isalnum()
+    ]
+if "table_version" not in st.session_state:
+    st.session_state.table_version = 0
+
+
+def on_star_edit(row_tickers):
+    """Apply ★ clicks to the watchlist.
+
+    The editor reports changes by row position in the table it was given, so
+    the ticker order of that render is passed in. Starred rows then move to
+    the top, which would make the editor's stored edits point at the wrong
+    rows - so the editor is recreated under a new key after every change.
+    """
+    edits = st.session_state[f"table_{st.session_state.table_version}"]["edited_rows"]
+    watchlist = list(st.session_state.watchlist)
+    for row, change in edits.items():
+        if "★" not in change:
+            continue
+        ticker = row_tickers[int(row)]
+        if change["★"] and ticker not in watchlist:
+            watchlist.append(ticker)
+        elif not change["★"] and ticker in watchlist:
+            watchlist.remove(ticker)
+    st.session_state.watchlist = watchlist
+    if watchlist:
+        st.query_params["watch"] = ",".join(watchlist)
+    elif "watch" in st.query_params:
+        del st.query_params["watch"]
+    st.session_state.table_version += 1
+
 with st.sidebar:
     st.header("Filters")
     sectors = ["All"] + sorted(df["Sector"].dropna().unique().tolist())
@@ -257,15 +302,25 @@ if min_score > 0:
     # Only applied above zero, so rows with an incomplete Combined Score are
     # not silently dropped at the default setting.
     filtered = filtered[filtered["Combined Score"] >= min_score]
-filtered = filtered.sort_values(sort_by, ascending=False)
+# Watchlist: starred stocks pin to the top, then the chosen sort applies
+# within each group. Filters still apply to starred stocks too.
+watch = set(st.session_state.watchlist)
+filtered["★"] = filtered["Ticker"].isin(watch)
+filtered = filtered.sort_values(
+    ["★", sort_by], ascending=[False, False], kind="stable"
+)
 
-display_df = filtered[DISPLAY_COLS].reset_index(drop=True)
+display_df = filtered[["★"] + DISPLAY_COLS].reset_index(drop=True)
 
 styled = style_table(display_df, momentum_max_abs, sharpe_max_abs)
 
 # Every numeric column gets a NumberColumn (numeric dtype + numeric sort
 # comparator) with its display format, instead of pre-formatted strings.
 column_config = {
+    "★": st.column_config.CheckboxColumn(
+        "★", pinned=True, width=40,
+        help="Star a stock to add it to your watchlist - starred stocks stay at the top.",
+    ),
     "Ticker": st.column_config.Column(pinned=True, width="small"),
     "Name": st.column_config.Column(pinned=True, width="medium"),
 }
@@ -276,11 +331,23 @@ for col, spec in COLUMN_FORMATS.items():
         width="small" if col == "Price (R)" else None,
     )
 
-st.dataframe(
+# st.data_editor rather than st.dataframe so the ★ column is clickable. Every
+# other column is locked, and Styler colours still apply to locked columns.
+st.data_editor(
     styled,
+    key=f"table_{st.session_state.table_version}",
     use_container_width=True,
     hide_index=True,
     column_config=column_config,
+    disabled=DISPLAY_COLS,
+    num_rows="fixed",
+    on_change=on_star_edit,
+    args=(display_df["Ticker"].tolist(),),
+)
+n_watch = len(st.session_state.watchlist)
+st.caption(
+    (f"★ {n_watch} on your watchlist. " if n_watch else "★ Star any stock to pin it to the top. ")
+    + "Your watchlist lives in this page's web address - bookmark the page to keep it."
 )
 
 # The table's own toolbar download uses the browser's "Save as" (File System
@@ -289,7 +356,8 @@ st.dataframe(
 # button is built server-side and served as an ordinary download instead, and
 # exports exactly the filtered, sorted view. utf-8-sig so Excel reads it right.
 data_date = ((meta or {}).get("generated_sast") or "")[:10] or "latest"
-export_df = display_df.copy()
+export_df = display_df.drop(columns="★")
+export_df.insert(0, "Watchlist", display_df["★"].map({True: "yes", False: ""}))
 for col in ["Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score"]:
     export_df[col] = export_df[col].round().astype("Int64")   # 98, not 98.0
 export_df["P/E"] = export_df["P/E"].round(2)
