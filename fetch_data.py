@@ -43,6 +43,11 @@ FETCH_PAUSE_SECONDS = 0.5     # be polite to Yahoo as the universe grows
 MIN_ADV_RAND = 5_000_000      # 20-day average daily value traded
 ADV_WINDOW = 20
 STALE_DAYS = 5                # identical closes for this many days = not trading
+# Yahoo sometimes stores part of a JSE price history in rand and part in cents,
+# so the series jumps ~100x in one day (e.g. SHC showed +10,470% momentum).
+# No real JSE share moves 20x in a day, so a jump that size means the history
+# can't be trusted and the stock is screened out rather than scored.
+MAX_DAILY_JUMP = 20
 
 # Refresh must not silently shrink the table. The gate is on the share of the
 # universe that hit a data error (bad response, no history) - not on the row
@@ -153,6 +158,13 @@ def fetch_one(ticker, name, fx_exposure):
 
     adj_series = hist["Adj Close"] if "Adj Close" in hist.columns else hist["Close"]
     adj_rand = adj_series / 100
+
+    for series in (close_rand, adj_rand):
+        step = (series / series.shift(1)).dropna()
+        step = step[step > 0]
+        if len(step) and (step.max() > MAX_DAILY_JUMP or step.min() < 1 / MAX_DAILY_JUMP):
+            biggest = max(step.max(), 1 / step.min())
+            raise Excluded(f"bad price history ({biggest:,.0f}x jump in one day)")
 
     momentum_pct = (adj_rand.iloc[-1] - adj_rand.iloc[0]) / adj_rand.iloc[0] * 100
 
