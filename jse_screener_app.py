@@ -443,22 +443,31 @@ if live_fallback:
 
 top = df.loc[df["Combined Score"].idxmax()]
 mover = df.loc[df["6mo Momentum %"].idxmax()]
-m1, m2, m3, m4 = st.columns(4)
+# A wrapping row rather than fixed columns: tiles keep a readable minimum
+# width and move to a second line in a narrow window instead of cutting off.
+tiles = st.container(horizontal=True, wrap=True, gap="small")
+m1 = m2 = m3 = m4 = tiles
+# Short labels, the number as the value, the ticker as a grey sub-line - so
+# the tiles still read in a narrow window (long values get cut off with "...").
 m1.metric(
-    "Stocks ranked", len(df), border=True,
-    help=f"{len(excluded)} more screened out today (illiquid, stale or too new). "
-         "See How it works.",
+    "Ranked", len(df), delta=f"{len(excluded)} screened out",
+    delta_color="off", delta_arrow="off", border=True, width=170,
+    help="Stocks scored today. The rest were left out as illiquid, stale or "
+         "too new - see How it works.",
 )
 m2.metric(
-    "Top Combined Score", f"{top['Ticker']} · {top['Combined Score']:.0f}",
-    border=True, help=top["Name"],
+    "Top score", f"{top['Combined Score']:.0f}", delta=top["Ticker"],
+    delta_color="off", delta_arrow="off", border=True, width=170,
+    help=f"Highest Combined Score: {top['Name']}",
 )
 m3.metric(
-    "Strongest 6-month run", f"{mover['Ticker']} · {mover['6mo Momentum %']:+.0f}%",
-    border=True, help=mover["Name"],
+    "Best 6m run", f"{mover['6mo Momentum %']:+.0f}%", delta=mover["Ticker"],
+    delta_color="off", delta_arrow="off", border=True, width=170,
+    help=f"Strongest six-month price move: {mover['Name']}",
 )
 m4.metric(
-    "Your watchlist", len(st.session_state.watchlist), border=True,
+    "Watchlist", len(st.session_state.watchlist), delta="starred",
+    delta_color="off", delta_arrow="off", border=True, width=170,
     help="Star stocks in the table, or search in the sidebar.",
 )
 
