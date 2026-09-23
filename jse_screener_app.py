@@ -1,5 +1,11 @@
 """
-JSE Screener v1.10 - watchlist.
+JSE Screener v1.11 - watchlist search box and "watchlist only" view.
+
+A sidebar box adds stocks by name or ticker, and a toggle shows only the
+watchlist. Both stay in step with the table stars; all three edit the same
+list, still kept in the page address.
+
+v1.10 - watchlist.
 
 Click the ★ in a row to star a stock; starred stocks stay at the top of the
 table (then the chosen sort applies). The watchlist is kept in the page
@@ -180,7 +186,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 # ---------------------------------------------------------------- app
 
 st.set_page_config(page_title="JSE Screener", layout="wide")
-st.title("JSE Screener — v1.10")
+st.title("JSE Screener — v1.11")
 st.caption(
     "Valuation + momentum + Sharpe ranking, Rand hedge/domestic "
     "classification. Scores are percentile ranks across the universe (0-100). "
@@ -255,6 +261,25 @@ if "table_version" not in st.session_state:
     st.session_state.table_version = 0
 
 
+def save_watchlist(watchlist):
+    """Single place that updates the watchlist: session, page address, table."""
+    st.session_state.watchlist = watchlist
+    if watchlist:
+        st.query_params["watch"] = ",".join(watchlist)
+    elif "watch" in st.query_params:
+        del st.query_params["watch"]
+    # The table editor keeps positional edits; a new key discards them once
+    # the rows re-order (see on_star_edit).
+    st.session_state.table_version += 1
+
+
+def on_watch_pick():
+    """The sidebar watchlist box changed - adopt its value, keeping order."""
+    picked = st.session_state.watch_pick
+    kept = [t for t in st.session_state.watchlist if t in picked]
+    save_watchlist(kept + [t for t in picked if t not in kept])
+
+
 def on_star_edit(row_tickers):
     """Apply ★ clicks to the watchlist.
 
@@ -273,14 +298,36 @@ def on_star_edit(row_tickers):
             watchlist.append(ticker)
         elif not change["★"] and ticker in watchlist:
             watchlist.remove(ticker)
-    st.session_state.watchlist = watchlist
-    if watchlist:
-        st.query_params["watch"] = ",".join(watchlist)
-    elif "watch" in st.query_params:
-        del st.query_params["watch"]
-    st.session_state.table_version += 1
+    save_watchlist(watchlist)
+
 
 with st.sidebar:
+    st.header("★ Watchlist")
+    names = dict(zip(df["Ticker"], df["Name"]))
+    # Starred stocks that dropped out of today's data (screened out, delisted)
+    # stay selectable, so they aren't silently removed from the watchlist.
+    watch_options = sorted(names) + [
+        t for t in st.session_state.watchlist if t not in names
+    ]
+    # Mirror the current watchlist into the box before it renders, so stars
+    # clicked in the table show up here too.
+    st.session_state.watch_pick = list(st.session_state.watchlist)
+    st.multiselect(
+        "Search and add stocks",
+        watch_options,
+        key="watch_pick",
+        format_func=lambda t: (
+            f"{t} · {names[t]}" if t in names else f"{t} · not in today's data"
+        ),
+        placeholder="Type a name or ticker...",
+        on_change=on_watch_pick,
+    )
+    watch_only = st.toggle(
+        "Show watchlist only",
+        key="watch_only",
+        disabled=not st.session_state.watchlist,
+    )
+
     st.header("Filters")
     sectors = ["All"] + sorted(df["Sector"].dropna().unique().tolist())
     sector_filter = st.selectbox("Sector", sectors)
@@ -306,6 +353,8 @@ if min_score > 0:
 # within each group. Filters still apply to starred stocks too.
 watch = set(st.session_state.watchlist)
 filtered["★"] = filtered["Ticker"].isin(watch)
+if watch_only and watch:
+    filtered = filtered[filtered["★"]]
 filtered = filtered.sort_values(
     ["★", sort_by], ascending=[False, False], kind="stable"
 )
@@ -345,8 +394,11 @@ st.data_editor(
     args=(display_df["Ticker"].tolist(),),
 )
 n_watch = len(st.session_state.watchlist)
+missing = [t for t in st.session_state.watchlist if t not in names]
 st.caption(
-    (f"★ {n_watch} on your watchlist. " if n_watch else "★ Star any stock to pin it to the top. ")
+    (f"★ {n_watch} on your watchlist. " if n_watch
+     else "★ Star any stock, or search in the sidebar, to pin it to the top. ")
+    + (f"Not in today's data: {', '.join(missing)}. " if missing else "")
     + "Your watchlist lives in this page's web address - bookmark the page to keep it."
 )
 
