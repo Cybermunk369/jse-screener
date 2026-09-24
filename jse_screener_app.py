@@ -1,5 +1,14 @@
 """
-JSE Screener v1.13 - stock detail panel, price trend and score history.
+JSE Screener v1.14 - click a row for the stock report.
+
+Clicking any row opens a pop-up report for that stock (price chart, key
+figures, score bars, score history, watchlist button), replacing the v1.13
+"Stock detail" picker under the table. The report's address is kept in the page
+URL (?stock=KAP), so a link opens straight to it. Row clicks need st.dataframe,
+which can't also have a clickable checkbox column, so the ★ column now only
+shows what's starred; starring moved into the report and the sidebar search.
+
+v1.13 - stock detail panel, price trend and score history.
 
 Pick any stock under the table to see its six-month price chart, its scores as
 bars, and a star button. The table gains a "6m trend" sparkline and a "Δ 1w"
@@ -69,6 +78,7 @@ Run locally:
     python3 -m streamlit run jse_screener_app.py
 """
 
+import functools
 import json
 import os
 
@@ -271,7 +281,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
 # ---------------------------------------------------------------- app
 
-APP_VERSION = "1.13"
+APP_VERSION = "1.14"
 
 # Columns shown by default - enough to act on, narrow enough for a phone.
 DEFAULT_COLS = [
@@ -368,9 +378,6 @@ def save_watchlist(watchlist):
     lowercase ?watch=agl) get normalised on load.
     """
     st.session_state.watchlist = watchlist
-    # The table editors keep positional edits; new keys discard them once the
-    # rows re-order (see on_star_edit).
-    st.session_state.table_version += 1
 
 
 def sync_watch_param():
@@ -390,29 +397,49 @@ def on_watch_pick():
     save_watchlist(kept + [t for t in picked if t not in kept])
 
 
-def on_star_edit(row_tickers, editor_key):
-    """Apply ★ clicks in either table to the watchlist.
+def on_row_click(row_tickers, table_key):
+    """A cell in a table was clicked - open that stock's report.
 
-    The editor reports changes by row position in the table it was given, so
-    the ticker order of that render is passed in. Starred rows then move, which
-    would make the editor's stored edits point at the wrong rows - so every
-    editor is recreated under a new key after each change.
+    Selections are reported by row position in the data the table was given
+    (they stay correct if the user re-sorts by a column header), so that
+    render's ticker order is passed in. The table is then recreated under a new
+    key so the selection clears: otherwise clicking the same row again after
+    closing the report would just deselect it.
     """
-    edits = st.session_state[editor_key]["edited_rows"]
-    watchlist = list(st.session_state.watchlist)
-    for row, change in edits.items():
-        if "★" not in change:
-            continue
-        ticker = row_tickers[int(row)]
-        if change["★"] and ticker not in watchlist:
-            watchlist.append(ticker)
-        elif not change["★"] and ticker in watchlist:
-            watchlist.remove(ticker)
-    save_watchlist(watchlist)
+    cells = st.session_state[table_key]["selection"]["cells"]
+    if cells:
+        st.session_state.open_stock = row_tickers[int(cells[0][0])]
+    st.session_state.table_version += 1
+
+
+def close_report():
+    st.session_state.open_stock = None
+    # A fresh table after the report closes: if a star changed the row order
+    # meanwhile, the old table ignored the next click (seen in testing).
+    st.session_state.table_version += 1
 
 
 names = dict(zip(df["Ticker"], df["Name"]))
 sync_watch_param()
+
+# The open report is kept in the page address (?stock=KAP) like the watchlist,
+# so a shared or bookmarked link opens straight to that stock.
+if "open_stock" not in st.session_state:
+    wanted = st.query_params.get("stock", "").upper()
+    st.session_state.open_stock = wanted if wanted in names else None
+
+
+def sync_stock_param():
+    """Make ?stock= match the open report. Runs every script run."""
+    stock = st.session_state.open_stock
+    if stock:
+        if st.query_params.get("stock") != stock:
+            st.query_params["stock"] = stock
+    elif "stock" in st.query_params:
+        del st.query_params["stock"]
+
+
+sync_stock_param()
 
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
@@ -460,12 +487,12 @@ def with_stars(data):
 
 
 def render_table(data, name):
-    """Styled, sortable table whose only editable column is the ★."""
+    """Styled, sortable table; clicking any cell opens that stock's report."""
     display_df = data[["★"] + DISPLAY_COLS].reset_index(drop=True)
     column_config = {
         "★": st.column_config.CheckboxColumn(
             "★", pinned=True, width=40,
-            help="Star a stock to add it to your watchlist.",
+            help="On your watchlist. Open a stock to add or remove it.",
         ),
         "Ticker": st.column_config.Column(pinned=True, width="small"),
         "Name": st.column_config.Column(pinned=True, width="medium"),
@@ -486,22 +513,21 @@ def render_table(data, name):
     shown_cols = [c for c in (DISPLAY_COLS if all_columns else DEFAULT_COLS)
                   if c not in hidden_cols]
     key = f"{name}_{st.session_state.table_version}"
-    # st.data_editor rather than st.dataframe so the ★ column is clickable.
-    # Every other column is locked, and Styler colours still apply to locked
-    # columns. placeholder shows a dash for missing values while the column
-    # stays numeric, so sorting keeps working.
-    st.data_editor(
+    # Cell selection rather than row selection: a click anywhere on the row
+    # opens the report, not only on the narrow row-marker column. placeholder
+    # shows a dash for missing values while columns stay numeric, so sorting
+    # keeps working.
+    st.dataframe(
         style_table(display_df, momentum_max_abs, sharpe_max_abs),
         key=key,
         use_container_width=True,
         hide_index=True,
         column_order=["★"] + shown_cols,
         column_config=column_config,
-        disabled=DISPLAY_COLS,
-        num_rows="fixed",
         placeholder="—",
-        on_change=on_star_edit,
-        args=(display_df["Ticker"].tolist(), key),
+        # st.dataframe takes no callback args; bind this render's tickers.
+        on_select=functools.partial(on_row_click, display_df["Ticker"].tolist(), key),
+        selection_mode="single-cell",
     )
     return display_df
 
@@ -607,56 +633,57 @@ SCORE_NOTES = {
 }
 
 
-def render_detail(rows, name):
-    """Detail panel for one stock, picked from the rows shown in the table."""
-    tickers = rows["Ticker"].tolist()
-    st.divider()
-    ticker = st.selectbox(
-        "🔍 Stock detail",
-        tickers,
-        key=f"detail_{name}",
-        format_func=lambda t: f"{t} · {names.get(t, '')}",
-        help="Pick any stock from the table above.",
-        width=420,
-    )
-    if ticker is None:
-        return
+def fmt(value, spec, prefix="", suffix=""):
+    """Format a number for a tile, or a dash when it's missing."""
+    return f"{prefix}{value:{spec}}{suffix}" if pd.notna(value) else "—"
+
+
+def report_body(ticker):
+    """The stock report shown in the pop-up."""
     row = df[df["Ticker"] == ticker].iloc[0]
     starred = ticker in st.session_state.watchlist
 
-    st.subheader(f"{row['Name']} ({ticker})")
     facts = [row["Sector"], row["FX Exposure"]]
-    if pd.notna(row["Market Cap (R bn)"]):
-        facts.append(f"R{row['Market Cap (R bn)']:,.0f}bn market cap")
     st.caption(" · ".join(str(f) for f in facts if pd.notna(f)))
+    # Inside a dialog this reruns only the report, so the label flips at once;
+    # the table's ★ column catches up when the report closes (close_report
+    # reruns the page).
     st.button(
         "★ Remove from watchlist" if starred else "☆ Add to watchlist",
-        key=f"star_{name}_{ticker}", on_click=toggle_star, args=(ticker,),
+        key=f"star_{ticker}", on_click=toggle_star, args=(ticker,),
     )
 
+    pe = row["P/E"] if pd.notna(row["P/E"]) and row["P/E"] > 0 else None
     tiles = st.container(horizontal=True, wrap=True, gap="small")
-    tiles.metric("Price", f"R{row['Price (R)']:,.2f}", border=True, width=150)
+    tiles.metric("Price", fmt(row["Price (R)"], ",.2f", "R"), border=True, width="content")
     tiles.metric(
-        "6m return", f"{row['6mo Momentum %']:+.1f}%", border=True, width=150,
+        "6m return", fmt(row["6mo Momentum %"], "+.1f", suffix="%"),
+        border=True, width="content",
         help="Including dividends. The chart shows the traded price, so it can "
              "differ slightly.",
     )
     tiles.metric(
-        "P/E", f"{row['P/E']:.1f}" if pd.notna(row["P/E"]) and row["P/E"] > 0 else "—",
-        border=True, width=150,
+        "P/E", fmt(pe, ".1f"), border=True, width="content",
         help="Trailing price-to-earnings. A dash means no profit to measure.",
     )
     tiles.metric(
-        "Sharpe (6m)", f"{row['Sharpe Ratio']:.2f}" if pd.notna(row["Sharpe Ratio"]) else "—",
-        border=True, width=150,
+        "Sharpe (6m)", fmt(row["Sharpe Ratio"], ".2f"), border=True, width="content",
+        help="Six-month return per unit of risk. A short window, so noisy.",
+    )
+    tiles.metric(
+        "Market cap", fmt(row["Market Cap (R bn)"], ",.0f", "R", "bn"),
+        border=True, width="content",
+    )
+    tiles.metric(
+        "Traded daily", fmt(row["ADV (R m)"], ",.0f", "R", "m"),
+        border=True, width="content",
+        help="Average value traded per day over the last 20 trading days.",
     )
 
-    # Side by side when there's room, stacked in a narrow window (st.columns
-    # only stack on phone-width screens, which left both halves cramped at
-    # tablet widths with the sidebar open).
+    # Side by side when there's room, stacked in a narrow window.
     panes = st.container(horizontal=True, wrap=True, gap="large")
-    left = panes.container(width=560)
-    right = panes.container(width=440)
+    left = panes.container(width=500)
+    right = panes.container(width=380)
     with left:
         st.markdown("**Share price, last six months (R)**")
         price_chart(ticker)
@@ -675,6 +702,14 @@ def render_detail(rows, name):
                         text=f"{label}: **{value:.0f}**{extra} · {SCORE_NOTES[col]}")
         st.markdown("**Combined Score history**")
         score_history_chart(ticker)
+    st.caption(f"Prices as of {pretty_stamp(stamp)} SAST. Not investment advice.")
+
+
+def open_report(ticker):
+    """Show the report pop-up. Called on every run while a stock is open, so
+    it stays open across reruns until the user closes it."""
+    title = f"{names.get(ticker, ticker)} ({ticker})"
+    st.dialog(title, width="large", on_dismiss=close_report)(report_body)(ticker)
 
 
 def pretty_stamp(s):
@@ -721,7 +756,7 @@ m3.metric(
 m4.metric(
     "Watchlist", len(st.session_state.watchlist), delta="starred",
     delta_color="off", delta_arrow="off", border=True, width=170,
-    help="Star stocks in the table, or search in the sidebar.",
+    help="Open a stock and tap ☆, or search in the sidebar.",
 )
 
 tab_screen, tab_watch, tab_how = st.tabs(
@@ -749,7 +784,7 @@ with tab_screen:
         filtered = view_rule(filtered)
 
     st.caption(f"**{view}** · {view_note} {len(filtered)} of {len(df)} shown. "
-               "Starred stocks stay at the top.")
+               "**Click any row for the full stock report.** Starred stocks stay at the top.")
     if filtered.empty:
         st.info("No stocks match this view with the current sidebar filters.")
     else:
@@ -759,8 +794,6 @@ with tab_screen:
         "Scores rank each stock against the others from 0 to 100 - green is "
         "strong, red is weak. Not investment advice. Details in *How it works*."
     )
-    if not filtered.empty:
-        render_detail(shown, "screener")
 
 # ---------------------------------------------------------------- watchlist
 with tab_watch:
@@ -768,8 +801,8 @@ with tab_watch:
     missing = [t for t in watchlist if t not in names]
     if not watchlist:
         st.info(
-            "Your watchlist is empty. Tick the ★ next to any stock in the "
-            "Screener, or search for one in the sidebar."
+            "Your watchlist is empty. Click any stock in the Screener and tap "
+            "☆ Add to watchlist, or search for one in the sidebar."
         )
     else:
         starred = df[df["Ticker"].isin(watchlist)]
@@ -778,12 +811,10 @@ with tab_watch:
             download_button(shown, "watchlist")
         st.caption(
             f"★ {len(watchlist)} on your watchlist, shown regardless of the "
-            "screener filters. "
+            "screener filters. Click a row for its report. "
             + (f"Not in today's data: {', '.join(missing)}. " if missing else "")
             + "It lives in this page's web address - bookmark the page to keep it."
         )
-        if not starred.empty:
-            render_detail(shown, "watchlist")
 
 # ---------------------------------------------------------------- how it works
 with tab_how:
@@ -848,3 +879,8 @@ each business earns its money - approximate, not taken from filings.
         f"Data as of {pretty_stamp(stamp)} SAST · refreshed after each JSE close · "
         f"version {APP_VERSION}"
     )
+
+# ---------------------------------------------------------------- stock report
+# Last, so the page behind the pop-up is fully drawn.
+if st.session_state.open_stock in names:
+    open_report(st.session_state.open_stock)
