@@ -1,5 +1,15 @@
 """
-JSE Screener v1.14 - click a row for the stock report.
+JSE Screener v1.15 - company facts in the stock report.
+
+The report pop-up gains what the company does (Yahoo's business description,
+first sentences with "Read more"), industry and website, dividend yield, a
+6-month price range worked out from our own closes, and four "latest reported"
+quality ratios (return on equity, profit margin, debt to equity, revenue
+growth). They come from data/company.csv, written by the daily refresh. Yahoo's
+own 52-week range isn't used: it showed MTN at a R537.80 high while MTN traded
+R188-R234.
+
+v1.14 - click a row for the stock report.
 
 Clicking any row opens a pop-up report for that stock (price chart, key
 figures, score bars, score history, watchlist button), replacing the v1.13
@@ -79,6 +89,7 @@ Run locally:
 """
 
 import functools
+import re
 import json
 import os
 
@@ -100,6 +111,7 @@ UNIVERSE_META_FILE = getattr(
 _DATA_DIR = os.path.dirname(DATA_FILE)
 PRICES_FILE = getattr(fetch_data, "PRICES_FILE", os.path.join(_DATA_DIR, "prices.csv"))
 HISTORY_FILE = getattr(fetch_data, "HISTORY_FILE", os.path.join(_DATA_DIR, "history.csv"))
+COMPANY_FILE = getattr(fetch_data, "COMPANY_FILE", os.path.join(_DATA_DIR, "company.csv"))
 
 SCORE_COLS = ["Combined Score", "Valuation Score", "Momentum Score", "Sharpe Score"]
 # Weekly change needs a record from 7-10 calendar days back: 7 so it is a
@@ -174,6 +186,15 @@ def load_prices():
     try:
         return pd.read_csv(PRICES_FILE, index_col="date", parse_dates=["date"])
     except (OSError, ValueError):
+        return pd.DataFrame()
+
+
+@st.cache_data(ttl=900)
+def load_company():
+    """Company facts per ticker. Empty until the refresh has written the file."""
+    try:
+        return pd.read_csv(COMPANY_FILE).set_index("Ticker")
+    except (OSError, ValueError, KeyError):
         return pd.DataFrame()
 
 
@@ -281,7 +302,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
 # ---------------------------------------------------------------- app
 
-APP_VERSION = "1.14"
+APP_VERSION = "1.15"
 
 # Columns shown by default - enough to act on, narrow enough for a phone.
 DEFAULT_COLS = [
@@ -340,6 +361,7 @@ cap_floor_bn = (rule.get("min_market_cap_rand") or 5e9) / 1e9
 
 prices = load_prices()
 history = load_history()
+company = load_company()
 week_change = weekly_change(history)
 has_week_change = not week_change.empty
 df = df.copy()
@@ -638,13 +660,69 @@ def fmt(value, spec, prefix="", suffix=""):
     return f"{prefix}{value:{spec}}{suffix}" if pd.notna(value) else "—"
 
 
+def split_summary(text, max_lead=320):
+    """Business description -> (opening sentences, the rest).
+
+    Splits on sentence ends followed by a capital letter, so "Ltd." inside a
+    sentence mostly survives; the lead takes whole sentences up to max_lead
+    characters (always at least one).
+    """
+    sentences = re.split(r"(?<=[.!?])\s+(?=[A-Z])", text.strip())
+    lead = sentences[0]
+    i = 1
+    while i < len(sentences) and len(lead) + len(sentences[i]) < max_lead:
+        lead += " " + sentences[i]
+        i += 1
+    return lead, " ".join(sentences[i:])
+
+
+def company_value(ticker, col):
+    if company.empty or ticker not in company.index or col not in company.columns:
+        return None
+    value = company.at[ticker, col]
+    return value if pd.notna(value) else None
+
+
+def about_section(ticker):
+    summary = company_value(ticker, "Summary")
+    website = company_value(ticker, "Website")
+    if not summary and not website:
+        return
+    st.markdown("**About**")
+    if summary:
+        lead, rest = split_summary(str(summary))
+        st.write(lead)
+        if rest:
+            with st.expander("Read more"):
+                st.write(rest)
+    source = "Description: Yahoo Finance."
+    if website:
+        source = f"[{str(website).replace('https://', '').replace('http://', '').rstrip('/')}]({website}) · " + source
+    st.caption(source)
+
+
+def range_bar(ticker, price):
+    """Where today's price sits in its 6-month range, from our own closes."""
+    series = prices[ticker].dropna() if ticker in prices else pd.Series(dtype=float)
+    if len(series) < 2 or pd.isna(price):
+        return
+    lo, hi = float(series.min()), float(series.max())
+    position = (price - lo) / (hi - lo) if hi > lo else 1.0
+    position = min(max(position, 0.0), 1.0)
+    st.progress(
+        position,
+        text=f"6-month range **R{lo:,.2f} – R{hi:,.2f}** · now "
+             f"{price / lo - 1:.0%} above the low, {1 - price / hi:.0%} below the high",
+    )
+
+
 def report_body(ticker):
     """The stock report shown in the pop-up."""
     row = df[df["Ticker"] == ticker].iloc[0]
     starred = ticker in st.session_state.watchlist
 
-    facts = [row["Sector"], row["FX Exposure"]]
-    st.caption(" · ".join(str(f) for f in facts if pd.notna(f)))
+    facts = [row["Sector"], company_value(ticker, "Industry"), row["FX Exposure"]]
+    st.caption(" · ".join(str(f) for f in facts if f is not None and pd.notna(f)))
     # Inside a dialog this reruns only the report, so the label flips at once;
     # the table's ★ column catches up when the report closes (close_report
     # reruns the page).
@@ -667,6 +745,12 @@ def report_body(ticker):
         help="Trailing price-to-earnings. A dash means no profit to measure.",
     )
     tiles.metric(
+        "Dividend yield", fmt(company_value(ticker, "Dividend Yield %"), ".1f", suffix="%"),
+        border=True, width="content",
+        help="Dividends over the last year as a % of the price, from Yahoo. "
+             "A dash means none reported.",
+    )
+    tiles.metric(
         "Sharpe (6m)", fmt(row["Sharpe Ratio"], ".2f"), border=True, width="content",
         help="Six-month return per unit of risk. A short window, so noisy.",
     )
@@ -680,6 +764,8 @@ def report_body(ticker):
         help="Average value traded per day over the last 20 trading days.",
     )
 
+    about_section(ticker)
+
     # Side by side when there's room, stacked in a narrow window.
     panes = st.container(horizontal=True, wrap=True, gap="large")
     left = panes.container(width=500)
@@ -687,6 +773,7 @@ def report_body(ticker):
     with left:
         st.markdown("**Share price, last six months (R)**")
         price_chart(ticker)
+        range_bar(ticker, row["Price (R)"])
     with right:
         st.markdown("**Scores** (0-100, against the other stocks)")
         change = row.get("Δ 1w")
@@ -702,6 +789,21 @@ def report_body(ticker):
                         text=f"{label}: **{value:.0f}**{extra} · {SCORE_NOTES[col]}")
         st.markdown("**Combined Score history**")
         score_history_chart(ticker)
+
+    quality = [
+        ("Return on equity", "ROE %", "Profit as a % of shareholders' equity."),
+        ("Profit margin", "Profit Margin %", "Profit as a % of revenue."),
+        ("Debt / equity", "Debt/Equity %",
+         "Debt as a % of shareholders' equity. Usually not reported for banks."),
+        ("Revenue growth", "Revenue Growth %", "Latest reported revenue vs a year earlier."),
+    ]
+    if any(company_value(ticker, col) is not None for _, col, _ in quality):
+        st.markdown("**Business quality** (latest reported, via Yahoo)")
+        qtiles = st.container(horizontal=True, wrap=True, gap="small")
+        for label, col, tip in quality:
+            spec = "+.0f" if col == "Revenue Growth %" else ".0f"
+            qtiles.metric(label, fmt(company_value(ticker, col), spec, suffix="%"),
+                          border=True, width="content", help=tip)
     st.caption(f"Prices as of {pretty_stamp(stamp)} SAST. Not investment advice.")
 
 
