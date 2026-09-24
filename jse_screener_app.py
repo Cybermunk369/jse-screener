@@ -1,5 +1,15 @@
 """
-JSE Screener v1.17 - label the prices by trading day.
+JSE Screener v1.18 - 20-day and 50-day moving averages on the price chart.
+
+The report's price chart adds the 20-day and 50-day moving averages of the
+closing price, labelled at the line ends and in a legend, with a hover that
+shows all three values for a day. A line under the chart says in plain words
+where today's price sits against both averages. The 50-day line starts about
+ten weeks into the six-month window, once it has 50 closes to average.
+Colours are the reference data-viz palette's first three slots, with its dark
+steps when the app is in dark mode.
+
+v1.17 - label the prices by trading day.
 
 Labels now say which trading day's closing prices are shown ("Closing prices
 of 23 Sep 2026 · updated 24 Sep, 11:14") instead of only when the refresh ran.
@@ -136,6 +146,12 @@ SCORE_COLS = ["Combined Score", "Valuation Score", "Momentum Score", "Sharpe Sco
 WEEK_MIN_DAYS, WEEK_MAX_DAYS = 7, 10
 # Single-series chart colour (reference data-viz palette, slot 1).
 CHART_BLUE = "#2a78d6"
+MA_WINDOWS = (20, 50)
+# Price, 20-day, 50-day: reference palette slots 1-3 (blue, orange, aqua),
+# validated all-pairs for colour-blind separation in both modes. Aqua is
+# under 3:1 contrast on the light surface, so every line is also labelled.
+SERIES_COLORS = {"light": ("#2a78d6", "#eb6834", "#1baf7a"),
+                 "dark": ("#3987e5", "#d95926", "#199e70")}
 
 DISPLAY_COLS = [
     "Ticker", "Name", "Price (R)", "6m trend", "Δ 1w", "Market Cap (R bn)",
@@ -319,7 +335,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
 # ---------------------------------------------------------------- app
 
-APP_VERSION = "1.17"
+APP_VERSION = "1.18"
 
 # Columns shown by default - enough to act on, narrow enough for a phone.
 DEFAULT_COLS = [
@@ -608,34 +624,106 @@ def toggle_star(ticker):
     save_watchlist(watchlist)
 
 
+def theme_mode():
+    try:
+        return "dark" if st.context.theme.type == "dark" else "light"
+    except Exception:
+        return "light"
+
+
+def spread_labels(values, min_gap):
+    """Nudge end-of-line label positions apart so they don't overlap.
+
+    `values` is {series: y}; returns {series: label y}, keeping order and
+    moving labels at least `min_gap` apart (in data units).
+    """
+    ordered = sorted(values.items(), key=lambda kv: kv[1])
+    placed = []
+    for name, y in ordered:
+        if placed and y - placed[-1][1] < min_gap:
+            y = placed[-1][1] + min_gap
+        placed.append((name, y))
+    # Re-centre so the group sits around the real values, not above them.
+    shift = (sum(v for _, v in ordered) - sum(v for _, v in placed)) / len(placed)
+    return {name: y + shift for name, y in placed}
+
+
 def price_chart(ticker):
     series = prices[ticker].dropna() if ticker in prices else pd.Series(dtype=float)
     if len(series) < 2:
         st.caption("Price chart appears after the next daily refresh.")
         return
-    data = series.rename("Price (R)").rename_axis("Date").reset_index()
+    # Short series names so the legend fits on a phone; the tooltip spells
+    # them out.
+    names = ["Price"] + [f"{w}-day avg" for w in MA_WINDOWS]
+    wide = pd.DataFrame({"Price": series})
+    for w, name in zip(MA_WINDOWS, names[1:]):
+        wide[name] = series.rolling(w).mean()
+    wide = wide.rename_axis("Date").reset_index()
+    long = wide.melt("Date", var_name="Series", value_name="Rand").dropna()
+    colors = SERIES_COLORS[theme_mode()]
+
     # Whole rand on the axis, except for cheap shares where that would repeat.
     y_format = ",.2f" if series.max() < 20 else ",.0f"
-    base = alt.Chart(data).encode(
-        x=alt.X("Date:T", title=None,
-                  axis=alt.Axis(format="%b", tickCount="month", grid=False)),
-        y=alt.Y("Price (R):Q", title=None, scale=alt.Scale(zero=False),
-                axis=alt.Axis(format=y_format, tickCount=4)),
-    )
-    # Invisible wide points under a nearest-x selection give a hover tooltip
-    # anywhere along the line, not only on the 2px stroke itself.
+    x = alt.X("Date:T", title=None,
+              axis=alt.Axis(format="%b", tickCount="month", grid=False))
+    y = alt.Y("Rand:Q", title=None, scale=alt.Scale(zero=False),
+              axis=alt.Axis(format=y_format, tickCount=4))
+    color = alt.Color("Series:N", scale=alt.Scale(domain=names, range=list(colors)),
+                      legend=alt.Legend(title=None, orient="top", direction="horizontal"))
+    lines = alt.Chart(long).mark_line(strokeWidth=2).encode(x=x, y=y, color=color)
+
+    # Direct labels at the right-hand end of each line (the colour alone
+    # isn't enough), nudged apart when the lines finish close together.
+    last = long.sort_values("Date").groupby("Series").tail(1).set_index("Series")
+    span = float(long["Rand"].max() - long["Rand"].min()) or 1.0
+    label_y = spread_labels(last["Rand"].to_dict(), span * 0.08)
+    ends = pd.DataFrame({
+        "Date": [last.at[n, "Date"] for n in names if n in last.index],
+        "Rand": [label_y[n] for n in names if n in last.index],
+        "Label": [("Price" if n == "Price" else n.replace(" avg", "")) for n in names
+                  if n in last.index],
+        "Series": [n for n in names if n in last.index],
+    })
+    labels = alt.Chart(ends).mark_text(align="left", dx=6, fontSize=11).encode(
+        x="Date:T", y="Rand:Q", text="Label:N", color=color)
+
+    # Hover: a vertical rule on the nearest day and one tooltip with all
+    # three values, from invisible wide points so it works anywhere.
     hover = alt.selection_point(fields=["Date"], nearest=True, on="pointerover",
                                 empty=False, clear="pointerout")
-    chart = alt.layer(
-        base.mark_line(color=CHART_BLUE, strokeWidth=2),
-        base.mark_point(opacity=0, size=200).add_params(hover).encode(
-            tooltip=[alt.Tooltip("Date:T", format="%-d %b %Y"),
-                     alt.Tooltip("Price (R):Q", format=",.2f")]
-        ),
-        base.mark_point(color=CHART_BLUE, size=70, filled=True)
-            .transform_filter(hover),
-    ).properties(height=240)
+    tooltip = [alt.Tooltip("Date:T", format="%-d %b %Y")] + [
+        alt.Tooltip(f"{n}:Q", format=",.2f", title=n.replace("avg", "average"))
+        for n in names
+    ]
+    targets = alt.Chart(wide).mark_rule(opacity=0, strokeWidth=12).encode(
+        x="Date:T", tooltip=tooltip).add_params(hover)
+    rule = alt.Chart(wide).mark_rule(color="#8a8a86", strokeWidth=1).encode(
+        x="Date:T").transform_filter(hover)
+    dots = alt.Chart(long).mark_point(size=60, filled=True).encode(
+        x=x, y=y, color=color).transform_filter(hover)
+
+    chart = alt.layer(lines, labels, targets, rule, dots).properties(
+        height=260, padding={"right": 70})
     st.altair_chart(chart, use_container_width=True)
+    trend_sentence(series)
+
+
+def trend_sentence(series):
+    """Plain-words reading of price against the two averages."""
+    price = float(series.iloc[-1])
+    parts = []
+    for w in MA_WINDOWS:
+        if len(series) < w:
+            continue
+        avg = float(series.tail(w).mean())
+        side = "above" if price >= avg else "below"
+        parts.append(f"{abs(price / avg - 1):.0%} {side} its {w}-day average "
+                     f"(R{avg:,.2f})")
+    if parts:
+        st.caption("Price is " + " and ".join(parts) + ". A moving average is the "
+                   "average closing price over the last 20 or 50 trading days; "
+                   "it smooths out daily noise to show the trend.")
 
 
 def score_history_chart(ticker):
