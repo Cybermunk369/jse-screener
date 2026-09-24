@@ -151,6 +151,11 @@ def fetch_one(ticker, name, fx_exposure):
     # auto_adjust=False so Close stays the actual traded price for display,
     # while Adj Close drives return calculations.
     hist = t.history(period="6mo", auto_adjust=False)
+    # Yahoo can return the latest day as a blank row (seen before the JSE
+    # opened on 24 Sep 2026: every stock's last close was empty). Left in, the
+    # last close becomes the price and the end of the momentum window, so
+    # every price and momentum figure came out blank. Drop blank closes first.
+    hist = hist.dropna(subset=["Close"])
     if hist.empty:
         raise ValueError("no price history")
     if len(hist) < MIN_HISTORY_DAYS:
