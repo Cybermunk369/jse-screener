@@ -1,5 +1,14 @@
 """
-JSE Screener v1.16 - plain-English business quality.
+JSE Screener v1.17 - label the prices by trading day.
+
+Labels now say which trading day's closing prices are shown ("Closing prices
+of 23 Sep 2026 · updated 24 Sep, 11:14") instead of only when the refresh ran.
+On a public holiday (Heritage Day, 24 Sep 2026) or after an off-schedule run,
+the refresh time and the price date differ, and "Data as of 24 Sep" implied
+prices from a day the JSE was shut. The date comes from metadata
+scores_as_of; older metadata without it falls back to the refresh time.
+
+v1.16 - plain-English business quality.
 
 The four quality tiles in the report use everyday labels ("Profit on owners'
 money" rather than "Return on equity"), a one-word rule-of-thumb verdict each
@@ -310,7 +319,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
 # ---------------------------------------------------------------- app
 
-APP_VERSION = "1.16"
+APP_VERSION = "1.17"
 
 # Columns shown by default - enough to act on, narrow enough for a phone.
 DEFAULT_COLS = [
@@ -361,6 +370,9 @@ if df is None or df.empty:
     st.stop()
 
 stamp = meta.get("generated_sast")
+# The trading day the prices and scores are from - not the same as the
+# refresh time after a holiday or an off-schedule run.
+prices_date = meta.get("scores_as_of")
 excluded = meta.get("excluded", [])
 adv_floor = meta.get("min_adv_rand", 5_000_000)
 universe_meta = load_universe_meta()
@@ -567,7 +579,7 @@ def download_button(display_df, name):
     # System Access) API, which some embedded browsers expose but can't write
     # through, leaving an empty file. This is built server-side instead and
     # exports exactly the view shown. utf-8-sig so Excel reads it right.
-    data_date = (stamp or "")[:10] or "latest"
+    data_date = prices_date or (stamp or "")[:10] or "latest"
     export_df = display_df.drop(columns=["★", "6m trend"])
     if "Δ 1w" in hidden_cols:
         export_df = export_df.drop(columns="Δ 1w")
@@ -867,7 +879,7 @@ def report_body(ticker):
             )
         st.caption("Verdicts are simple rules of thumb, not advice. What's normal "
                    "differs by industry, and one unusual year can distort a figure.")
-    st.caption(f"Prices as of {pretty_stamp(stamp)} SAST. Not investment advice.")
+    st.caption(f"{data_label()}. Not investment advice.")
 
 
 def open_report(ticker):
@@ -875,6 +887,20 @@ def open_report(ticker):
     it stays open across reruns until the user closes it."""
     title = f"{names.get(ticker, ticker)} ({ticker})"
     st.dialog(title, width="large", on_dismiss=close_report)(report_body)(ticker)
+
+
+def data_label():
+    """E.g. "Closing prices of 23 Sep 2026 · updated 24 Sep, 11:14 SAST"."""
+    if not stamp:
+        return "Data date unknown"
+    if not prices_date:
+        return f"Data as of {pretty_stamp(stamp)} SAST"
+    try:
+        closes = pd.Timestamp(prices_date).strftime("%-d %b %Y")
+        updated = pd.Timestamp(stamp).strftime("%-d %b, %H:%M")
+    except (ValueError, TypeError):
+        return f"Data as of {pretty_stamp(stamp)} SAST"
+    return f"Closing prices of {closes} · updated {updated} SAST"
 
 
 def pretty_stamp(s):
@@ -889,7 +915,7 @@ st.title("📈 JSE Screener")
 st.caption(
     f"Every liquid JSE share worth R{cap_floor_bn:.0f}bn or more, ranked daily on "
     "value, momentum and risk-adjusted return. "
-    + (f"Data as of {pretty_stamp(stamp)} SAST." if stamp else "")
+    + (f"{data_label()}." if stamp else "")
 )
 if live_fallback:
     st.info("Today's precomputed data isn't available yet, so this is a live fetch.")
@@ -1041,7 +1067,7 @@ each business earns its money - approximate, not taken from filings.
             + ". These usually clear on the next daily refresh."
         )
     st.caption(
-        f"Data as of {pretty_stamp(stamp)} SAST · refreshed after each JSE close · "
+        f"{data_label()} · refreshed after each JSE close · "
         f"version {APP_VERSION}"
     )
 
