@@ -68,6 +68,14 @@ MAX_DAILY_JUMP = 20
 # (illiquid, stale, too new) are not data errors and do not count.
 MAX_FAILURE_RATE = 0.10
 
+# Data-quality gates, checked before anything is written. A failed gate makes
+# the refresh exit with an error: the previous good files stay live, and
+# GitHub emails the repo owner that the scheduled run failed. Added after
+# 24 Sep 2026, when a run "succeeded" with every price blank.
+MIN_LOADED_SHARE = 0.60   # of the universe; normally ~82% pass the screens
+MAX_STALE_DAYS = 6        # calendar days since the newest close; covers Easter
+MAX_LAGGING_SHARE = 0.20  # stocks whose last close is older than the newest
+
 # Anchored to this file's directory, not the working directory. Streamlit
 # Cloud and GitHub Actions do not guarantee the same cwd, and a relative path
 # that silently misses just falls back to the built-in universe - which is
@@ -514,6 +522,35 @@ def write_outputs(df, failures, excluded, requested, closes=None, company=None):
     return meta
 
 
+def data_problems(rows, closes, requested, today=None):
+    """Reasons this refresh must not be published (empty list = fine)."""
+    problems = []
+    loaded = len(rows)
+    if loaded < requested * MIN_LOADED_SHARE:
+        problems.append(f"only {loaded} of {requested} stocks usable "
+                        f"(minimum {MIN_LOADED_SHARE:.0%})")
+    for col in ("Price (R)", "6mo Momentum %"):
+        blank = [r["Ticker"] for r in rows
+                 if r.get(col) is None or not np.isfinite(r.get(col))]
+        if blank:
+            problems.append(f"{len(blank)} stocks with a blank {col} "
+                            f"(e.g. {', '.join(blank[:5])})")
+    last_dates = {t: pd.to_datetime(s.index).max().date()
+                  for t, s in closes.items() if len(s)}
+    if last_dates:
+        newest = max(last_dates.values())
+        today = today or datetime.now(SAST).date()
+        age = (today - newest).days
+        if age > MAX_STALE_DAYS:
+            problems.append(f"newest close is {newest} ({age} days old) - "
+                            "Yahoo may be serving stale data")
+        lagging = [t for t, d in last_dates.items() if d < newest]
+        if len(lagging) > len(last_dates) * MAX_LAGGING_SHARE:
+            problems.append(f"{len(lagging)} of {len(last_dates)} stocks stop "
+                            f"before {newest} - a partial update")
+    return problems
+
+
 def validate():
     """Test every ticker in the universe and report. Writes nothing.
 
@@ -578,6 +615,14 @@ def main():
         )
         for ticker, reason in failures:
             print(f"  {ticker}: {reason}", file=sys.stderr)
+        return 1
+
+    problems = data_problems(rows, closes, requested)
+    if problems:
+        print("FAILED: data-quality check. Keeping the existing data files.",
+              file=sys.stderr)
+        for problem in problems:
+            print(f"  {problem}", file=sys.stderr)
         return 1
 
     meta = write_outputs(score(pd.DataFrame(rows)), failures, excluded, requested,
