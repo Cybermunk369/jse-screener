@@ -1,15 +1,11 @@
 {
-  "generated_utc": "2026-09-23 19:32:29",
-  "generated_sast": "2026-09-23 21:32:29",
+  "generated_utc": "2026-09-24 09:14:50",
+  "generated_sast": "2026-09-24 11:14:50",
   "tickers_requested": 131,
-  "tickers_loaded": 107,
+  "tickers_loaded": 108,
+  "scores_as_of": "2026-09-23",
   "min_adv_rand": 5000000,
-  "failures": [
-    {
-      "ticker": "RDF.JO",
-      "reason": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
-    }
-  ],
+  "failures": [],
   "excluded": [
     {
       "ticker": "SHC.JO",
@@ -25,7 +21,7 @@
     },
     {
       "ticker": "APH.JO",
-      "reason": "illiquid (ADV R0.3m)"
+      "reason": "illiquid (ADV R0.2m)"
     },
     {
       "ticker": "OPA.JO",
