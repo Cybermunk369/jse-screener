@@ -10,6 +10,13 @@ Streamlit Cloud's shared IPs, which is what caused the rate limiting. Doing the
 work once a day on a GitHub runner removes that entirely, makes the app load
 instantly, and lets the universe grow without making the problem worse.
 
+It also keeps two files the app's stock detail panel reads: data/prices.csv
+(each ranked stock's daily closes over the same six months) and
+data/history.csv (one row per stock per trading day with that day's scores,
+appended on every refresh). The history is the record behind "score changed
+by X in a week" - it can't be rebuilt later, because the P/E behind each
+day's Valuation Score isn't kept anywhere else.
+
 Also importable - the app falls back to build_dataset() if the data file is
 missing, so the app never depends on the pipeline having run yet.
 
@@ -66,6 +73,8 @@ DATA_FILE = os.path.join(DATA_DIR, "screener.csv")
 META_FILE = os.path.join(DATA_DIR, "metadata.json")
 UNIVERSE_FILE = os.path.join(DATA_DIR, "universe.csv")
 UNIVERSE_META_FILE = os.path.join(DATA_DIR, "universe_meta.json")
+PRICES_FILE = os.path.join(DATA_DIR, "prices.csv")
+HISTORY_FILE = os.path.join(DATA_DIR, "history.csv")
 
 SAST = timezone(timedelta(hours=2))
 
@@ -94,6 +103,11 @@ FALLBACK_UNIVERSE = {
 COLUMNS = [
     "Ticker", "Name", "Price (R)", "Market Cap (R bn)", "Sector", "FX Exposure",
     "P/E", "6mo Momentum %", "Sharpe Ratio", "ADV (R m)",
+    "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
+]
+
+HISTORY_COLUMNS = [
+    "date", "Ticker", "Price (R)",
     "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
 ]
 
@@ -191,6 +205,9 @@ def fetch_one(ticker, name, fx_exposure):
         "6mo Momentum %": round(float(momentum_pct), 1),
         "Sharpe Ratio": round(float(sharpe), 2) if sharpe is not None else None,
         "ADV (R m)": round(adv_rand / 1e6, 1),
+        # Daily closes for the app's price chart. Split off by split_closes()
+        # before the row becomes part of the table.
+        "_closes": close_rand,
     }
 
 
@@ -231,6 +248,21 @@ def fetch_all(universe, verbose=True):
         time.sleep(FETCH_PAUSE_SECONDS)
 
     return rows, failures, excluded
+
+
+def split_closes(rows):
+    """Separate the price series from the table rows.
+
+    Returns (rows without "_closes", {ticker: close series}).
+    """
+    closes, clean = {}, []
+    for row in rows:
+        row = dict(row)
+        series = row.pop("_closes", None)
+        if series is not None:
+            closes[row["Ticker"]] = series
+        clean.append(row)
+    return clean, closes
 
 
 # ---------------------------------------------------------------- scoring
@@ -303,6 +335,7 @@ def build_dataset(universe=None, verbose=False):
     """
     universe = universe or load_universe()
     rows, failures, _ = fetch_all(universe, verbose=verbose)
+    rows, _ = split_closes(rows)
     if not rows:
         return pd.DataFrame(columns=COLUMNS), failures
     return score(pd.DataFrame(rows)), failures
@@ -310,18 +343,67 @@ def build_dataset(universe=None, verbose=False):
 
 # ---------------------------------------------------------------- output
 
-def write_outputs(df, failures, excluded, requested):
+def closes_frame(closes):
+    """{ticker: close series} -> one row per trading date, one column per
+    ticker, prices in rand."""
+    if not closes:
+        return pd.DataFrame()
+    by_ticker = {}
+    for ticker, series in closes.items():
+        s = pd.Series(series.values, index=pd.to_datetime(series.index).strftime("%Y-%m-%d"))
+        by_ticker[ticker] = s[~s.index.duplicated(keep="last")].round(2)
+    frame = pd.DataFrame(by_ticker).sort_index()
+    frame.index.name = "date"
+    return frame
+
+
+def updated_history(df, as_of, path=HISTORY_FILE):
+    """Existing score history plus today's scores for date `as_of`.
+
+    A rerun on the same trading day replaces that day's rows rather than
+    adding duplicates. Raises if the existing file can't be read: this record
+    can't be rebuilt, so a refresh must fail rather than overwrite it.
+    """
+    today = df.reindex(columns=HISTORY_COLUMNS[1:]).copy()
+    today.insert(0, "date", as_of)
+    if os.path.exists(path):
+        old = pd.read_csv(path, dtype={"date": str})
+        missing = set(HISTORY_COLUMNS) - set(old.columns)
+        if missing:
+            raise ValueError(f"{path} is missing columns {sorted(missing)}")
+        old = old[old["date"] != as_of]
+        today = pd.concat([old[HISTORY_COLUMNS], today], ignore_index=True)
+    for col in HISTORY_COLUMNS[3:]:
+        today[col] = pd.to_numeric(today[col]).round().astype("Int64")   # 85, not 85.0
+    return today.sort_values(["date", "Ticker"], kind="stable").reset_index(drop=True)
+
+
+def write_outputs(df, failures, excluded, requested, closes=None):
     os.makedirs(DATA_DIR, exist_ok=True)
 
     df = df.reindex(columns=COLUMNS)
-    df.to_csv(DATA_FILE, index=False)
-
     now_utc = datetime.now(timezone.utc)
+
+    # Scores are stamped with the trading day of the closes they were computed
+    # from (not the run date), so a weekend or late rerun overwrites that day
+    # instead of inventing a new one.
+    prices = closes_frame(closes or {})
+    as_of = prices.index.max() if len(prices) else now_utc.astimezone(SAST).strftime("%Y-%m-%d")
+    # Built before anything is written, so an unreadable history file stops
+    # the refresh with every file untouched.
+    history = updated_history(df, as_of)
+
+    df.to_csv(DATA_FILE, index=False)
+    if len(prices):
+        prices.to_csv(PRICES_FILE)
+    history.to_csv(HISTORY_FILE, index=False)
+
     meta = {
         "generated_utc": now_utc.strftime("%Y-%m-%d %H:%M:%S"),
         "generated_sast": now_utc.astimezone(SAST).strftime("%Y-%m-%d %H:%M:%S"),
         "tickers_requested": requested,
         "tickers_loaded": int(len(df)),
+        "scores_as_of": as_of,
         "min_adv_rand": MIN_ADV_RAND,
         "failures": [{"ticker": t, "reason": r} for t, r in failures],
         "excluded": [{"ticker": t, "reason": r} for t, r in excluded],
@@ -375,6 +457,7 @@ def main():
     print(f"Fetching {requested} JSE tickers from {UNIVERSE_FILE}...")
 
     rows, failures, excluded = fetch_all(universe)
+    rows, closes = split_closes(rows)
     loaded = len(rows)
 
     print(f"\nTradeable {loaded}/{requested} "
@@ -397,8 +480,10 @@ def main():
             print(f"  {ticker}: {reason}", file=sys.stderr)
         return 1
 
-    meta = write_outputs(score(pd.DataFrame(rows)), failures, excluded, requested)
-    print(f"Wrote {DATA_FILE} and {META_FILE} at {meta['generated_sast']} SAST.")
+    meta = write_outputs(score(pd.DataFrame(rows)), failures, excluded, requested,
+                         closes=closes)
+    print(f"Wrote {DATA_FILE}, {PRICES_FILE}, {HISTORY_FILE} and {META_FILE} "
+          f"at {meta['generated_sast']} SAST (scores as of {meta['scores_as_of']}).")
 
     if excluded:
         print(f"\n{len(excluded)} screened out:")
