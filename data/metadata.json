@@ -1,15 +1,11 @@
 {
-  "generated_utc": "2026-09-23 19:32:29",
-  "generated_sast": "2026-09-23 21:32:29",
+  "generated_utc": "2026-09-24 06:03:29",
+  "generated_sast": "2026-09-24 08:03:29",
   "tickers_requested": 131,
   "tickers_loaded": 107,
+  "scores_as_of": "2026-09-23",
   "min_adv_rand": 5000000,
-  "failures": [
-    {
-      "ticker": "RDF.JO",
-      "reason": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
-    }
-  ],
+  "failures": [],
   "excluded": [
     {
       "ticker": "SHC.JO",
@@ -21,7 +17,7 @@
     },
     {
       "ticker": "KRO.JO",
-      "reason": "illiquid (ADV R1.5m)"
+      "reason": "illiquid (ADV R1.3m)"
     },
     {
       "ticker": "APH.JO",
@@ -33,11 +29,11 @@
     },
     {
       "ticker": "SSU.JO",
-      "reason": "illiquid (ADV R4.8m)"
+      "reason": "illiquid (ADV R5.0m)"
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R1.3m)"
+      "reason": "illiquid (ADV R1.4m)"
     },
     {
       "ticker": "AFH.JO",
@@ -45,7 +41,7 @@
     },
     {
       "ticker": "DIB.JO",
-      "reason": "illiquid (ADV R4.6m)"
+      "reason": "illiquid (ADV R4.8m)"
     },
     {
       "ticker": "CCD.JO",
@@ -57,11 +53,11 @@
     },
     {
       "ticker": "ISO.JO",
-      "reason": "illiquid (ADV R4.4m)"
+      "reason": "illiquid (ADV R4.6m)"
     },
     {
       "ticker": "TSG.JO",
-      "reason": "illiquid (ADV R2.1m)"
+      "reason": "illiquid (ADV R2.2m)"
     },
     {
       "ticker": "ACS.JO",
@@ -73,7 +69,7 @@
     },
     {
       "ticker": "EMI.JO",
-      "reason": "illiquid (ADV R2.4m)"
+      "reason": "illiquid (ADV R2.5m)"
     },
     {
       "ticker": "PWR.JO",
@@ -81,7 +77,7 @@
     },
     {
       "ticker": "RCL.JO",
-      "reason": "illiquid (ADV R2.4m)"
+      "reason": "illiquid (ADV R2.5m)"
     },
     {
       "ticker": "LSK.JO",
@@ -89,7 +85,7 @@
     },
     {
       "ticker": "MKR.JO",
-      "reason": "illiquid (ADV R0.5m)"
+      "reason": "illiquid (ADV R0.4m)"
     },
     {
       "ticker": "RBO.JO",
@@ -100,8 +96,12 @@
       "reason": "illiquid (ADV R0.3m)"
     },
     {
+      "ticker": "FBR.JO",
+      "reason": "illiquid (ADV R4.5m)"
+    },
+    {
       "ticker": "WVR.JO",
-      "reason": "illiquid (ADV R0.3m)"
+      "reason": "illiquid (ADV R0.2m)"
     }
   ]
 }
