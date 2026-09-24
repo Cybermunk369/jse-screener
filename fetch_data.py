@@ -17,6 +17,11 @@ appended on every refresh). The history is the record behind "score changed
 by X in a week" - it can't be rebuilt later, because the P/E behind each
 day's Valuation Score isn't kept anywhere else.
 
+data/company.csv holds the company facts for the report pop-up (Yahoo's
+business description, industry, website, dividend yield and a few quality
+ratios). These come from the same Yahoo profile call the P/E already uses, so
+they add no extra requests.
+
 Also importable - the app falls back to build_dataset() if the data file is
 missing, so the app never depends on the pipeline having run yet.
 
@@ -75,6 +80,7 @@ UNIVERSE_FILE = os.path.join(DATA_DIR, "universe.csv")
 UNIVERSE_META_FILE = os.path.join(DATA_DIR, "universe_meta.json")
 PRICES_FILE = os.path.join(DATA_DIR, "prices.csv")
 HISTORY_FILE = os.path.join(DATA_DIR, "history.csv")
+COMPANY_FILE = os.path.join(DATA_DIR, "company.csv")
 
 SAST = timezone(timedelta(hours=2))
 
@@ -105,6 +111,25 @@ COLUMNS = [
     "P/E", "6mo Momentum %", "Sharpe Ratio", "ADV (R m)",
     "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
 ]
+
+# Chosen from a coverage check across the 131-stock universe (24 Sep 2026):
+# each is present for 90%+ of names. Left out: next results date (57%, and
+# the dates were past results), employee count (44%), and Yahoo's
+# trailingAnnualDividendYield (unusable: 0.00003 for BAT, yield ~5.9%).
+# Yahoo's 52-week high/low is also left out: MTN showed a R537.80 high while
+# it traded R188-R234; the app computes ranges from our own closes instead.
+COMPANY_COLUMNS = [
+    "Ticker", "Industry", "Website", "Dividend Yield %", "ROE %",
+    "Profit Margin %", "Debt/Equity %", "Revenue Growth %", "Summary",
+]
+# Anything outside these is treated as a data error and left blank.
+PLAUSIBLE = {
+    "Dividend Yield %": (0, 30),
+    "ROE %": (-300, 300),
+    "Profit Margin %": (-300, 100),
+    "Debt/Equity %": (0, 2000),
+    "Revenue Growth %": (-100, 1000),
+}
 
 HISTORY_COLUMNS = [
     "date", "Ticker", "Price (R)",
@@ -213,6 +238,38 @@ def fetch_one(ticker, name, fx_exposure):
         # Daily closes for the app's price chart. Split off by split_closes()
         # before the row becomes part of the table.
         "_closes": close_rand,
+        # Company facts for the report pop-up. Split off by split_company().
+        "_company": company_facts(info),
+    }
+
+
+def _pct(value, scale):
+    """Yahoo number -> percentage, or None if missing or not a number."""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return None
+    return round(v * scale, 2) if np.isfinite(v) else None
+
+
+def company_facts(info):
+    """The report-pop-up fields from Yahoo's profile, in display units.
+
+    Units as Yahoo returned them in the coverage check: dividendYield and
+    debtToEquity are already percentages (Standard Bank 5.84 = 5.84%;
+    debtToEquity 72.2 = 72%); returnOnEquity, profitMargins and revenueGrowth
+    are fractions (0.19 = 19%).
+    """
+    summary = (info.get("longBusinessSummary") or "").strip()
+    return {
+        "Industry": info.get("industry"),
+        "Website": info.get("website"),
+        "Dividend Yield %": _pct(info.get("dividendYield"), 1),
+        "ROE %": _pct(info.get("returnOnEquity"), 100),
+        "Profit Margin %": _pct(info.get("profitMargins"), 100),
+        "Debt/Equity %": _pct(info.get("debtToEquity"), 1),
+        "Revenue Growth %": _pct(info.get("revenueGrowth"), 100),
+        "Summary": summary or None,
     }
 
 
@@ -268,6 +325,40 @@ def split_closes(rows):
             closes[row["Ticker"]] = series
         clean.append(row)
     return clean, closes
+
+
+def split_company(rows):
+    """Separate the company facts from the table rows.
+
+    Returns (rows without "_company", company DataFrame).
+    """
+    facts, clean = [], []
+    for row in rows:
+        row = dict(row)
+        company = row.pop("_company", None)
+        if company is not None:
+            facts.append({"Ticker": row["Ticker"], **company})
+        clean.append(row)
+    return clean, pd.DataFrame(facts, columns=COMPANY_COLUMNS)
+
+
+def clean_company(company):
+    """Blank out implausible values and fix a possible dividend-yield unit
+    change, so a Yahoo quirk shows as "not reported" rather than a wrong
+    number."""
+    company = company.reindex(columns=COMPANY_COLUMNS).copy()
+    yields = pd.to_numeric(company["Dividend Yield %"], errors="coerce")
+    positive = yields[yields > 0]
+    # Some yfinance versions return 0.0584 instead of 5.84. Across a whole
+    # market the median dividend yield is well above 0.5%, so a median below
+    # that means the whole column came back as fractions.
+    if len(positive) >= 10 and positive.median() < 0.5:
+        yields = yields * 100
+    company["Dividend Yield %"] = yields
+    for col, (lo, hi) in PLAUSIBLE.items():
+        values = pd.to_numeric(company[col], errors="coerce")
+        company[col] = values.where(values.between(lo, hi))
+    return company
 
 
 # ---------------------------------------------------------------- scoring
@@ -341,6 +432,7 @@ def build_dataset(universe=None, verbose=False):
     universe = universe or load_universe()
     rows, failures, _ = fetch_all(universe, verbose=verbose)
     rows, _ = split_closes(rows)
+    rows, _ = split_company(rows)
     if not rows:
         return pd.DataFrame(columns=COLUMNS), failures
     return score(pd.DataFrame(rows)), failures
@@ -383,7 +475,7 @@ def updated_history(df, as_of, path=HISTORY_FILE):
     return today.sort_values(["date", "Ticker"], kind="stable").reset_index(drop=True)
 
 
-def write_outputs(df, failures, excluded, requested, closes=None):
+def write_outputs(df, failures, excluded, requested, closes=None, company=None):
     os.makedirs(DATA_DIR, exist_ok=True)
 
     df = df.reindex(columns=COLUMNS)
@@ -402,6 +494,8 @@ def write_outputs(df, failures, excluded, requested, closes=None):
     if len(prices):
         prices.to_csv(PRICES_FILE)
     history.to_csv(HISTORY_FILE, index=False)
+    if company is not None and len(company):
+        clean_company(company).to_csv(COMPANY_FILE, index=False)
 
     meta = {
         "generated_utc": now_utc.strftime("%Y-%m-%d %H:%M:%S"),
@@ -463,6 +557,7 @@ def main():
 
     rows, failures, excluded = fetch_all(universe)
     rows, closes = split_closes(rows)
+    rows, company = split_company(rows)
     loaded = len(rows)
 
     print(f"\nTradeable {loaded}/{requested} "
@@ -486,7 +581,7 @@ def main():
         return 1
 
     meta = write_outputs(score(pd.DataFrame(rows)), failures, excluded, requested,
-                         closes=closes)
+                         closes=closes, company=company)
     print(f"Wrote {DATA_FILE}, {PRICES_FILE}, {HISTORY_FILE} and {META_FILE} "
           f"at {meta['generated_sast']} SAST (scores as of {meta['scores_as_of']}).")
 
