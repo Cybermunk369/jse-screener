@@ -1,5 +1,13 @@
 """
-JSE Screener v1.15 - company facts in the stock report.
+JSE Screener v1.16 - plain-English business quality.
+
+The four quality tiles in the report use everyday labels ("Profit on owners'
+money" rather than "Return on equity"), a one-word rule-of-thumb verdict each
+(Good / OK / Weak ...), and a hover line in rand terms ("R16 a year for every
+R100 of owners' money"). Verdict bands are in QUALITY_RULES; the report says
+they are rules of thumb, not advice, and that normal levels differ by industry.
+
+v1.15 - company facts in the stock report.
 
 The report pop-up gains what the company does (Yahoo's business description,
 first sentences with "Read more"), industry and website, dividend yield, a
@@ -302,7 +310,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
 # ---------------------------------------------------------------- app
 
-APP_VERSION = "1.15"
+APP_VERSION = "1.16"
 
 # Columns shown by default - enough to act on, narrow enough for a phone.
 DEFAULT_COLS = [
@@ -660,6 +668,58 @@ def fmt(value, spec, prefix="", suffix=""):
     return f"{prefix}{value:{spec}}{suffix}" if pd.notna(value) else "—"
 
 
+# Business-quality tiles: (label, company.csv column, verdict bands, rule of
+# thumb). Bands are (upper bound, verdict), checked in order; the first bound
+# the value is below wins. Rules of thumb for a general reader, not advice:
+# normal levels differ a lot by industry (a 3% margin is normal for a grocer).
+QUALITY_RULES = [
+    ("Profit on owners' money", "ROE %",
+     [(0, "Loss-making"), (10, "Weak"), (15, "OK"), (40, "Good"),
+      (float("inf"), "Very high - check why")],
+     "Return on equity. Around 15% or more is good."),
+    ("Profit kept from sales", "Profit Margin %",
+     [(0, "Loss-making"), (5, "Thin"), (15, "OK"), (40, "Healthy"),
+      (float("inf"), "Very high - check why")],
+     "Profit margin. Normal levels differ by industry: a supermarket keeps "
+     "about R3 of every R100."),
+    ("Borrowing", "Debt/Equity %",
+     [(50, "Low"), (100, "Moderate"), (float("inf"), "High")],
+     "Debt to equity. Under 50% is low, over 100% is heavy. Usually not "
+     "reported for banks, where borrowing is the business."),
+    ("Sales growth", "Revenue Growth %",
+     [(0, "Shrinking"), (5, "About inflation"), (15, "Growing"),
+      (float("inf"), "Strong")],
+     "Revenue growth. SA inflation is around 4-5%, so more than that is "
+     "real growth."),
+]
+
+
+def quality_verdict(value, bands):
+    for upper, verdict in bands:
+        if value < upper:
+            return verdict
+    return bands[-1][1]
+
+
+def rand(v):
+    """Rand amount per R100: whole rand, or cents when under R1."""
+    return f"R{abs(v):.0f}" if abs(v) >= 1 else f"R{abs(v):.2f}"
+
+
+def quality_meaning(col, v):
+    """The figure in rand terms, for the tile's hover text."""
+    if col == "ROE %":
+        return (f"A loss of {rand(v)} a year for every R100 of shareholders' money."
+                if v < 0 else
+                f"{rand(v)} profit a year for every R100 of shareholders' money.")
+    if col == "Profit Margin %":
+        return (f"A loss of {rand(v)} on every R100 of sales." if v < 0 else
+                f"{rand(v)} of every R100 of sales is left as profit.")
+    if col == "Debt/Equity %":
+        return f"{rand(v)} borrowed for every R100 of shareholders' money."
+    return f"Sales {v:+.0f}% compared with a year earlier."
+
+
 def split_summary(text, max_lead=320):
     """Business description -> (opening sentences, the rest).
 
@@ -790,20 +850,23 @@ def report_body(ticker):
         st.markdown("**Combined Score history**")
         score_history_chart(ticker)
 
-    quality = [
-        ("Return on equity", "ROE %", "Profit as a % of shareholders' equity."),
-        ("Profit margin", "Profit Margin %", "Profit as a % of revenue."),
-        ("Debt / equity", "Debt/Equity %",
-         "Debt as a % of shareholders' equity. Usually not reported for banks."),
-        ("Revenue growth", "Revenue Growth %", "Latest reported revenue vs a year earlier."),
-    ]
-    if any(company_value(ticker, col) is not None for _, col, _ in quality):
-        st.markdown("**Business quality** (latest reported, via Yahoo)")
+    if any(company_value(ticker, col) is not None for _, col, _, _ in QUALITY_RULES):
+        st.markdown("**How good is the business?** (latest reported year, via Yahoo)")
         qtiles = st.container(horizontal=True, wrap=True, gap="small")
-        for label, col, tip in quality:
+        for label, col, bands, tip in QUALITY_RULES:
+            value = company_value(ticker, col)
             spec = "+.0f" if col == "Revenue Growth %" else ".0f"
-            qtiles.metric(label, fmt(company_value(ticker, col), spec, suffix="%"),
-                          border=True, width="content", help=tip)
+            if value is not None and abs(value) < 1:
+                spec = spec.replace(".0f", ".1f")   # -0.1%, not "-0%"
+            qtiles.metric(
+                label, fmt(value, spec, suffix="%"),
+                delta=quality_verdict(value, bands) if value is not None else "not reported",
+                delta_color="off", delta_arrow="off",
+                border=True, width="content",
+                help=(quality_meaning(col, value) + " " if value is not None else "") + tip,
+            )
+        st.caption("Verdicts are simple rules of thumb, not advice. What's normal "
+                   "differs by industry, and one unusual year can distort a figure.")
     st.caption(f"Prices as of {pretty_stamp(stamp)} SAST. Not investment advice.")
 
 
