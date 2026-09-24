@@ -22,6 +22,11 @@ business description, industry, website, dividend yield and a few quality
 ratios). These come from the same Yahoo profile call the P/E already uses, so
 they add no extra requests.
 
+data/track_record/YYYY-MM.csv is a monthly snapshot of the full ranking,
+written by the first successful refresh of each month and never changed
+afterwards. It is the raw record for a public track record ("the Top 20 each
+month vs the Top 40 index"), which can't be back-filled honestly later.
+
 Also importable - the app falls back to build_dataset() if the data file is
 missing, so the app never depends on the pipeline having run yet.
 
@@ -89,6 +94,11 @@ UNIVERSE_META_FILE = os.path.join(DATA_DIR, "universe_meta.json")
 PRICES_FILE = os.path.join(DATA_DIR, "prices.csv")
 HISTORY_FILE = os.path.join(DATA_DIR, "history.csv")
 COMPANY_FILE = os.path.join(DATA_DIR, "company.csv")
+TRACK_DIR = os.path.join(DATA_DIR, "track_record")
+TRACK_COLUMNS = [
+    "snapshot_date", "rank", "Ticker", "Name", "Combined Score",
+    "Valuation Score", "Momentum Score", "Sharpe Score", "Price (R)",
+]
 
 SAST = timezone(timedelta(hours=2))
 
@@ -483,6 +493,35 @@ def updated_history(df, as_of, path=HISTORY_FILE):
     return today.sort_values(["date", "Ticker"], kind="stable").reset_index(drop=True)
 
 
+def track_snapshot(df, as_of):
+    """The full ranking on trading day `as_of`, best first.
+
+    Ties are broken by Momentum Score, then ticker, so the order - and
+    therefore the Top 20 - is reproducible from the same scores.
+    """
+    snap = df.reindex(columns=TRACK_COLUMNS[2:]).copy()
+    snap = snap[snap["Combined Score"].notna()]
+    snap = snap.sort_values(["Combined Score", "Momentum Score", "Ticker"],
+                            ascending=[False, False, True], kind="stable")
+    snap.insert(0, "rank", range(1, len(snap) + 1))
+    snap.insert(0, "snapshot_date", as_of)
+    for col in TRACK_COLUMNS[4:8]:
+        snap[col] = snap[col].round().astype("Int64")
+    return snap.reset_index(drop=True)
+
+
+def write_track_snapshot(df, as_of, track_dir=TRACK_DIR):
+    """Write this month's snapshot if there isn't one yet. Returns the path
+    written, or None. Existing months are never touched: a track record that
+    can be edited afterwards is worthless."""
+    path = os.path.join(track_dir, f"{as_of[:7]}.csv")
+    if os.path.exists(path):
+        return None
+    os.makedirs(track_dir, exist_ok=True)
+    track_snapshot(df, as_of).to_csv(path, index=False)
+    return path
+
+
 def write_outputs(df, failures, excluded, requested, closes=None, company=None):
     os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -504,6 +543,7 @@ def write_outputs(df, failures, excluded, requested, closes=None, company=None):
     history.to_csv(HISTORY_FILE, index=False)
     if company is not None and len(company):
         clean_company(company).to_csv(COMPANY_FILE, index=False)
+    snapshot = write_track_snapshot(df, as_of)
 
     meta = {
         "generated_utc": now_utc.strftime("%Y-%m-%d %H:%M:%S"),
@@ -511,6 +551,7 @@ def write_outputs(df, failures, excluded, requested, closes=None, company=None):
         "tickers_requested": requested,
         "tickers_loaded": int(len(df)),
         "scores_as_of": as_of,
+        "track_snapshot_written": os.path.basename(snapshot) if snapshot else None,
         "min_adv_rand": MIN_ADV_RAND,
         "failures": [{"ticker": t, "reason": r} for t, r in failures],
         "excluded": [{"ticker": t, "reason": r} for t, r in excluded],
