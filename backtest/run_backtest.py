@@ -63,6 +63,7 @@ STALE_DAYS = 5
 MAX_DAILY_JUMP = 20
 TOP_N = 20
 RISK_FREE = 0.08
+CASH_RATE = 0.07               # rough SA cash / money-market yield, 2015-2026
 BENCHMARK = "STX40.JO"         # Satrix 40 ETF: tracks the FTSE/JSE Top 40
 FX_TICKERS = {"USD": "USDZAR=X", "GBP": "GBPZAR=X", "EUR": "EURZAR=X",
               "GBp": "GBPZAR=X"}
@@ -153,6 +154,47 @@ def fetch_fx():
 
 
 # ---------------------------------------------------------------- cleaning
+
+def repair_history(px):
+    """Yahoo's long JSE histories carry the odd bad print: a single day at
+    100x (cents/rand mix-up) or a stretch quoted in the other unit. Drop
+    one- to three-day spikes that reverse, and rescale a whole earlier
+    stretch when the series steps by ~100x and stays there. Returns the
+    repaired frame and the number of fixes."""
+    px = px.copy()
+    fixes = 0
+    for _ in range(3):
+        c = px["close"]
+        step = c / c.shift(1)
+        jumps = np.where((step > MAX_DAILY_JUMP / 4) | (step < 4 / MAX_DAILY_JUMP))[0]
+        if not len(jumps):
+            break
+        drop = set()
+        for i in jumps:
+            if i - 1 in drop or i in drop:
+                continue
+            base = c.iloc[i - 1]
+            # A spike that comes back within 3 days: drop those days.
+            back = None
+            for k in range(i + 1, min(i + 4, len(c))):
+                if 0.5 < c.iloc[k] / base < 2:
+                    back = k
+                    break
+            if back is not None:
+                drop.update(range(i, back))
+                continue
+            # A lasting ~100x step: rescale everything before it.
+            ratio = c.iloc[i] / base
+            for factor in (100.0, 0.01):
+                if 0.5 < ratio / factor < 2:
+                    px.iloc[:i, px.columns.get_indexer(["close", "adj"])] *= factor
+                    fixes += 1
+                    break
+        if drop:
+            px = px.drop(px.index[sorted(drop)])
+            fixes += len(drop)
+    return px, fixes
+
 
 def bad_history(px):
     """Same guard as the app: a 20x one-day move means mixed rand/cents."""
@@ -443,7 +485,9 @@ def ma_cross_study(prices, liquid_days):
         r = a.pct_change(fill_method=None)
         pos = above.shift(1).fillna(0)
         switches = pos.diff().abs().fillna(0)
-        timing[t] = (pos * r - switches * COST_PER_TRADE).where(s.shift(1).notna())
+        cash = (1 + CASH_RATE) ** (1 / 252) - 1        # out of the stock = in cash
+        timing[t] = (pos * r + (1 - pos) * cash
+                     - switches * COST_PER_TRADE).where(s.shift(1).notna())
         hold[t] = r.where(s.shift(1).notna())
     summary = {}
     for kind in events:
@@ -460,6 +504,23 @@ def ma_cross_study(prices, liquid_days):
                 "hit_rate": float(good.mean()),
                 "t": float(ex.mean() / (ex.std(ddof=1) / np.sqrt(len(ex)))) if len(ex) > 2 else None,
             }
+    # Does a golden cross beat a death cross? Both are measured against the
+    # same average stock, so this difference cancels any drift the event
+    # sample shares (e.g. volatile stocks crossing more often).
+    for h in EVENT_HORIZONS:
+        g = np.array([e["excess"] for e in events["golden"][h]])
+        d = np.array([e["excess"] for e in events["death"][h]])
+        if len(g) > 2 and len(d) > 2:
+            diff = g.mean() - d.mean()
+            se = np.sqrt(g.var(ddof=1) / len(g) + d.var(ddof=1) / len(d))
+            summary.setdefault("golden_minus_death", {})[str(h)] = {
+                "diff": float(diff), "t": float(diff / se)}
+    by_year = {}
+    for kind in ("golden", "death"):
+        for e in events[kind][EVENT_HORIZONS[-1]]:
+            by_year.setdefault(e["date"][:4], {}).setdefault(kind, []).append(e["excess"])
+    summary["by_year"] = {y: {k: {"count": len(v), "mean_excess": float(np.mean(v))}
+                              for k, v in ks.items()} for y, ks in sorted(by_year.items())}
     tim = pd.DataFrame(timing).mean(axis=1).dropna()
     hol = pd.DataFrame(hold).mean(axis=1).dropna()
     both = pd.concat([tim.rename("timing"), hol.rename("hold")], axis=1).dropna()
@@ -478,10 +539,13 @@ def ma_cross_study(prices, liquid_days):
 
 def run(universe, verbose=True):
     fx = fetch_fx()
-    data, problems = {}, {}
+    data, problems, repaired = {}, {}, {}
     for i, t in enumerate(universe, 1):
         try:
             d = fetch_ticker(t)
+            d["px"], fixed = repair_history(d["px"])
+            if fixed:
+                repaired[t] = fixed
             if bad_history(d["px"]):
                 problems[t] = "bad price history (rand/cents jump)"
             elif len(d["px"]) < MIN_HISTORY + 21:
@@ -530,9 +594,10 @@ def run(universe, verbose=True):
                "settings": {"start": START, "accounts_lag_months": ACCOUNTS_LAG_MONTHS,
                             "cost_per_trade": COST_PER_TRADE, "min_adv_rand": MIN_ADV_RAND,
                             "top_n": TOP_N, "benchmark": BENCHMARK,
-                            "ma_fast": MA_FAST, "ma_slow": MA_SLOW},
+                            "ma_fast": MA_FAST, "ma_slow": MA_SLOW, "cash_rate": CASH_RATE},
                "coverage": {"universe": len(universe), "with_prices": len(data),
                             "excluded": problems,
+                            "repaired_bad_prints": repaired,
                             "dividend_units_unreliable": [t for t, f in div_units.items() if f is None],
                             "pe_unreliable": pe_unreliable,
                             "stocks_per_month": {str(d.date()): int(n) for d, n in
