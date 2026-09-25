@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-09-22 19:59:01",
-  "generated_sast": "2026-09-22 21:59:01",
+  "generated_utc": "2026-09-25 19:57:32",
+  "generated_sast": "2026-09-25 21:57:32",
   "rule": {
     "exchange": "JNB",
     "min_market_cap_rand": 5000000000,
@@ -8,96 +8,17 @@
     "source": "Yahoo Finance screener via yfinance"
   },
   "count": 131,
-  "added": [
-    "ACS.JO",
-    "AEL.JO",
-    "AFH.JO",
-    "APH.JO",
-    "ARL.JO",
-    "ATT.JO",
-    "BAT.JO",
-    "BLU.JO",
-    "BOX.JO",
-    "BTN.JO",
-    "BYI.JO",
-    "CAA.JO",
-    "CCD.JO",
-    "CFR.JO",
-    "CML.JO",
-    "CNP.JO",
-    "DCP.JO",
-    "DIB.JO",
-    "DTC.JO",
-    "EMI.JO",
-    "EQU.JO",
-    "FBR.JO",
-    "FFB.JO",
-    "FTB.JO",
-    "GND.JO",
-    "HCI.JO",
-    "HMN.JO",
-    "ISO.JO",
-    "ITE.JO",
-    "JSE.JO",
-    "KRO.JO",
-    "KST.JO",
-    "LSK.JO",
-    "LTE.JO",
-    "MKR.JO",
-    "MSP.JO",
-    "MTH.JO",
-    "NY1.JO",
-    "OMN.JO",
-    "OPA.JO",
-    "OUT.JO",
-    "PAN.JO",
-    "PHP.JO",
-    "PMR.JO",
-    "PPC.JO",
-    "PPH.JO",
-    "PWR.JO",
-    "QLT.JO",
-    "RBO.JO",
-    "RBX.JO",
-    "RCL.JO",
-    "RES.JO",
-    "RLO.JO",
-    "S32.JO",
-    "SAC.JO",
-    "SBP.JO",
-    "SDO.JO",
-    "SEA.JO",
-    "SHC.JO",
-    "SNT.JO",
-    "SPG.JO",
-    "SRE.JO",
-    "SSS.JO",
-    "SSU.JO",
-    "SUI.JO",
-    "TGA.JO",
-    "THA.JO",
-    "TKG.JO",
-    "TSG.JO",
-    "VKE.JO",
-    "WBC.JO",
-    "WBO.JO",
-    "WVR.JO"
-  ],
-  "removed": [
-    "ACL.JO",
-    "AFT.JO",
-    "INL.JO",
-    "RMH.JO"
-  ],
+  "added": [],
+  "removed": [],
   "unclassified": [],
   "dropped": [
     {
       "ticker": "SOLBE1.JO",
-      "reason": "market cap R92.1bn vs price x shares R0.5bn - unreliable"
+      "reason": "market cap R86.3bn vs price x shares R0.5bn - unreliable"
     },
     {
       "ticker": "FTA.JO",
-      "reason": "market cap R40.3bn vs price x shares R1.2bn - unreliable"
+      "reason": "market cap R41.7bn vs price x shares R1.2bn - unreliable"
     },
     {
       "ticker": "CATP.JO",
@@ -105,10 +26,6 @@
     },
     {
       "ticker": "CPIP.JO",
-      "reason": "not an ordinary share"
-    },
-    {
-      "ticker": "INPP.JO",
       "reason": "not an ordinary share"
     },
     {
@@ -181,10 +98,6 @@
     },
     {
       "ticker": "AGOGE.JO",
-      "reason": "no market cap"
-    },
-    {
-      "ticker": "AMC002.JO",
       "reason": "no market cap"
     },
     {
@@ -588,10 +501,6 @@
       "reason": "not an ordinary share"
     },
     {
-      "ticker": "SAALG.JO",
-      "reason": "no market cap"
-    },
-    {
       "ticker": "SQRL.JO",
       "reason": "no market cap"
     },
@@ -808,10 +717,6 @@
       "reason": "not an ordinary share"
     },
     {
-      "ticker": "TBIMAI.JO",
-      "reason": "not an ordinary share"
-    },
-    {
       "ticker": "VUNGLE.JO",
       "reason": "no market cap"
     },
@@ -822,10 +727,6 @@
     {
       "ticker": "WTOP20.JO",
       "reason": "not an ordinary share"
-    },
-    {
-      "ticker": "ABAM2.JO",
-      "reason": "no market cap"
     },
     {
       "ticker": "ADETNC.JO",
@@ -866,10 +767,6 @@
     {
       "ticker": "AMC007.JO",
       "reason": "no market cap"
-    },
-    {
-      "ticker": "AMC011.JO",
-      "reason": "not an ordinary share"
     },
     {
       "ticker": "AMC012.JO",
@@ -956,10 +853,6 @@
       "reason": "no market cap"
     },
     {
-      "ticker": "DNKOPP.JO",
-      "reason": "no market cap"
-    },
-    {
       "ticker": "EGETNC.JO",
       "reason": "not an ordinary share"
     },
@@ -1006,6 +899,10 @@
     {
       "ticker": "GSETNQ.JO",
       "reason": "not an ordinary share"
+    },
+    {
+      "ticker": "HERTGE.JO",
+      "reason": "no market cap"
     },
     {
       "ticker": "MCETNC.JO",
@@ -1080,10 +977,6 @@
       "reason": "not an ordinary share"
     },
     {
-      "ticker": "SAAGG.JO",
-      "reason": "no market cap"
-    },
-    {
       "ticker": "SBCOP.JO",
       "reason": "not an ordinary share"
     },
@@ -1116,11 +1009,7 @@
       "reason": "no market cap"
     },
     {
-      "ticker": "UBFAMU.JO",
-      "reason": "no market cap"
-    },
-    {
-      "ticker": "UBRAND.JO",
+      "ticker": "UBNDDU.JO",
       "reason": "no market cap"
     },
     {
@@ -1128,11 +1017,7 @@
       "reason": "no market cap"
     },
     {
-      "ticker": "UBSSXF.JO",
-      "reason": "no market cap"
-    },
-    {
-      "ticker": "UBSUKX.JO",
+      "ticker": "UBSSNP.JO",
       "reason": "no market cap"
     },
     {
@@ -1149,10 +1034,6 @@
     },
     {
       "ticker": "UMMIEA.JO",
-      "reason": "no market cap"
-    },
-    {
-      "ticker": "UMMIES.JO",
       "reason": "no market cap"
     },
     {
@@ -1176,7 +1057,7 @@
       "reason": "no market cap"
     },
     {
-      "ticker": "UUQUAD.JO",
+      "ticker": "UWORLD.JO",
       "reason": "no market cap"
     },
     {
