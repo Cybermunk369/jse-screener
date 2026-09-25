@@ -1,5 +1,16 @@
 """
-JSE Screener v1.18 - 20-day and 50-day moving averages on the price chart.
+JSE Screener v1.19 - honest framing: a research shortlist, not buy signals.
+
+Copy-only reframe after the full 2015-2026 backtest. The app is positioned as
+a disciplined filter and research starting point rather than a predictive
+ranking: the title, the screener caption and the "How it works" tab now lead
+with what the tool is for, say plainly that the scores are for sorting and
+filtering rather than timing, and replace the old momentum claim (IC ~0.10)
+with the honest backtest result - value and quality point the right way,
+momentum's full-period edge is roughly zero, and moving-average crosses did
+not work as buy/sell signals. No scoring, screening or data logic changed.
+
+v1.18 - 20-day and 50-day moving averages on the price chart.
 
 The report's price chart adds the 20-day and 50-day moving averages of the
 closing price, labelled at the line ends and in a legend, with a hover that
@@ -335,7 +346,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
 # ---------------------------------------------------------------- app
 
-APP_VERSION = "1.18"
+APP_VERSION = "1.19"
 
 # Columns shown by default - enough to act on, narrow enough for a phone.
 DEFAULT_COLS = [
@@ -1001,8 +1012,9 @@ def pretty_stamp(s):
 # ---------------------------------------------------------------- header
 st.title("📈 JSE Screener")
 st.caption(
-    f"Every liquid JSE share worth R{cap_floor_bn:.0f}bn or more, ranked daily on "
-    "value, momentum and risk-adjusted return. "
+    f"A clean, liquid slice of the JSE - every share worth R{cap_floor_bn:.0f}bn "
+    "or more, screened for value, quality and momentum. A shortlist worth your "
+    "own research, not a list of buy calls. "
     + (f"{data_label()}." if stamp else "")
 )
 if live_fallback:
@@ -1071,7 +1083,9 @@ with tab_screen:
         download_button(shown, "screener")
     st.caption(
         "Scores rank each stock against the others from 0 to 100 - green is "
-        "strong, red is weak. Not investment advice. Details in *How it works*."
+        "strong, red is weak. Use them to sort and shortlist, not as buy signals "
+        "- *How it works* shows how well each one has actually predicted returns. "
+        "Not investment advice."
     )
 
 # ---------------------------------------------------------------- watchlist
@@ -1099,6 +1113,13 @@ with tab_watch:
 with tab_how:
     st.markdown(
         f"""
+#### What this tool is for
+It filters the whole JSE down to the liquid, sensibly-priced, financially-sound
+shares worth a closer look, and gives you a clean, trustworthy report on each.
+It's a **starting point for your own research** - a way to narrow ~{universe_meta.get('count', 130)} shares
+to a shortlist - not a system that predicts winners or tells you when to trade.
+The section below is honest about how much each score has actually been worth.
+
 #### The scores
 Each stock gets three scores from 0 to 100. They are **percentile ranks**: a
 Momentum Score of 80 means stronger momentum than 80% of the stocks here.
@@ -1116,11 +1137,24 @@ a score is missing, its weight shifts to the others.
 recorded after each daily refresh{(" since " + f"{history['date'].min():%-d %b %Y}") if not history.empty else ""}.
 Because scores are ranks, a stock can move because the others did.
 
-#### How much to trust them
-The momentum signal was backtested over about 54 monthly periods: an
-information coefficient of about 0.10 and a ~63% win rate - a modest but
-genuine edge, not a strong one. Valuation and Sharpe are included on sound
-principles but have not been backtested here.
+#### How much to trust the scores
+We backtested every score over about 11 years (2015-2026, 130 shares), ranking
+the stocks each month and checking the next month's returns. The honest results:
+
+- **Value and quality point the right way.** Cheaper shares (low P/E), fatter
+  profit margins and lower debt lined up with better returns. This is the most
+  promising signal - though it rests on only about 3-4 years of company accounts,
+  so treat it as a lean, not a law.
+- **Momentum is weak and unreliable.** Averaged over the full period its edge was
+  roughly zero: it worked in some years and lost in others. A high Momentum Score
+  is a reason to look, not a forecast.
+- **Moving-average crosses did not work** as buy or sell signals on the JSE. A
+  "golden cross" was, if anything, followed by mild underperformance. The averages
+  on the chart are there to show the trend, not to trigger trades.
+
+So use the scores to organise and shortlist, not to time the market. That's the
+honest edge of a screener: it saves you from illiquid junk and overpriced shares
+and puts the sound ones in front of you - the buy or sell decision is still yours.
 
 #### Which stocks are included
 Every JSE ordinary share with a market cap of R{cap_floor_bn:.0f}bn or more
