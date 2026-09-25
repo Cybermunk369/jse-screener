@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-09-25 19:23:33",
-  "generated_sast": "2026-09-25 21:23:33",
+  "generated_utc": "2026-09-25 19:59:48",
+  "generated_sast": "2026-09-25 21:59:48",
   "tickers_requested": 131,
   "tickers_loaded": 107,
   "scores_as_of": "2026-09-25",
@@ -41,12 +41,12 @@
       "reason": "illiquid (ADV R0.7m)"
     },
     {
-      "ticker": "DIB.JO",
-      "reason": "illiquid (ADV R4.5m)"
-    },
-    {
       "ticker": "CCD.JO",
       "reason": "illiquid (ADV R1.7m)"
+    },
+    {
+      "ticker": "DIB.JO",
+      "reason": "illiquid (ADV R4.5m)"
     },
     {
       "ticker": "THA.JO",
@@ -69,6 +69,10 @@
       "reason": "illiquid (ADV R1.5m)"
     },
     {
+      "ticker": "MKR.JO",
+      "reason": "illiquid (ADV R0.5m)"
+    },
+    {
       "ticker": "EMI.JO",
       "reason": "illiquid (ADV R2.4m)"
     },
@@ -85,10 +89,6 @@
       "reason": "illiquid (ADV R1.0m)"
     },
     {
-      "ticker": "MKR.JO",
-      "reason": "illiquid (ADV R0.5m)"
-    },
-    {
       "ticker": "RBO.JO",
       "reason": "illiquid (ADV R1.1m)"
     },
@@ -97,12 +97,12 @@
       "reason": "illiquid (ADV R3.4m)"
     },
     {
-      "ticker": "FBR.JO",
-      "reason": "illiquid (ADV R4.8m)"
-    },
-    {
       "ticker": "WVR.JO",
       "reason": "illiquid (ADV R0.3m)"
+    },
+    {
+      "ticker": "FBR.JO",
+      "reason": "illiquid (ADV R4.8m)"
     }
   ]
 }
