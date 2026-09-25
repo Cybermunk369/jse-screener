@@ -1,10 +1,10 @@
 {
-  "generated_utc": "2026-09-25 18:21:16",
-  "generated_sast": "2026-09-25 20:21:16",
+  "generated_utc": "2026-09-25 19:23:33",
+  "generated_sast": "2026-09-25 21:23:33",
   "tickers_requested": 131,
   "tickers_loaded": 107,
   "scores_as_of": "2026-09-25",
-  "track_snapshot_written": "2026-09.csv",
+  "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
   "excluded": [
