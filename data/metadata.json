@@ -1,9 +1,10 @@
 {
-  "generated_utc": "2026-09-24 19:21:26",
-  "generated_sast": "2026-09-24 21:21:26",
+  "generated_utc": "2026-09-25 18:21:16",
+  "generated_sast": "2026-09-25 20:21:16",
   "tickers_requested": 131,
-  "tickers_loaded": 108,
-  "scores_as_of": "2026-09-23",
+  "tickers_loaded": 107,
+  "scores_as_of": "2026-09-25",
+  "track_snapshot_written": "2026-09.csv",
   "min_adv_rand": 5000000,
   "failures": [],
   "excluded": [
@@ -13,7 +14,7 @@
     },
     {
       "ticker": "CNP.JO",
-      "reason": "too new (79 trading days, need 100)"
+      "reason": "too new (80 trading days, need 100)"
     },
     {
       "ticker": "KRO.JO",
@@ -29,7 +30,7 @@
     },
     {
       "ticker": "SSU.JO",
-      "reason": "illiquid (ADV R4.8m)"
+      "reason": "illiquid (ADV R4.9m)"
     },
     {
       "ticker": "ITE.JO",
@@ -41,15 +42,15 @@
     },
     {
       "ticker": "DIB.JO",
-      "reason": "illiquid (ADV R4.6m)"
+      "reason": "illiquid (ADV R4.5m)"
     },
     {
       "ticker": "CCD.JO",
-      "reason": "illiquid (ADV R1.8m)"
+      "reason": "illiquid (ADV R1.7m)"
     },
     {
       "ticker": "THA.JO",
-      "reason": "illiquid (ADV R1.2m)"
+      "reason": "illiquid (ADV R1.1m)"
     },
     {
       "ticker": "ISO.JO",
@@ -57,7 +58,7 @@
     },
     {
       "ticker": "TSG.JO",
-      "reason": "illiquid (ADV R2.1m)"
+      "reason": "illiquid (ADV R2.2m)"
     },
     {
       "ticker": "ACS.JO",
@@ -89,11 +90,15 @@
     },
     {
       "ticker": "RBO.JO",
-      "reason": "illiquid (ADV R1.0m)"
+      "reason": "illiquid (ADV R1.1m)"
     },
     {
       "ticker": "SBP.JO",
-      "reason": "illiquid (ADV R0.3m)"
+      "reason": "illiquid (ADV R3.4m)"
+    },
+    {
+      "ticker": "FBR.JO",
+      "reason": "illiquid (ADV R4.8m)"
     },
     {
       "ticker": "WVR.JO",
