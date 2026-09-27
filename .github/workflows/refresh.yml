@@ -5,6 +5,12 @@ on:
     # 15:30 UTC = 17:30 SAST, half an hour after the JSE close.
     # Weekdays only - the JSE is shut at weekends.
     - cron: '30 15 * * 1-5'
+    # Backstop 19:07 UTC = 21:07 SAST. GitHub's scheduler is best-effort and
+    # silently skips runs under load (it dropped the 15:30 run on 2026-09-25),
+    # so a later second attempt catches a missed primary. An odd minute avoids
+    # the congested top-of-hour / half-hour slots. If the primary already ran,
+    # the commit step below sees the same scores_as_of and does nothing.
+    - cron: '07 19 * * 1-5'
   workflow_dispatch:        # allows a manual run from the Actions tab
 
 permissions:
@@ -41,8 +47,17 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # All data outputs, including new monthly files in data/track_record/.
           git add data/
+          # fetch_data.py always rewrites metadata.json with a fresh timestamp,
+          # so a plain diff is never empty. Commit only when the trading day
+          # (scores_as_of) actually advanced - otherwise the backstop run would
+          # push a duplicate of a refresh the primary already committed.
+          new_asof=$(python -c "import json; print(json.load(open('data/metadata.json'))['scores_as_of'])")
+          old_asof=$(git show HEAD:data/metadata.json | python -c "import json,sys; print(json.load(sys.stdin)['scores_as_of'])")
           if git diff --staged --quiet; then
             echo "No change in the data - nothing to commit."
+          elif [ "$new_asof" = "$old_asof" ]; then
+            echo "scores_as_of unchanged ($new_asof) - already refreshed today, skipping."
+            git checkout -- data/
           else
             git commit -m "Data refresh $(date -u +'%Y-%m-%d %H:%M UTC')"
             git push
