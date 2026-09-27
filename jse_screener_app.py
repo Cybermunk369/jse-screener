@@ -1,5 +1,14 @@
 """
-JSE Screener v1.19 - honest framing: a research shortlist, not buy signals.
+JSE Screener v1.20 - demote the Combined Score from a ranking to a filter.
+
+Follows v1.19's honest framing. The Combined Score stays the default sort, but
+the copy stops treating it as a pick: the "Top 20" quick view is renamed
+"Shortlist" (a research starting point, not tips), the "Top score" headline
+tile becomes "Highest score" with a plain "not a recommendation" note, and the
+"All stocks" view no longer calls the list "ranked". Sort order, the 20-highest
+filter and all scoring logic are unchanged.
+
+v1.19 - honest framing: a research shortlist, not buy signals.
 
 Copy-only reframe after the full 2015-2026 backtest. The app is positioned as
 a disciplined filter and research starting point rather than a predictive
@@ -346,7 +355,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
 # ---------------------------------------------------------------- app
 
-APP_VERSION = "1.19"
+APP_VERSION = "1.20"
 
 # Columns shown by default - enough to act on, narrow enough for a phone.
 DEFAULT_COLS = [
@@ -358,10 +367,10 @@ DEFAULT_COLS = [
 # next to the view so users can see exactly what they're looking at. They
 # filter only; the sidebar "Sort by" still decides the order.
 QUICK_VIEWS = {
-    "All stocks": (None, "Every ranked stock."),
-    "Top 20": (
+    "All stocks": (None, "Every stock that passed the screen."),
+    "Shortlist": (
         lambda d: d[d["Combined Score"].rank(ascending=False, method="first") <= 20],
-        "The 20 highest Combined Scores.",
+        "The 20 highest Combined Scores - a research starting point, not tips.",
     ),
     "Value": (
         lambda d: d[d["Valuation Score"] >= 70],
@@ -1035,9 +1044,10 @@ m1.metric(
          "too new - see How it works.",
 )
 m2.metric(
-    "Top score", f"{top['Combined Score']:.0f}", delta=top["Ticker"],
+    "Highest score", f"{top['Combined Score']:.0f}", delta=top["Ticker"],
     delta_color="off", delta_arrow="off", border=True, width=170,
-    help=f"Highest Combined Score: {top['Name']}",
+    help=f"Top of the default Combined Score sort - a starting point for "
+         f"research, not a recommendation: {top['Name']}",
 )
 m3.metric(
     "Best 6m run", f"{mover['6mo Momentum %']:+.0f}%", delta=mover["Ticker"],
