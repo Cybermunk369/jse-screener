@@ -1,5 +1,11 @@
 """
-JSE Screener v1.20 - demote the Combined Score from a ranking to a filter.
+JSE Screener v1.21 - show the version in the page footers.
+
+The version number (previously only in the How it works tab) now also appears
+in the footer under the screener table and under each stock report, so it's
+visible on the main pages at a glance. Display-only.
+
+v1.20 - demote the Combined Score from a ranking to a filter.
 
 Follows v1.19's honest framing. The Combined Score stays the default sort, but
 the copy stops treating it as a pick: the "Top 20" quick view is renamed
@@ -355,7 +361,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
 # ---------------------------------------------------------------- app
 
-APP_VERSION = "1.20"
+APP_VERSION = "1.21"
 
 # Columns shown by default - enough to act on, narrow enough for a phone.
 DEFAULT_COLS = [
@@ -987,7 +993,7 @@ def report_body(ticker):
             )
         st.caption("Verdicts are simple rules of thumb, not advice. What's normal "
                    "differs by industry, and one unusual year can distort a figure.")
-    st.caption(f"{data_label()}. Not investment advice.")
+    st.caption(f"{data_label()}. Not investment advice. · v{APP_VERSION}")
 
 
 def open_report(ticker):
@@ -1095,7 +1101,7 @@ with tab_screen:
         "Scores rank each stock against the others from 0 to 100 - green is "
         "strong, red is weak. Use them to sort and shortlist, not as buy signals "
         "- *How it works* shows how well each one has actually predicted returns. "
-        "Not investment advice."
+        f"Not investment advice. · v{APP_VERSION}"
     )
 
 # ---------------------------------------------------------------- watchlist
