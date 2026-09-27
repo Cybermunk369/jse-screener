@@ -128,6 +128,7 @@ COLUMNS = [
     "Ticker", "Name", "Price (R)", "Market Cap (R bn)", "Sector", "FX Exposure",
     "P/E", "6mo Momentum %", "Sharpe Ratio", "ADV (R m)",
     "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
+    "Quality Score",
 ]
 
 # Chosen from a coverage check across the 131-stock universe (24 Sep 2026):
@@ -258,6 +259,10 @@ def fetch_one(ticker, name, fx_exposure):
         "_closes": close_rand,
         # Company facts for the report pop-up. Split off by split_company().
         "_company": company_facts(info),
+        # Quality inputs, kept private so score() can rank them. Same Yahoo
+        # fields and units as company_facts; dropped from the table by score().
+        "_margin": _pct(info.get("profitMargins"), 100),
+        "_debt_equity": _pct(info.get("debtToEquity"), 1),
     }
 
 
@@ -434,12 +439,44 @@ def add_combined_score(df, weights=None):
     return df
 
 
+# Quality = profitable and not over-indebted. Profit margin and debt/equity
+# are the two fundamentals that pointed the right way in the 2015-2026 backtest
+# (both weakly, on ~3 years of accounts), and both rest on established factor
+# theory. ROE is deliberately left out: it was negative in that sample, a sign
+# the fundamentals history is too short and noisy to lean on any harder. This
+# is a separate lens, NOT part of the Combined Score.
+QUALITY_SCORE_WEIGHTS = {"_margin": 0.5, "_debt_equity": 0.5}
+
+
+def add_quality_score(df):
+    """Percentile blend of profit margin (higher is better) and debt/equity
+    (lower is better). Values outside the plausible display bounds are dropped
+    first so a bogus Yahoo figure can't skew the ranks. Weights renormalize
+    over whichever input is present, and a row with neither is left blank."""
+    for col, key in (("_margin", "Profit Margin %"), ("_debt_equity", "Debt/Equity %")):
+        if col not in df.columns:
+            df[col] = np.nan
+        lo, hi = PLAUSIBLE[key]
+        df[col] = df[col].where(df[col].between(lo, hi))
+    margin_rank = df["_margin"].rank(pct=True, ascending=True).mul(100)   # high = good
+    debt_rank = df["_debt_equity"].rank(pct=True, ascending=False).mul(100)  # low = good
+    ranks = pd.DataFrame({"_margin": margin_rank, "_debt_equity": debt_rank})
+    w = pd.Series(QUALITY_SCORE_WEIGHTS)
+    present = ranks.notna()
+    total = present.mul(w, axis=1).sum(axis=1)
+    quality = (ranks.fillna(0).mul(w, axis=1).sum(axis=1) / total).round(0)
+    quality[total == 0] = np.nan
+    df["Quality Score"] = quality
+    return df
+
+
 def score(df):
     df = add_valuation_score(df)
     df = add_momentum_score(df)
     df = add_sharpe_score(df)
     df = add_combined_score(df)
-    return df
+    df = add_quality_score(df)
+    return df.drop(columns=["_margin", "_debt_equity"], errors="ignore")
 
 
 def build_dataset(universe=None, verbose=False):
