@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-09-25 19:59:48",
-  "generated_sast": "2026-09-25 21:59:48",
+  "generated_utc": "2026-09-27 15:23:38",
+  "generated_sast": "2026-09-27 17:23:38",
   "tickers_requested": 131,
   "tickers_loaded": 107,
   "scores_as_of": "2026-09-25",
@@ -18,7 +18,7 @@
     },
     {
       "ticker": "KRO.JO",
-      "reason": "illiquid (ADV R1.5m)"
+      "reason": "illiquid (ADV R2.0m)"
     },
     {
       "ticker": "APH.JO",
