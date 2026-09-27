@@ -1,5 +1,17 @@
 """
-JSE Screener v1.21 - show the version in the page footers.
+JSE Screener v1.22 - add a Quality lens (profit margin + low debt).
+
+A new Quality Score - 50% profit margin (higher better), 50% debt/equity (lower
+better), percentile-ranked and renormalized over whatever is present - is shown
+as a table column (all-columns view), a "Quality" quick view, a sort option and
+a bar in the stock report. It's the value/quality tilt the backtest weakly
+supported, exposed as a separate lens rather than baked into the Combined Score,
+which is unchanged. Scored in fetch_data from the same Yahoo fields the report
+already uses; kept out of the weekly history. ROE is deliberately excluded (it
+was negative in the backtest sample). The app tolerates a data file without the
+column (shows blanks) for a safe deploy.
+
+v1.21 - show the version in the page footers.
 
 The version number (previously only in the How it works tab) now also appears
 in the footer under the screener table and under each stock report, so it's
@@ -183,7 +195,8 @@ DISPLAY_COLS = [
     "Ticker", "Name", "Price (R)", "6m trend", "Δ 1w", "Market Cap (R bn)",
     "Sector", "FX Exposure", "P/E", "6mo Momentum %", "Sharpe Ratio",
     "ADV (R m)",
-    "Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score",
+    "Valuation Score", "Momentum Score", "Sharpe Score", "Quality Score",
+    "Combined Score",
 ]
 
 # printf-style specs for st.column_config.NumberColumn (not Python .format() -
@@ -200,6 +213,7 @@ COLUMN_FORMATS = {
     "Valuation Score": "%.0f",
     "Momentum Score": "%.0f",
     "Sharpe Score": "%.0f",
+    "Quality Score": "%.0f",
     "Combined Score": "%.0f",
     "Δ 1w": "%+.0f",
 }
@@ -216,6 +230,10 @@ def load_precomputed():
     df = pd.read_csv(DATA_FILE)
     if df.empty:
         return None, None
+    # Backward compatible: a data file written before the Quality Score existed
+    # (or during a brief stale-module window on deploy) simply shows blanks.
+    if "Quality Score" not in df.columns:
+        df["Quality Score"] = float("nan")
 
     meta = {}
     if os.path.exists(META_FILE):
@@ -351,8 +369,10 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
     styles["Sharpe Ratio"] = display_df["Sharpe Ratio"].map(
         lambda v: color_ratio(v, sharpe_max_abs)
     )
-    for col in ["Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score"]:
-        styles[col] = display_df[col].map(color_score)
+    for col in ["Valuation Score", "Momentum Score", "Sharpe Score",
+                "Quality Score", "Combined Score"]:
+        if col in display_df.columns:
+            styles[col] = display_df[col].map(color_score)
     # A 10-point move in a week is big for a percentile score; cap the shade there.
     styles["Δ 1w"] = display_df["Δ 1w"].map(lambda v: color_ratio(v, 10))
 
@@ -361,7 +381,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
 # ---------------------------------------------------------------- app
 
-APP_VERSION = "1.21"
+APP_VERSION = "1.22"
 
 # Columns shown by default - enough to act on, narrow enough for a phone.
 DEFAULT_COLS = [
@@ -381,6 +401,10 @@ QUICK_VIEWS = {
     "Value": (
         lambda d: d[d["Valuation Score"] >= 70],
         "Valuation Score 70+: the cheapest 30% on P/E (loss-makers excluded).",
+    ),
+    "Quality": (
+        lambda d: d[d["Quality Score"] >= 70],
+        "Quality Score 70+: the strongest 30% on profit margin and low debt.",
     ),
     "Momentum": (
         lambda d: d[d["Momentum Score"] >= 80],
@@ -556,7 +580,7 @@ with st.sidebar:
     sort_by = st.selectbox(
         "Sort by",
         ["Combined Score"] + (["Δ 1w"] if has_week_change else [])
-        + ["Sharpe Ratio", "Valuation Score", "Momentum Score",
+        + ["Sharpe Ratio", "Valuation Score", "Momentum Score", "Quality Score",
            "6mo Momentum %", "P/E", "Market Cap (R bn)", "ADV (R m)"],
     )
     all_columns = st.toggle("Show all columns", key="all_columns")
@@ -626,7 +650,8 @@ def download_button(display_df, name):
     if "Δ 1w" in hidden_cols:
         export_df = export_df.drop(columns="Δ 1w")
     export_df.insert(0, "Watchlist", display_df["★"].map({True: "yes", False: ""}))
-    for col in ["Valuation Score", "Momentum Score", "Sharpe Score", "Combined Score"]:
+    for col in ["Valuation Score", "Momentum Score", "Sharpe Score",
+                "Quality Score", "Combined Score"]:
         export_df[col] = export_df[col].round().astype("Int64")   # 98, not 98.0
     if "Δ 1w" in export_df:
         export_df["Δ 1w"] = export_df["Δ 1w"].round().astype("Int64")
@@ -786,6 +811,7 @@ SCORE_NOTES = {
     "Valuation Score": "cheapness on P/E",
     "Momentum Score": "six-month return",
     "Sharpe Score": "return per unit of risk",
+    "Quality Score": "profit margin and low debt",
 }
 
 
@@ -973,6 +999,13 @@ def report_body(ticker):
                      if col == "Combined Score" and pd.notna(change) else "")
             st.progress(int(value) / 100,
                         text=f"{label}: **{value:.0f}**{extra} · {SCORE_NOTES[col]}")
+        quality = row.get("Quality Score")
+        if pd.isna(quality):
+            st.progress(0, text="Quality: no score · separate from the Combined Score")
+        else:
+            st.progress(int(quality) / 100,
+                        text=f"Quality: **{quality:.0f}** · {SCORE_NOTES['Quality Score']} "
+                             "· separate from the Combined Score")
         st.markdown("**Combined Score history**")
         score_history_chart(ticker)
 
@@ -1137,17 +1170,20 @@ to a shortlist - not a system that predicts winners or tells you when to trade.
 The section below is honest about how much each score has actually been worth.
 
 #### The scores
-Each stock gets three scores from 0 to 100. They are **percentile ranks**: a
-Momentum Score of 80 means stronger momentum than 80% of the stocks here.
+Each score runs 0 to 100 and is a **percentile rank**: a Momentum Score of 80
+means stronger momentum than 80% of the stocks here.
 
 - **Valuation** - how cheap the share is on P/E. Loss-makers (no or negative
   P/E) get no Valuation Score rather than looking "cheap".
 - **Momentum** - price change over the last six months.
 - **Sharpe** - six-month return per unit of risk (annualised, daily prices,
   {RISK_FREE_RATE*100:.0f}% risk-free rate). Six months is a short window, so treat it as noisy.
+- **Quality** - profit margin (higher is better) and debt/equity (lower is
+  better), 50/50. It's a *separate lens* for finding profitable, low-debt
+  businesses - it is **not** part of the Combined Score.
 
-The **Combined Score** blends them 40% Valuation, 40% Momentum, 20% Sharpe. When
-a score is missing, its weight shifts to the others.
+The **Combined Score** blends the first three 40% Valuation, 40% Momentum, 20%
+Sharpe. When a score is missing, its weight shifts to the others.
 
 **Δ 1w** is the change in Combined Score over the last week, from the scores
 recorded after each daily refresh{(" since " + f"{history['date'].min():%-d %b %Y}") if not history.empty else ""}.
@@ -1157,10 +1193,11 @@ Because scores are ranks, a stock can move because the others did.
 We backtested every score over about 11 years (2015-2026, 130 shares), ranking
 the stocks each month and checking the next month's returns. The honest results:
 
-- **Value and quality point the right way.** Cheaper shares (low P/E), fatter
-  profit margins and lower debt lined up with better returns. This is the most
-  promising signal - though it rests on only about 3-4 years of company accounts,
-  so treat it as a lean, not a law.
+- **Value and quality point the right way.** Cheaper shares (low P/E) and the
+  Quality Score's ingredients - fatter profit margins and lower debt - lined up
+  with better returns. This is the most promising signal, and why Quality is
+  shown as its own lens - though it rests on only about 3-4 years of company
+  accounts, so treat it as a lean, not a law.
 - **Momentum is weak and unreliable.** Averaged over the full period its edge was
   roughly zero: it worked in some years and lost in others. A high Momentum Score
   is a reason to look, not a forecast.
