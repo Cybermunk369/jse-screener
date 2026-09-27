@@ -48,15 +48,15 @@ jobs:
           # All data outputs, including new monthly files in data/track_record/.
           git add data/
           # fetch_data.py always rewrites metadata.json with a fresh timestamp,
-          # so a plain diff is never empty. Commit only when the trading day
-          # (scores_as_of) actually advanced - otherwise the backstop run would
-          # push a duplicate of a refresh the primary already committed.
-          new_asof=$(python -c "import json; print(json.load(open('data/metadata.json'))['scores_as_of'])")
-          old_asof=$(git show HEAD:data/metadata.json | python -c "import json,sys; print(json.load(sys.stdin)['scores_as_of'])")
-          if git diff --staged --quiet; then
+          # so a plain diff is never empty. Commit only when real data changed -
+          # some file other than metadata.json - so a backstop rerun on the same
+          # trading day (only the timestamp differs) doesn't push a duplicate,
+          # while a new day, a correction or a schema change still commit.
+          changed=$(git diff --staged --name-only)
+          if [ -z "$changed" ]; then
             echo "No change in the data - nothing to commit."
-          elif [ "$new_asof" = "$old_asof" ]; then
-            echo "scores_as_of unchanged ($new_asof) - already refreshed today, skipping."
+          elif [ "$changed" = "data/metadata.json" ]; then
+            echo "Only the metadata timestamp changed (same trading day) - skipping."
             git checkout -- data/
           else
             git commit -m "Data refresh $(date -u +'%Y-%m-%d %H:%M UTC')"
