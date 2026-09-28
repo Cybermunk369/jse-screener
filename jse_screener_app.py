@@ -1,5 +1,13 @@
 """
-JSE Screener v1.22 - add a Quality lens (profit margin + low debt).
+JSE Screener v1.23 - professional header redesign (theme + hero + stat cards).
+
+The plain title and four st.metric tiles are replaced with a branded hero (logo
+mark, wordmark, tagline) and a responsive grid of custom stat cards, rendered as
+our own themed HTML so the look doesn't depend on Streamlit's internal classes
+and reads cleanly in both light and dark. A .streamlit/config.toml sets the
+accent and font app-wide. Tab labels lose the busy emoji. Display-only.
+
+v1.22 - add a Quality lens (profit margin + low debt).
 
 A new Quality Score - 50% profit margin (higher better), 50% debt/equity (lower
 better), percentile-ranked and renormalized over whatever is present - is shown
@@ -154,6 +162,7 @@ Run locally:
 """
 
 import functools
+import html
 import re
 import json
 import os
@@ -381,7 +390,7 @@ def style_table(display_df, momentum_max_abs, sharpe_max_abs):
 
 # ---------------------------------------------------------------- app
 
-APP_VERSION = "1.22"
+APP_VERSION = "1.23"
 
 # Columns shown by default - enough to act on, narrow enough for a phone.
 DEFAULT_COLS = [
@@ -1058,49 +1067,106 @@ def pretty_stamp(s):
 
 
 # ---------------------------------------------------------------- header
-st.title("📈 JSE Screener")
-st.caption(
-    f"A clean, liquid slice of the JSE - every share worth R{cap_floor_bn:.0f}bn "
-    "or more, screened for value, quality and momentum. A shortlist worth your "
-    "own research, not a list of buy calls. "
-    + (f"{data_label()}." if stamp else "")
+# The hero and stat cards are our own HTML (not styled st.metric, whose internal
+# classes change between versions). They are deliberately theme-agnostic: text
+# uses `inherit` so it takes Streamlit's own text colour, and card / pill fills
+# are neutral translucent greys that read on either background. That way the
+# header always matches the actually-rendered theme - st.context can report a
+# different mode than the chrome actually shows, so we don't rely on it here.
+HERO_ACCENT = "#3b82e6"   # brand blue, legible on light and dark
+HERO_UP = "#17a06c"       # positive green, legible on both
+
+
+def render_hero(tagline, stamp_line, cards):
+    """Brand header + a responsive grid of stat cards."""
+    logo = (
+        f"<span class='jse-logo'>"
+        "<svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#fff' "
+        "stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'>"
+        "<polyline points='3,16 9,10 13,13 21,5'/><polyline points='15,5 21,5 21,11'/>"
+        "</svg></span>"
+    )
+    card_html = ""
+    for label, value, sub, up, tip in cards:
+        vcls = "val up" if up else "val"
+        card_html += (
+            f"<div class='jse-card' title=\"{html.escape(tip)}\">"
+            f"<div class='lbl'>{html.escape(label)}</div>"
+            f"<div class='{vcls}'>{html.escape(value)}</div>"
+            f"<span class='sub'>{html.escape(sub)}</span></div>"
+        )
+    stamp_html = (f"<div class='jse-stamp'>{html.escape(stamp_line)}</div>"
+                  if stamp_line else "")
+    st.markdown(
+        f"""
+<style>
+.jse-hero {{ display:flex; align-items:center; gap:14px; margin:0 0 12px; }}
+.jse-logo {{ width:46px; height:46px; border-radius:13px; display:inline-flex;
+  align-items:center; justify-content:center; flex:none;
+  background:linear-gradient(135deg, {HERO_ACCENT}, #1f5fb8);
+  box-shadow:0 3px 10px rgba(59,130,230,.35); }}
+.jse-eyebrow {{ font-size:11px; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; color:inherit; opacity:.55; margin:0 0 3px; }}
+.jse-title {{ font-size:31px; font-weight:750; letter-spacing:-.02em; line-height:1.05;
+  color:inherit; margin:0; }}
+.jse-title .exch {{ color:{HERO_ACCENT}; }}
+.jse-tagline {{ font-size:15px; line-height:1.5; color:inherit; opacity:.62;
+  max-width:72ch; margin:0; }}
+.jse-stamp {{ font-size:12.5px; color:inherit; opacity:.5; margin-top:4px;
+  font-variant-numeric:tabular-nums; }}
+.jse-cards {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+  gap:12px; margin:18px 0 4px; }}
+.jse-card {{ background:rgba(128,128,128,.06); border:1px solid rgba(128,128,128,.22);
+  border-radius:14px; padding:14px 16px 13px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05), 0 6px 20px rgba(0,0,0,.04); }}
+.jse-card .lbl {{ font-size:10.5px; font-weight:600; letter-spacing:.07em;
+  text-transform:uppercase; color:inherit; opacity:.55; }}
+.jse-card .val {{ font-size:27px; font-weight:720; letter-spacing:-.01em; line-height:1.1;
+  margin-top:5px; color:inherit; font-variant-numeric:tabular-nums; }}
+.jse-card .val.up {{ color:{HERO_UP}; }}
+.jse-card .sub {{ display:inline-block; margin-top:9px; font-size:11px; font-weight:500;
+  color:inherit; opacity:.8; background:rgba(128,128,128,.16); border-radius:6px;
+  padding:2px 8px; }}
+</style>
+<div class='jse-hero'>{logo}
+  <div>
+    <div class='jse-eyebrow'>Johannesburg Stock Exchange</div>
+    <div class='jse-title'>JSE <span class='exch'>Screener</span></div>
+  </div>
+</div>
+<div class='jse-tagline'>{html.escape(tagline)}</div>
+{stamp_html}
+<div class='jse-cards'>{card_html}</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+top = df.loc[df["Combined Score"].idxmax()]
+mover = df.loc[df["6mo Momentum %"].idxmax()]
+render_hero(
+    tagline=(f"A clean, liquid slice of the JSE — every share worth R{cap_floor_bn:.0f}bn "
+             "or more, screened for value, quality and momentum. A shortlist worth "
+             "your own research, not a list of buy calls."),
+    stamp_line=(data_label() if stamp else ""),
+    cards=[
+        ("Ranked", f"{len(df)}", f"{len(excluded)} screened out", False,
+         "Stocks scored today. The rest were left out as illiquid, stale or too new."),
+        ("Highest score", f"{top['Combined Score']:.0f}", top["Ticker"], False,
+         "Top of the default Combined Score sort — a starting point for research, "
+         f"not a recommendation: {top['Name']}"),
+        ("Best 6-month run", f"{mover['6mo Momentum %']:+.0f}%", mover["Ticker"],
+         bool(mover["6mo Momentum %"] > 0),
+         f"Strongest six-month price move: {mover['Name']}"),
+        ("Watchlist", f"{len(st.session_state.watchlist)}", "starred", False,
+         "Open a stock and tap the star, or search in the sidebar."),
+    ],
 )
 if live_fallback:
     st.info("Today's precomputed data isn't available yet, so this is a live fetch.")
 
-top = df.loc[df["Combined Score"].idxmax()]
-mover = df.loc[df["6mo Momentum %"].idxmax()]
-# A wrapping row rather than fixed columns: tiles keep a readable minimum
-# width and move to a second line in a narrow window instead of cutting off.
-tiles = st.container(horizontal=True, wrap=True, gap="small")
-m1 = m2 = m3 = m4 = tiles
-# Short labels, the number as the value, the ticker as a grey sub-line - so
-# the tiles still read in a narrow window (long values get cut off with "...").
-m1.metric(
-    "Ranked", len(df), delta=f"{len(excluded)} screened out",
-    delta_color="off", delta_arrow="off", border=True, width=170,
-    help="Stocks scored today. The rest were left out as illiquid, stale or "
-         "too new - see How it works.",
-)
-m2.metric(
-    "Highest score", f"{top['Combined Score']:.0f}", delta=top["Ticker"],
-    delta_color="off", delta_arrow="off", border=True, width=170,
-    help=f"Top of the default Combined Score sort - a starting point for "
-         f"research, not a recommendation: {top['Name']}",
-)
-m3.metric(
-    "Best 6m run", f"{mover['6mo Momentum %']:+.0f}%", delta=mover["Ticker"],
-    delta_color="off", delta_arrow="off", border=True, width=170,
-    help=f"Strongest six-month price move: {mover['Name']}",
-)
-m4.metric(
-    "Watchlist", len(st.session_state.watchlist), delta="starred",
-    delta_color="off", delta_arrow="off", border=True, width=170,
-    help="Open a stock and tap ☆, or search in the sidebar.",
-)
-
 tab_screen, tab_watch, tab_how = st.tabs(
-    ["📊 Screener", "★ Watchlist", "ℹ️ How it works"]
+    ["Screener", "★ Watchlist", "How it works"]
 )
 
 # ---------------------------------------------------------------- screener
