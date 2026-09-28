@@ -1,9 +1,9 @@
 {
-  "generated_utc": "2026-09-27 15:23:38",
-  "generated_sast": "2026-09-27 17:23:38",
+  "generated_utc": "2026-09-28 21:19:33",
+  "generated_sast": "2026-09-28 23:19:33",
   "tickers_requested": 131,
-  "tickers_loaded": 107,
-  "scores_as_of": "2026-09-25",
+  "tickers_loaded": 108,
+  "scores_as_of": "2026-09-28",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
@@ -14,7 +14,7 @@
     },
     {
       "ticker": "CNP.JO",
-      "reason": "too new (80 trading days, need 100)"
+      "reason": "too new (81 trading days, need 100)"
     },
     {
       "ticker": "KRO.JO",
@@ -22,7 +22,7 @@
     },
     {
       "ticker": "APH.JO",
-      "reason": "illiquid (ADV R0.2m)"
+      "reason": "illiquid (ADV R0.1m)"
     },
     {
       "ticker": "OPA.JO",
@@ -34,7 +34,7 @@
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R1.3m)"
+      "reason": "illiquid (ADV R1.4m)"
     },
     {
       "ticker": "AFH.JO",
@@ -45,16 +45,12 @@
       "reason": "illiquid (ADV R1.7m)"
     },
     {
-      "ticker": "DIB.JO",
-      "reason": "illiquid (ADV R4.5m)"
-    },
-    {
       "ticker": "THA.JO",
-      "reason": "illiquid (ADV R1.1m)"
+      "reason": "illiquid (ADV R1.0m)"
     },
     {
       "ticker": "ISO.JO",
-      "reason": "illiquid (ADV R4.4m)"
+      "reason": "illiquid (ADV R4.2m)"
     },
     {
       "ticker": "TSG.JO",
@@ -74,7 +70,7 @@
     },
     {
       "ticker": "EMI.JO",
-      "reason": "illiquid (ADV R2.4m)"
+      "reason": "illiquid (ADV R2.5m)"
     },
     {
       "ticker": "PWR.JO",
@@ -90,11 +86,11 @@
     },
     {
       "ticker": "RBO.JO",
-      "reason": "illiquid (ADV R1.1m)"
+      "reason": "illiquid (ADV R0.8m)"
     },
     {
       "ticker": "SBP.JO",
-      "reason": "illiquid (ADV R3.4m)"
+      "reason": "illiquid (ADV R3.5m)"
     },
     {
       "ticker": "WVR.JO",
@@ -102,7 +98,7 @@
     },
     {
       "ticker": "FBR.JO",
-      "reason": "illiquid (ADV R4.8m)"
+      "reason": "illiquid (ADV R4.6m)"
     }
   ]
 }
