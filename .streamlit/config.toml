@@ -1,0 +1,6 @@
+# App theme. Only a primary accent and font are set here so both the built-in
+# light and dark themes apply it - the hero, stat cards and charts carry their
+# own per-mode palettes. Accent matches the charts' primary blue.
+[theme]
+primaryColor = "#2a78d6"
+font = "sans-serif"
