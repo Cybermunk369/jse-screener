@@ -1,9 +1,9 @@
 {
-  "generated_utc": "2026-09-30 20:11:14",
-  "generated_sast": "2026-09-30 22:11:14",
+  "generated_utc": "2026-09-30 23:00:57",
+  "generated_sast": "2026-10-01 01:00:57",
   "tickers_requested": 131,
   "tickers_loaded": 109,
-  "scores_as_of": "2026-09-30",
+  "scores_as_of": "2026-09-29",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
@@ -14,7 +14,7 @@
     },
     {
       "ticker": "CNP.JO",
-      "reason": "too new (83 trading days, need 100)"
+      "reason": "too new (82 trading days, need 100)"
     },
     {
       "ticker": "KRO.JO",
@@ -30,7 +30,7 @@
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R1.0m)"
+      "reason": "illiquid (ADV R1.3m)"
     },
     {
       "ticker": "AFH.JO",
@@ -38,7 +38,7 @@
     },
     {
       "ticker": "CCD.JO",
-      "reason": "illiquid (ADV R1.6m)"
+      "reason": "illiquid (ADV R1.7m)"
     },
     {
       "ticker": "THA.JO",
@@ -62,27 +62,27 @@
     },
     {
       "ticker": "MKR.JO",
-      "reason": "illiquid (ADV R0.5m)"
+      "reason": "illiquid (ADV R0.6m)"
     },
     {
       "ticker": "EMI.JO",
-      "reason": "illiquid (ADV R2.3m)"
-    },
-    {
-      "ticker": "PWR.JO",
-      "reason": "illiquid (ADV R0.2m)"
-    },
-    {
-      "ticker": "RCL.JO",
       "reason": "illiquid (ADV R2.4m)"
     },
     {
+      "ticker": "PWR.JO",
+      "reason": "illiquid (ADV R0.1m)"
+    },
+    {
+      "ticker": "RCL.JO",
+      "reason": "illiquid (ADV R2.5m)"
+    },
+    {
       "ticker": "LSK.JO",
-      "reason": "illiquid (ADV R1.0m)"
+      "reason": "illiquid (ADV R0.9m)"
     },
     {
       "ticker": "RBO.JO",
-      "reason": "illiquid (ADV R0.7m)"
+      "reason": "illiquid (ADV R0.8m)"
     },
     {
       "ticker": "SBP.JO",
@@ -94,7 +94,7 @@
     },
     {
       "ticker": "FBR.JO",
-      "reason": "illiquid (ADV R4.1m)"
+      "reason": "illiquid (ADV R4.3m)"
     }
   ]
 }
