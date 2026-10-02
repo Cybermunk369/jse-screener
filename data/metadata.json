@@ -1,9 +1,9 @@
 {
-  "generated_utc": "2026-10-01 23:10:44",
-  "generated_sast": "2026-10-02 01:10:44",
+  "generated_utc": "2026-10-02 20:01:28",
+  "generated_sast": "2026-10-02 22:01:28",
   "tickers_requested": 131,
-  "tickers_loaded": 109,
-  "scores_as_of": "2026-09-30",
+  "tickers_loaded": 108,
+  "scores_as_of": "2026-10-02",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
@@ -14,11 +14,11 @@
     },
     {
       "ticker": "CNP.JO",
-      "reason": "too new (83 trading days, need 100)"
+      "reason": "too new (85 trading days, need 100)"
     },
     {
       "ticker": "KRO.JO",
-      "reason": "illiquid (ADV R2.1m)"
+      "reason": "illiquid (ADV R2.5m)"
     },
     {
       "ticker": "APH.JO",
@@ -30,7 +30,7 @@
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R1.0m)"
+      "reason": "illiquid (ADV R1.1m)"
     },
     {
       "ticker": "AFH.JO",
@@ -38,15 +38,19 @@
     },
     {
       "ticker": "CCD.JO",
-      "reason": "illiquid (ADV R1.6m)"
+      "reason": "illiquid (ADV R1.7m)"
+    },
+    {
+      "ticker": "OCE.JO",
+      "reason": "illiquid (ADV R4.8m)"
     },
     {
       "ticker": "THA.JO",
-      "reason": "illiquid (ADV R1.1m)"
+      "reason": "illiquid (ADV R1.8m)"
     },
     {
       "ticker": "ISO.JO",
-      "reason": "illiquid (ADV R4.2m)"
+      "reason": "illiquid (ADV R4.3m)"
     },
     {
       "ticker": "TSG.JO",
@@ -66,7 +70,7 @@
     },
     {
       "ticker": "EMI.JO",
-      "reason": "illiquid (ADV R2.3m)"
+      "reason": "illiquid (ADV R2.5m)"
     },
     {
       "ticker": "PWR.JO",
@@ -78,7 +82,7 @@
     },
     {
       "ticker": "LSK.JO",
-      "reason": "illiquid (ADV R1.9m)"
+      "reason": "illiquid (ADV R2.0m)"
     },
     {
       "ticker": "RBO.JO",
@@ -86,7 +90,7 @@
     },
     {
       "ticker": "SBP.JO",
-      "reason": "illiquid (ADV R3.5m)"
+      "reason": "illiquid (ADV R3.6m)"
     },
     {
       "ticker": "WVR.JO",
@@ -94,7 +98,7 @@
     },
     {
       "ticker": "FBR.JO",
-      "reason": "illiquid (ADV R4.1m)"
+      "reason": "illiquid (ADV R4.2m)"
     }
   ]
 }
