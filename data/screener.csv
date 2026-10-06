@@ -1,110 +1,110 @@
 Ticker,Name,Price (R),Market Cap (R bn),Sector,FX Exposure,P/E,6mo Momentum %,Sharpe Ratio,ADV (R m),Valuation Score,Momentum Score,Sharpe Score,Combined Score,Quality Score
-BHG,BHP Group,715.0,3634.31,Basic Materials,Rand Hedge,21.865442,16.1,0.9,421.6,12.0,87.0,84.0,56.0,51.0
-ANH,AB InBev,1256.0,2473.23,Consumer Defensive,Rand Hedge,15.98371,3.7,0.11,390.3,20.0,63.0,63.0,46.0,40.0
-CFR,Richemont,3479.0,2045.44,Consumer Cyclical,Rand Hedge,29.400827,16.5,0.96,514.1,3.0,89.0,86.0,54.0,47.0
-BTI,British American Tobacco,880.39,1893.79,Consumer Defensive,Rand Hedge,13.331163,-11.6,-0.95,595.3,32.0,28.0,26.0,29.0,48.0
-GLN,Glencore,125.88,1476.03,Basic Materials,Rand Hedge,16.519686,0.5,-0.09,591.8,19.0,53.0,56.0,40.0,11.0
-PRX,Prosus,659.95,1380.74,Consumer Cyclical,Rand Hedge,7.261774,-15.1,-0.96,976.0,71.0,24.0,24.0,43.0,61.0
-AGL,Anglo American,910.9,976.02,Basic Materials,Rand Hedge,,24.2,1.16,637.7,,94.0,92.0,93.0,14.0
-ANG,AngloGold Ashanti,1536.95,777.34,Basic Materials,Rand Hedge,12.172896,-9.0,-0.23,1843.7,41.0,32.0,48.0,39.0,79.0
-GFI,Gold Fields,594.61,529.74,Basic Materials,Rand Hedge,7.198668,-22.9,-0.85,1893.8,72.0,12.0,32.0,40.0,74.0
-NPN,Naspers,707.87,529.57,Consumer Cyclical,Rand Hedge,6.6566677,-18.7,-1.03,1605.0,83.0,18.0,20.0,44.0,71.0
-CPI,Capitec,4275.78,495.23,Financial Services,Domestic,26.985043,1.4,-0.14,1224.2,5.0,57.0,53.0,35.0,83.0
-FSR,FirstRand,91.39,508.26,Financial Services,Domestic,13.28343,5.0,0.2,1361.6,33.0,68.0,67.0,54.0,73.0
-SBK,Standard Bank,299.86,485.57,Financial Services,Mixed,9.5405655,-3.8,-0.58,779.0,56.0,44.0,39.0,48.0,74.0
-MTN,MTN Group,188.01,344.63,Communication Services,Mixed,19.362513,-3.6,-0.27,995.2,17.0,45.0,47.0,34.0,27.0
-VAL,Valterra Platinum,1271.05,335.52,Basic Materials,Rand Hedge,9.206505,-10.0,-0.22,1251.2,58.0,29.0,49.0,45.0,80.0
-VOD,Vodacom,154.53,298.52,Communication Services,Mixed,14.872954,7.5,0.39,282.0,23.0,73.0,74.0,53.0,33.0
-S32,South32,56.95,255.04,Basic Materials,Rand Hedge,14.309046,7.9,0.38,91.1,27.0,74.0,73.0,55.0,69.0
-HAR,Harmony Gold,281.39,176.18,Basic Materials,Rand Hedge,6.074914,6.4,0.36,1029.0,92.0,69.0,72.0,79.0,80.0
-IMP,Impala Platinum,187.5,168.29,Basic Materials,Rand Hedge,5.453752,-18.7,-0.41,767.5,95.0,18.0,44.0,54.0,80.0
-ABG,Absa Group,215.44,178.4,Financial Services,Domestic,7.7052937,-9.3,-0.97,471.8,68.0,30.0,23.0,44.0,63.0
-DSY,Discovery,264.06,176.73,Financial Services,Domestic,13.717402,7.2,0.38,430.4,31.0,72.0,73.0,56.0,63.0
-SHP,Shoprite,318.22,172.09,Consumer Cyclical,Domestic,21.299868,15.7,1.15,493.8,13.0,86.0,91.0,58.0,12.0
-SLM,Sanlam,81.22,169.73,Financial Services,Domestic,9.0850115,-8.7,-1.05,406.8,59.0,35.0,19.0,41.0,59.0
-SOL,Sasol,235.99,151.28,Basic Materials,Mixed,12.599573,4.0,0.29,903.0,37.0,66.0,68.0,55.0,30.0
-BID,Bid Corporation,440.51,147.24,Consumer Defensive,Rand Hedge,16.579226,8.1,0.55,314.9,18.0,75.0,78.0,53.0,35.0
-NED,Nedbank,284.98,130.21,Financial Services,Domestic,14.819553,4.8,0.17,451.3,24.0,67.0,66.0,50.0,50.0
-OUT,OUTsurance Group,80.8,125.09,Financial Services,Mixed,22.320444,14.2,0.88,245.2,11.0,84.0,83.0,55.0,71.0
-SSW,Sibanye-Stillwater,41.15,116.48,Basic Materials,Rand Hedge,8.148515,-19.5,-0.66,611.8,65.0,17.0,36.0,40.0,41.0
-REM,Remgro,203.99,113.57,Financial Services,Mixed,81.27092,6.6,0.35,245.4,1.0,72.0,71.0,43.0,54.0
-NPH,Northam Platinum,249.45,98.21,Basic Materials,Rand Hedge,7.1578193,-26.0,-0.98,602.6,73.0,8.0,22.0,37.0,69.0
-NRP,NEPI Rockcastle,140.4,99.3,Real Estate,Rand Hedge,9.743234,3.4,-0.03,236.9,55.0,62.0,60.0,59.0,61.0
-INP,Investec,134.89,84.52,Financial Services,Mixed,7.725659,2.2,-0.05,166.3,67.0,59.0,59.0,62.0,79.0
-RNI,Reinet Investments,437.34,82.98,Financial Services,Rand Hedge,,-20.0,-2.06,209.0,,16.0,7.0,13.0,8.0
-MNP,Mondi,174.25,76.81,Basic Materials,Rand Hedge,,-7.8,-0.53,121.8,,37.0,40.0,38.0,23.0
-BVT,Bidvest Group,226.64,77.03,Industrials,Domestic,12.5353985,1.8,-0.11,220.4,38.0,58.0,55.0,49.0,20.0
-KIO,Kumba Iron Ore,221.54,70.93,Basic Materials,Rand Hedge,6.11651,-31.2,-2.57,99.4,89.0,3.0,5.0,38.0,79.0
-APN,Aspen Pharmacare,161.9,70.09,Healthcare,Mixed,,21.4,1.11,305.1,,92.0,89.0,91.0,56.0
-PPH,Pepkor,18.2,67.12,Consumer Cyclical,Domestic,11.304348,-17.3,-1.53,326.9,47.0,21.0,12.0,30.0,36.0
-PAN,Pan African Resources,26.2,55.75,Basic Materials,Rand Hedge,8.791946,-20.5,-0.69,261.6,61.0,15.0,35.0,37.0,82.0
-OMU,Old Mutual,13.2,53.33,Financial Services,Domestic,6.984127,-5.2,-0.74,306.2,76.0,41.0,34.0,54.0,49.0
-GRT,Growthpoint Properties,15.63,52.93,Real Estate,Domestic,7.0405407,-3.4,-0.6,204.2,75.0,47.0,38.0,56.0,61.0
-QLT,Quilter,38.41,51.42,Financial Services,Rand Hedge,19.901554,-2.4,-0.5,48.0,16.0,49.0,41.0,34.0,42.0
-PHP,Primary Health Properties,19.44,50.45,Real Estate,Rand Hedge,14.294118,-6.4,0.05,13.3,28.0,39.0,61.0,39.0,46.0
-MTM,Momentum Group,37.99,48.94,Financial Services,Domestic,7.6132274,3.1,0.01,80.0,69.0,61.0,61.0,64.0,52.0
-CLS,Clicks Group,208.97,48.42,Healthcare,Domestic,14.789102,-28.4,-2.18,372.9,25.0,5.0,6.0,13.0,29.0
-SNT,Santam,482.0,52.65,Financial Services,Domestic,12.6376505,22.2,1.11,65.3,36.0,93.0,89.0,69.0,34.0
-HMN,Hammerson,73.4,42.82,Real Estate,Rand Hedge,8.021858,8.7,0.49,23.4,66.0,76.0,76.0,72.0,57.0
-RDF,Redefine Properties,6.03,42.08,Real Estate,Domestic,6.7752814,0.4,-0.19,97.9,82.0,51.0,51.0,63.0,56.0
-MRP,Mr Price Group,169.27,43.52,Consumer Cyclical,Domestic,12.030562,11.9,0.58,113.8,43.0,82.0,79.0,66.0,28.0
-EXX,Exxaro Resources,174.0,40.74,Energy,Rand Hedge,6.0924373,-23.0,-2.04,178.9,90.0,11.0,8.0,42.0,64.0
-NY1,Ninety One,42.5,39.0,Financial Services,Mixed,10.678391,-7.5,-0.96,21.6,51.0,39.0,24.0,41.0,74.0
-TBS,Tiger Brands,248.34,36.3,Consumer Defensive,Domestic,11.973964,-16.9,-1.99,151.0,44.0,22.0,9.0,28.0,56.0
-KST,PSG Financial Services,30.84,38.16,Financial Services,Domestic,22.510948,12.9,0.85,31.5,10.0,83.0,83.0,54.0,73.0
-BOX,Boxer Retail,80.3,36.73,Consumer Cyclical,Domestic,23.617647,9.6,0.52,59.9,8.0,79.0,77.0,50.0,13.0
-VKE,Vukile Property Fund,24.5,36.56,Real Estate,Mixed,5.5429864,9.1,0.58,115.3,94.0,78.0,79.0,85.0,67.0
-DRD,DRDGOLD,40.21,34.93,Basic Materials,Rand Hedge,8.222904,-21.3,-0.95,54.9,64.0,13.0,26.0,36.0,90.0
-FFB,Fortress Real Estate,24.87,31.83,Real Estate,Mixed,5.992771,11.3,0.69,78.5,93.0,81.0,82.0,86.0,60.0
-WHL,Woolworths Holdings,36.81,32.36,Consumer Cyclical,Mixed,14.157693,-25.7,-2.61,242.3,29.0,9.0,4.0,16.0,10.0
-SRE,Sirius Real Estate,19.5,30.85,Real Estate,Rand Hedge,6.521739,-8.4,-1.12,16.6,84.0,36.0,17.0,51.0,58.0
-ARI,African Rainbow Minerals,156.5,31.42,Basic Materials,Rand Hedge,7.593401,-34.8,-1.91,63.6,70.0,1.0,10.0,30.0,85.0
-PMR,Premier Group,175.84,28.96,Consumer Defensive,Domestic,15.644128,4.0,0.12,57.4,21.0,66.0,64.0,48.0,51.0
-ADH,ADvTECH,51.33,27.91,Consumer Defensive,Domestic,20.614458,20.7,1.45,37.2,14.0,91.0,95.0,61.0,57.0
-AVI,AVI Limited,84.1,28.06,Consumer Defensive,Domestic,11.065789,-17.8,-2.31,114.1,49.0,20.0,6.0,29.0,58.0
-TKG,Telkom,50.76,25.08,Communication Services,Domestic,7.1292133,-13.8,-0.91,34.0,74.0,25.0,29.0,45.0,45.0
-HYP,Hyprop Investments,61.6,25.83,Real Estate,Domestic,6.8444443,14.7,1.21,77.2,80.0,85.0,93.0,85.0,71.0
-RES,Resilient REIT,77.2,25.79,Real Estate,Domestic,5.2696247,-4.8,-0.9,39.9,96.0,43.0,31.0,62.0,43.0
-DCP,Dis-Chem,26.82,22.96,Healthcare,Domestic,23.526316,-29.2,-2.77,39.0,9.0,4.0,3.0,6.0,13.0
-BYI,Bytes Technology,98.53,22.67,Technology,Rand Hedge,20.315464,53.4,2.42,39.7,15.0,100.0,100.0,66.0,80.0
-NTC,Netcare,17.39,20.08,Healthcare,Domestic,12.076388,3.8,0.08,50.2,42.0,64.0,62.0,55.0,20.0
-DTC,Datatec,83.55,20.27,Technology,Rand Hedge,12.433037,20.5,0.99,61.1,39.0,90.0,87.0,69.0,14.0
-GND,Grindrod,27.66,18.47,Industrials,Mixed,15.366667,40.3,2.09,48.5,22.0,98.0,99.0,68.0,62.0
-OMN,Omnia,123.0,19.25,Industrials,Mixed,14.369158,29.6,1.59,87.4,26.0,94.0,97.0,67.0,55.0
-MTH,Motus,107.23,17.53,Consumer Cyclical,Mixed,6.169736,-5.7,-0.63,51.8,88.0,40.0,37.0,59.0,14.0
-LTE,Lighthouse Properties,8.25,17.38,Real Estate,Rand Hedge,8.25,12.1,0.94,7.8,63.0,83.0,85.0,75.0,61.0
-LHC,Life Healthcare,11.86,16.97,Healthcare,Domestic,12.752687,0.5,-0.11,37.4,35.0,53.0,55.0,46.0,62.0
-EQU,Equites Property Fund,17.86,15.51,Real Estate,Domestic,10.090396,6.5,0.34,18.3,53.0,70.0,70.0,63.0,66.0
-TFG,The Foschini Group,50.27,15.85,Consumer Cyclical,Mixed,12.290954,-26.1,-1.41,69.2,40.0,7.0,13.0,21.0,14.0
-TRU,Truworths International,43.74,16.28,Consumer Cyclical,Mixed,6.0834494,-13.5,-1.11,89.6,91.0,26.0,17.0,50.0,42.0
-FTB,Fairvest,6.92,14.59,Real Estate,Domestic,3.7814207,6.5,0.32,81.5,100.0,70.0,69.0,82.0,73.0
-CML,Coronation Fund Managers,42.15,14.74,Financial Services,Domestic,8.655031,-3.6,-0.46,24.6,62.0,45.0,42.0,51.0,80.0
-TGA,Thungela Resources,122.77,15.6,Energy,Rand Hedge,,-28.2,-0.82,82.7,,6.0,33.0,15.0,49.0
-PIK,Pick n Pay Stores,19.44,14.28,Consumer Cyclical,Domestic,,3.0,0.16,36.1,,61.0,65.0,62.0,5.0
-MSP,MAS,20.89,14.02,Real Estate,Rand Hedge,24.011494,8.8,0.49,31.7,7.0,77.0,76.0,49.0,70.0
-SDO,Stadio,16.32,13.77,Consumer Defensive,Domestic,39.80488,44.4,1.65,49.5,2.0,99.0,98.0,60.0,73.0
-SSU,Southern Sun,10.15,13.21,Consumer Cyclical,Domestic,11.277778,0.5,-0.16,6.8,48.0,53.0,52.0,51.0,65.0
-JSE,JSE Ltd,149.0,12.38,Financial Services,Domestic,10.530036,-8.9,-1.21,18.8,52.0,33.0,14.0,37.0,84.0
-ATT,Attacq,18.07,12.64,Real Estate,Domestic,8.945544,10.9,0.68,10.6,60.0,80.0,81.0,72.0,68.0
-HCI,Hosken Consolidated,158.9,11.97,Industrials,Domestic,4.973396,-3.1,-0.44,5.7,98.0,48.0,43.0,67.0,52.0
-WBC,We Buy Cars,26.09,10.92,Consumer Cyclical,Domestic,11.859091,-33.7,-3.09,34.6,45.0,2.0,1.0,19.0,27.0
-PPC,PPC,7.69,11.28,Basic Materials,Domestic,13.732142,29.7,1.48,28.7,30.0,95.0,96.0,69.0,63.0
-AFE,AECI,100.16,10.57,Basic Materials,Domestic,27.822224,-10.6,-0.91,24.0,4.0,28.0,29.0,19.0,33.0
-SUI,Sun International,43.93,10.53,Consumer Cyclical,Domestic,6.9072328,-9.1,-1.02,22.8,79.0,31.0,21.0,48.0,25.0
-AEL,Altron,26.79,10.48,Technology,Domestic,13.197045,34.0,1.39,10.9,34.0,97.0,94.0,71.0,46.0
-SAC,SA Corporate Real Estate,3.35,9.19,Real Estate,Domestic,11.551724,-0.3,-0.2,9.2,46.0,50.0,50.0,48.0,49.0
-RLO,Reunert,57.0,8.96,Industrials,Domestic,10.035212,-12.0,-0.9,33.2,54.0,27.0,31.0,39.0,55.0
-SPP,SPAR Group,46.19,8.89,Consumer Defensive,Mixed,25.949438,-23.5,-1.08,90.7,6.0,10.0,18.0,10.0,4.0
-OCE,Oceana Group,63.49,7.6,Consumer Defensive,Mixed,10.779287,16.5,1.02,5.3,50.0,89.0,88.0,73.0,50.0
-DIB,Dipula Properties,6.9,8.2,Real Estate,Domestic,6.831683,-0.7,-0.32,6.5,81.0,50.0,46.0,62.0,67.0
-SSS,Stor-Age Property REIT,15.55,7.97,Real Estate,Mixed,6.9111114,-7.6,-1.16,12.5,78.0,38.0,16.0,50.0,73.0
-BAT,Brait,1.99,7.69,Financial Services,Mixed,6.419355,-4.8,-0.35,34.9,85.0,43.0,45.0,60.0,85.0
-BTN,Burstone Group,9.39,7.38,Real Estate,Mixed,9.39,2.8,-0.07,8.4,57.0,60.0,57.0,58.0,54.0
-SAP,Sappi,13.11,7.96,Basic Materials,Rand Hedge,,-21.3,-0.58,27.6,,13.0,39.0,22.0,7.0
-RBX,Raubex,41.45,7.48,Industrials,Domestic,6.943049,-15.6,-1.62,7.8,77.0,23.0,11.0,42.0,41.0
-WBO,WBHO,141.87,7.57,Industrials,Domestic,6.2913527,-8.9,-0.94,27.3,86.0,33.0,28.0,53.0,55.0
-ARL,Astral Foods,184.53,7.14,Consumer Defensive,Domestic,4.506227,-26.4,-2.89,17.3,99.0,6.0,2.0,42.0,60.0
-KAP,KAP Limited,2.89,7.25,Industrials,Domestic,,33.8,1.39,13.3,,96.0,94.0,95.0,19.0
-BLU,Blu Label,6.97,6.33,Communication Services,Domestic,,-17.8,-1.2,24.7,,20.0,15.0,18.0,1.0
-SEA,Spear REIT,12.76,6.45,Real Estate,Domestic,6.1941752,0.6,-0.22,8.0,87.0,55.0,49.0,67.0,77.0
-SPG,Super Group,17.06,5.71,Industrials,Mixed,5.0623145,1.1,-0.06,14.2,97.0,56.0,58.0,73.0,15.0
+BHG,BHP Group,716.84,3634.31,Basic Materials,Rand Hedge,21.865442,16.4,0.92,404.6,12.0,87.0,85.0,57.0,51.0
+ANH,AB InBev,1236.4,2473.23,Consumer Defensive,Rand Hedge,15.98371,2.1,-0.01,395.4,20.0,60.0,61.0,44.0,40.0
+CFR,Richemont,3513.15,2045.44,Consumer Cyclical,Rand Hedge,29.400827,17.6,1.04,486.7,3.0,89.0,90.0,55.0,47.0
+BTI,British American Tobacco,882.17,1893.79,Consumer Defensive,Rand Hedge,13.331163,-11.4,-0.94,605.8,32.0,29.0,28.0,30.0,48.0
+GLN,Glencore,125.61,1476.03,Basic Materials,Rand Hedge,16.519686,0.3,-0.1,582.1,19.0,55.0,58.0,41.0,11.0
+PRX,Prosus,662.7,1380.74,Consumer Cyclical,Rand Hedge,7.261774,-14.7,-0.94,952.8,71.0,25.0,28.0,44.0,61.0
+AGL,Anglo American,918.39,976.02,Basic Materials,Rand Hedge,,25.2,1.21,633.3,,94.0,93.0,94.0,14.0
+ANG,AngloGold Ashanti,1565.4,777.34,Basic Materials,Rand Hedge,12.172896,-7.3,-0.16,1782.9,41.0,39.0,53.0,43.0,79.0
+GFI,Gold Fields,594.25,529.74,Basic Materials,Rand Hedge,7.198668,-22.9,-0.85,1907.5,73.0,13.0,33.0,41.0,74.0
+NPN,Naspers,706.04,529.57,Consumer Cyclical,Rand Hedge,6.6566677,-18.9,-1.04,1568.8,83.0,19.0,21.0,45.0,71.0
+CPI,Capitec,4229.13,495.36,Financial Services,Domestic,26.985043,0.3,-0.24,1173.6,5.0,55.0,49.0,34.0,83.0
+FSR,FirstRand,90.1,508.26,Financial Services,Domestic,13.28343,3.6,0.07,1323.2,33.0,66.0,64.0,52.0,73.0
+SBK,Standard Bank,295.13,486.64,Financial Services,Mixed,9.5405655,-5.3,-0.72,758.7,56.0,46.0,37.0,48.0,74.0
+MTN,MTN Group,184.16,344.63,Communication Services,Mixed,19.362513,-5.6,-0.39,972.8,17.0,44.0,45.0,33.0,27.0
+VAL,Valterra Platinum,1276.2,335.52,Basic Materials,Rand Hedge,9.206505,-9.6,-0.21,1247.6,58.0,31.0,51.0,46.0,80.0
+VOD,Vodacom,152.08,298.52,Communication Services,Mixed,14.872954,5.8,0.26,275.1,24.0,71.0,71.0,52.0,33.0
+S32,South32,56.97,255.04,Basic Materials,Rand Hedge,14.309046,7.9,0.38,101.4,27.0,74.0,73.0,55.0,69.0
+HAR,Harmony Gold,286.19,176.18,Basic Materials,Rand Hedge,6.074914,8.3,0.42,1012.7,92.0,76.0,75.0,82.0,80.0
+IMP,Impala Platinum,190.62,168.29,Basic Materials,Rand Hedge,5.453752,-17.4,-0.36,766.4,95.0,21.0,46.0,56.0,80.0
+ABG,Absa Group,212.53,178.4,Financial Services,Domestic,7.7052937,-10.6,-1.09,474.2,68.0,30.0,19.0,43.0,63.0
+DSY,Discovery,262.2,177.61,Financial Services,Domestic,13.717402,6.5,0.32,428.9,31.0,72.0,72.0,56.0,63.0
+SHP,Shoprite,314.16,172.09,Consumer Cyclical,Domestic,21.299868,14.2,1.04,474.4,13.0,86.0,90.0,58.0,12.0
+SLM,Sanlam,77.0,169.73,Financial Services,Domestic,9.0850115,-13.4,-1.64,385.0,59.0,27.0,13.0,37.0,59.0
+SOL,Sasol,233.0,151.28,Basic Materials,Mixed,12.599573,2.7,0.25,903.1,37.0,62.0,69.0,53.0,30.0
+BID,Bid Corporation,435.08,147.24,Consumer Defensive,Rand Hedge,16.579226,6.7,0.4,305.0,18.0,73.0,74.0,51.0,35.0
+NED,Nedbank,281.66,130.21,Financial Services,Domestic,15.006846,3.6,0.06,443.9,23.0,66.0,63.0,48.0,50.0
+OUT,OUTsurance Group,79.63,125.09,Financial Services,Mixed,22.320444,12.5,0.76,240.6,11.0,84.0,82.0,54.0,71.0
+SSW,Sibanye-Stillwater,41.4,116.48,Basic Materials,Rand Hedge,8.148515,-19.0,-0.64,625.3,65.0,17.0,39.0,41.0,41.0
+REM,Remgro,199.85,113.57,Financial Services,Mixed,81.27092,4.4,0.14,231.5,1.0,69.0,67.0,41.0,54.0
+NPH,Northam Platinum,254.9,98.21,Basic Materials,Rand Hedge,7.2116218,-24.3,-0.91,621.7,72.0,11.0,30.0,39.0,69.0
+NRP,NEPI Rockcastle,141.37,99.3,Real Estate,Rand Hedge,9.743234,4.1,0.08,228.2,55.0,68.0,66.0,62.0,61.0
+INP,Investec,132.19,84.52,Financial Services,Mixed,7.725659,0.1,-0.23,164.3,67.0,52.0,50.0,58.0,79.0
+RNI,Reinet Investments,434.62,82.98,Financial Services,Rand Hedge,,-20.5,-2.12,208.1,,15.0,8.0,13.0,8.0
+MNP,Mondi,171.79,76.81,Basic Materials,Rand Hedge,,-9.1,-0.61,126.2,,33.0,41.0,36.0,23.0
+BVT,Bidvest Group,223.2,77.03,Industrials,Domestic,12.5353985,0.2,-0.25,215.4,38.0,53.0,47.0,46.0,20.0
+KIO,Kumba Iron Ore,224.81,70.93,Basic Materials,Rand Hedge,6.11651,-30.2,-2.48,97.8,89.0,3.0,5.0,38.0,79.0
+APN,Aspen Pharmacare,159.99,70.09,Healthcare,Mixed,,20.0,1.04,298.4,,90.0,90.0,90.0,56.0
+PPH,Pepkor,17.81,67.12,Consumer Cyclical,Domestic,11.304348,-19.0,-1.71,323.5,47.0,17.0,12.0,28.0,36.0
+PAN,Pan African Resources,26.44,55.75,Basic Materials,Rand Hedge,8.791946,-19.7,-0.66,257.4,61.0,16.0,39.0,39.0,82.0
+OMU,Old Mutual,13.04,53.33,Financial Services,Domestic,6.984127,-6.3,-0.86,293.7,76.0,42.0,32.0,54.0,49.0
+GRT,Growthpoint Properties,15.59,52.93,Real Estate,Domestic,7.0405407,-3.6,-0.63,200.7,75.0,48.0,40.0,57.0,61.0
+QLT,Quilter,38.75,51.42,Financial Services,Rand Hedge,19.901554,-1.5,-0.42,49.2,16.0,49.0,44.0,35.0,42.0
+PHP,Primary Health Properties,19.33,50.45,Real Estate,Rand Hedge,14.294118,-7.0,0.04,13.3,28.0,39.0,62.0,39.0,46.0
+MTM,Momentum Group,37.4,48.94,Financial Services,Domestic,7.6132274,1.5,-0.15,78.9,69.0,58.0,54.0,62.0,52.0
+CLS,Clicks Group,208.52,48.87,Healthcare,Domestic,14.789102,-28.5,-2.2,367.4,25.0,5.0,6.0,13.0,29.0
+SNT,Santam,475.0,52.65,Financial Services,Domestic,12.6376505,20.4,1.03,52.2,36.0,91.0,88.0,68.0,34.0
+HMN,Hammerson,73.2,42.82,Real Estate,Rand Hedge,8.021858,8.4,0.47,24.0,66.0,77.0,76.0,72.0,57.0
+RDF,Redefine Properties,5.99,42.08,Real Estate,Domestic,6.7752814,-0.3,-0.24,96.8,82.0,51.0,49.0,63.0,56.0
+MRP,Mr Price Group,166.0,43.52,Consumer Cyclical,Domestic,12.030562,9.8,0.48,109.7,43.0,81.0,77.0,65.0,28.0
+EXX,Exxaro Resources,171.95,40.74,Energy,Rand Hedge,6.0924373,-23.9,-2.14,182.3,90.0,12.0,7.0,42.0,64.0
+NY1,Ninety One,42.31,39.0,Financial Services,Mixed,10.678391,-7.9,-1.0,21.1,51.0,37.0,23.0,40.0,74.0
+TBS,Tiger Brands,247.28,36.3,Consumer Defensive,Domestic,11.973964,-17.2,-2.04,150.0,44.0,22.0,9.0,28.0,56.0
+KST,PSG Financial Services,30.7,38.16,Financial Services,Domestic,22.510948,12.3,0.82,34.2,10.0,83.0,84.0,54.0,73.0
+BOX,Boxer Retail,80.0,36.73,Consumer Cyclical,Domestic,23.617647,9.2,0.49,59.5,8.0,78.0,78.0,50.0,13.0
+VKE,Vukile Property Fund,24.31,36.56,Real Estate,Mixed,5.5429864,8.2,0.51,113.6,94.0,75.0,79.0,83.0,67.0
+DRD,DRDGOLD,40.32,34.93,Basic Materials,Rand Hedge,8.222904,-21.1,-0.94,54.0,64.0,14.0,28.0,37.0,90.0
+FFB,Fortress Real Estate,25.06,31.83,Real Estate,Mixed,5.992771,12.1,0.76,77.7,93.0,83.0,82.0,87.0,60.0
+WHL,Woolworths Holdings,36.15,32.93,Consumer Cyclical,Mixed,14.157693,-27.0,-2.79,261.3,29.0,7.0,3.0,15.0,10.0
+SRE,Sirius Real Estate,19.62,30.85,Real Estate,Rand Hedge,6.521739,-7.9,-1.07,16.5,84.0,37.0,20.0,52.0,58.0
+ARI,African Rainbow Minerals,155.64,30.18,Basic Materials,Rand Hedge,7.593401,-35.1,-1.94,63.6,70.0,1.0,10.0,30.0,85.0
+PMR,Premier Group,174.0,28.96,Consumer Defensive,Domestic,15.644128,2.9,0.03,57.1,21.0,64.0,61.0,46.0,51.0
+ADH,ADvTECH,51.22,27.91,Consumer Defensive,Domestic,20.614458,20.4,1.44,37.0,14.0,91.0,95.0,61.0,57.0
+AVI,AVI Limited,83.06,28.06,Consumer Defensive,Domestic,11.065789,-18.9,-2.46,113.2,49.0,19.0,6.0,28.0,58.0
+TKG,Telkom,50.37,25.08,Communication Services,Domestic,7.1292133,-14.5,-0.95,32.9,74.0,26.0,26.0,45.0,45.0
+HYP,Hyprop Investments,61.32,25.83,Real Estate,Domestic,6.8444443,14.2,1.17,76.0,80.0,86.0,92.0,85.0,71.0
+RES,Resilient REIT,76.66,25.76,Real Estate,Domestic,5.2696247,-5.4,-0.98,40.4,96.0,45.0,25.0,61.0,43.0
+DCP,Dis-Chem,26.82,22.96,Healthcare,Domestic,23.526316,-29.2,-2.78,39.2,9.0,4.0,4.0,6.0,13.0
+BYI,Bytes Technology,97.67,22.67,Technology,Rand Hedge,20.315464,52.0,2.38,38.9,15.0,100.0,100.0,66.0,80.0
+NTC,Netcare,17.12,20.08,Healthcare,Domestic,12.076388,2.2,-0.06,50.0,42.0,61.0,60.0,53.0,20.0
+DTC,Datatec,83.54,20.27,Technology,Rand Hedge,12.433037,20.5,0.99,58.8,39.0,93.0,86.0,70.0,14.0
+GND,Grindrod,27.14,18.47,Industrials,Mixed,15.366667,37.6,1.98,48.3,22.0,98.0,99.0,68.0,62.0
+OMN,Omnia,122.76,19.25,Industrials,Mixed,14.369158,29.3,1.59,84.2,26.0,94.0,98.0,68.0,55.0
+MTH,Motus,106.15,17.53,Consumer Cyclical,Mixed,6.169736,-6.6,-0.71,53.2,88.0,40.0,38.0,59.0,14.0
+LTE,Lighthouse Properties,8.14,17.38,Real Estate,Rand Hedge,8.25,10.6,0.8,7.7,63.0,82.0,83.0,75.0,61.0
+LHC,Life Healthcare,11.73,16.97,Healthcare,Domestic,12.752687,-0.6,-0.19,33.9,35.0,50.0,52.0,44.0,62.0
+EQU,Equites Property Fund,17.7,15.51,Real Estate,Domestic,10.090396,5.5,0.25,18.3,53.0,70.0,69.0,63.0,66.0
+TFG,The Foschini Group,49.49,15.85,Consumer Cyclical,Mixed,12.290954,-27.2,-1.5,67.3,40.0,6.0,14.0,21.0,14.0
+TRU,Truworths International,42.71,15.84,Consumer Cyclical,Mixed,6.0834494,-15.5,-1.29,84.0,91.0,24.0,15.0,49.0,42.0
+FTB,Fairvest,6.93,14.59,Real Estate,Domestic,3.7814207,6.7,0.34,81.5,100.0,73.0,72.0,84.0,73.0
+CML,Coronation Fund Managers,41.94,14.74,Financial Services,Domestic,8.655031,-4.1,-0.5,24.3,62.0,47.0,42.0,52.0,80.0
+TGA,Thungela Resources,126.0,15.6,Energy,Rand Hedge,,-26.3,-0.75,82.2,,9.0,35.0,18.0,49.0
+PIK,Pick n Pay Stores,19.42,14.28,Consumer Cyclical,Domestic,,2.9,0.15,36.1,,64.0,68.0,65.0,5.0
+MSP,MAS,21.0,14.02,Real Estate,Rand Hedge,24.011494,9.4,0.54,31.8,7.0,79.0,80.0,50.0,70.0
+SDO,Stadio,15.99,13.77,Consumer Defensive,Domestic,39.80488,41.5,1.57,47.6,2.0,99.0,97.0,60.0,73.0
+SSU,Southern Sun,10.2,13.21,Consumer Cyclical,Domestic,11.277778,1.0,-0.12,6.8,48.0,57.0,56.0,53.0,65.0
+JSE,JSE Ltd,148.5,12.38,Financial Services,Domestic,10.530036,-9.2,-1.24,16.4,52.0,32.0,16.0,37.0,84.0
+ATT,Attacq,17.88,12.64,Real Estate,Domestic,8.945544,9.7,0.59,10.3,60.0,80.0,81.0,72.0,68.0
+HCI,Hosken Consolidated,153.28,11.97,Industrials,Domestic,4.973396,-6.5,-0.75,5.8,98.0,41.0,35.0,63.0,52.0
+WBC,We Buy Cars,25.54,10.92,Consumer Cyclical,Domestic,11.859091,-35.1,-3.28,34.0,45.0,1.0,1.0,19.0,27.0
+PPC,PPC,7.71,11.28,Basic Materials,Domestic,13.732142,30.1,1.5,29.8,30.0,96.0,96.0,70.0,63.0
+AFE,AECI,98.62,10.57,Basic Materials,Domestic,27.822224,-12.0,-1.02,24.1,4.0,28.0,22.0,17.0,33.0
+SUI,Sun International,44.12,10.53,Consumer Cyclical,Domestic,6.9072328,-8.7,-0.99,23.4,79.0,35.0,24.0,50.0,25.0
+AEL,Altron,26.7,10.48,Technology,Domestic,13.197045,33.6,1.38,11.2,34.0,97.0,94.0,71.0,46.0
+SAC,SA Corporate Real Estate,3.33,9.19,Real Estate,Domestic,11.551724,-0.9,-0.25,8.8,46.0,50.0,47.0,48.0,49.0
+RLO,Reunert,57.19,8.96,Industrials,Domestic,10.035212,-11.7,-0.88,37.5,54.0,28.0,31.0,39.0,55.0
+SPP,SPAR Group,45.54,8.89,Consumer Defensive,Mixed,25.949438,-24.5,-1.14,90.5,6.0,10.0,18.0,10.0,4.0
+OCE,Oceana Group,63.5,7.6,Consumer Defensive,Mixed,10.779287,16.5,1.03,5.1,50.0,88.0,88.0,73.0,50.0
+DIB,Dipula Properties,7.21,8.2,Real Estate,Domestic,6.831683,3.8,0.08,6.3,81.0,67.0,66.0,72.0,67.0
+SSS,Stor-Age Property REIT,15.5,7.97,Real Estate,Mixed,6.9111114,-7.9,-1.2,12.9,78.0,37.0,17.0,49.0,73.0
+BAT,Brait,1.96,7.69,Financial Services,Mixed,6.419355,-6.2,-0.45,34.9,85.0,43.0,43.0,60.0,85.0
+BTN,Burstone Group,9.35,7.38,Real Estate,Mixed,9.39,2.3,-0.11,8.5,57.0,61.0,57.0,59.0,54.0
+SAP,Sappi,12.23,7.96,Basic Materials,Rand Hedge,,-26.5,-0.83,26.5,,8.0,34.0,17.0,7.0
+RBX,Raubex,40.77,7.48,Industrials,Domestic,6.943049,-17.0,-1.77,7.9,77.0,23.0,11.0,42.0,41.0
+WBO,WBHO,142.0,7.57,Industrials,Domestic,6.2913527,-8.8,-0.94,27.5,86.0,34.0,28.0,54.0,55.0
+ARL,Astral Foods,182.85,7.14,Consumer Defensive,Domestic,4.506227,-27.1,-2.99,17.0,99.0,6.0,2.0,42.0,60.0
+KAP,KAP Limited,2.8,7.25,Industrials,Domestic,,29.6,1.25,12.0,,95.0,94.0,95.0,19.0
+BLU,Blu Label,6.96,6.33,Communication Services,Domestic,,-17.9,-1.21,24.3,,20.0,17.0,19.0,1.0
+SEA,Spear REIT,12.89,6.45,Real Estate,Domestic,6.1941752,1.6,-0.12,8.2,87.0,59.0,56.0,70.0,77.0
+SPG,Super Group,16.99,5.71,Industrials,Mixed,5.0623145,0.7,-0.09,14.2,97.0,56.0,59.0,73.0,15.0

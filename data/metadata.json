@@ -1,9 +1,9 @@
 {
-  "generated_utc": "2026-10-06 20:27:05",
-  "generated_sast": "2026-10-06 22:27:05",
+  "generated_utc": "2026-10-06 23:02:15",
+  "generated_sast": "2026-10-07 01:02:15",
   "tickers_requested": 131,
   "tickers_loaded": 109,
-  "scores_as_of": "2026-10-06",
+  "scores_as_of": "2026-10-05",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
@@ -14,7 +14,7 @@
     },
     {
       "ticker": "CNP.JO",
-      "reason": "too new (87 trading days, need 100)"
+      "reason": "too new (86 trading days, need 100)"
     },
     {
       "ticker": "KRO.JO",
@@ -34,7 +34,7 @@
     },
     {
       "ticker": "AFH.JO",
-      "reason": "illiquid (ADV R0.8m)"
+      "reason": "illiquid (ADV R0.7m)"
     },
     {
       "ticker": "CCD.JO",
@@ -46,7 +46,7 @@
     },
     {
       "ticker": "ISO.JO",
-      "reason": "illiquid (ADV R4.5m)"
+      "reason": "illiquid (ADV R4.4m)"
     },
     {
       "ticker": "TSG.JO",
@@ -54,11 +54,11 @@
     },
     {
       "ticker": "ACS.JO",
-      "reason": "illiquid (ADV R0.0m)"
+      "reason": "stale price (5d unchanged)"
     },
     {
       "ticker": "CAA.JO",
-      "reason": "illiquid (ADV R0.7m)"
+      "reason": "illiquid (ADV R1.4m)"
     },
     {
       "ticker": "MKR.JO",
@@ -78,11 +78,11 @@
     },
     {
       "ticker": "LSK.JO",
-      "reason": "illiquid (ADV R2.2m)"
+      "reason": "illiquid (ADV R2.1m)"
     },
     {
       "ticker": "RBO.JO",
-      "reason": "illiquid (ADV R1.1m)"
+      "reason": "illiquid (ADV R0.9m)"
     },
     {
       "ticker": "SBP.JO",
@@ -94,7 +94,7 @@
     },
     {
       "ticker": "FBR.JO",
-      "reason": "illiquid (ADV R4.9m)"
+      "reason": "illiquid (ADV R4.8m)"
     }
   ]
 }
