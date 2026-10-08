@@ -1,9 +1,9 @@
 {
-  "generated_utc": "2026-10-08 20:45:37",
-  "generated_sast": "2026-10-08 22:45:37",
+  "generated_utc": "2026-10-08 23:46:09",
+  "generated_sast": "2026-10-09 01:46:09",
   "tickers_requested": 131,
-  "tickers_loaded": 109,
-  "scores_as_of": "2026-10-08",
+  "tickers_loaded": 110,
+  "scores_as_of": "2026-10-07",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
@@ -14,7 +14,7 @@
     },
     {
       "ticker": "CNP.JO",
-      "reason": "too new (89 trading days, need 100)"
+      "reason": "too new (88 trading days, need 100)"
     },
     {
       "ticker": "KRO.JO",
@@ -30,7 +30,7 @@
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R0.8m)"
+      "reason": "illiquid (ADV R0.9m)"
     },
     {
       "ticker": "AFH.JO",
@@ -39,10 +39,6 @@
     {
       "ticker": "CCD.JO",
       "reason": "illiquid (ADV R2.4m)"
-    },
-    {
-      "ticker": "OCE.JO",
-      "reason": "illiquid (ADV R4.9m)"
     },
     {
       "ticker": "THA.JO",
@@ -66,11 +62,11 @@
     },
     {
       "ticker": "MKR.JO",
-      "reason": "illiquid (ADV R0.6m)"
+      "reason": "illiquid (ADV R0.5m)"
     },
     {
       "ticker": "EMI.JO",
-      "reason": "illiquid (ADV R3.5m)"
+      "reason": "illiquid (ADV R2.5m)"
     },
     {
       "ticker": "PWR.JO",
