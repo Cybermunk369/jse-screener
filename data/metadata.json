@@ -1,24 +1,24 @@
 {
-  "generated_utc": "2026-10-23 19:24:13",
-  "generated_sast": "2026-10-23 21:24:13",
+  "generated_utc": "2026-10-23 22:06:26",
+  "generated_sast": "2026-10-24 00:06:26",
   "tickers_requested": 131,
-  "tickers_loaded": 108,
-  "scores_as_of": "2026-10-23",
+  "tickers_loaded": 107,
+  "scores_as_of": "2026-10-22",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
   "excluded": [
     {
       "ticker": "SHC.JO",
-      "reason": "illiquid (ADV R3.2m)"
+      "reason": "illiquid (ADV R3.3m)"
     },
     {
       "ticker": "CNP.JO",
-      "reason": "illiquid (ADV R0.6m)"
+      "reason": "too new (99 trading days, need 100)"
     },
     {
       "ticker": "KRO.JO",
-      "reason": "illiquid (ADV R1.2m)"
+      "reason": "illiquid (ADV R1.7m)"
     },
     {
       "ticker": "APH.JO",
@@ -30,23 +30,27 @@
     },
     {
       "ticker": "SSU.JO",
-      "reason": "illiquid (ADV R4.5m)"
+      "reason": "illiquid (ADV R4.6m)"
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R3.7m)"
+      "reason": "illiquid (ADV R3.6m)"
     },
     {
       "ticker": "AFH.JO",
-      "reason": "illiquid (ADV R2.4m)"
+      "reason": "illiquid (ADV R2.5m)"
     },
     {
       "ticker": "CCD.JO",
-      "reason": "illiquid (ADV R3.7m)"
+      "reason": "illiquid (ADV R3.6m)"
     },
     {
       "ticker": "OCE.JO",
       "reason": "illiquid (ADV R3.7m)"
+    },
+    {
+      "ticker": "BAT.JO",
+      "reason": "illiquid (ADV R4.1m)"
     },
     {
       "ticker": "THA.JO",
@@ -54,7 +58,7 @@
     },
     {
       "ticker": "ISO.JO",
-      "reason": "illiquid (ADV R3.1m)"
+      "reason": "illiquid (ADV R3.2m)"
     },
     {
       "ticker": "TSG.JO",
@@ -86,7 +90,7 @@
     },
     {
       "ticker": "LSK.JO",
-      "reason": "illiquid (ADV R1.8m)"
+      "reason": "illiquid (ADV R1.7m)"
     },
     {
       "ticker": "RBO.JO",
@@ -94,7 +98,7 @@
     },
     {
       "ticker": "SBP.JO",
-      "reason": "illiquid (ADV R0.4m)"
+      "reason": "illiquid (ADV R3.4m)"
     },
     {
       "ticker": "WVR.JO",
