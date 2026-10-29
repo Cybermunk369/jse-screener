@@ -1,24 +1,28 @@
 {
-  "generated_utc": "2026-10-28 23:11:01",
-  "generated_sast": "2026-10-29 01:11:01",
+  "generated_utc": "2026-10-29 20:24:55",
+  "generated_sast": "2026-10-29 22:24:55",
   "tickers_requested": 131,
-  "tickers_loaded": 108,
-  "scores_as_of": "2026-10-27",
+  "tickers_loaded": 105,
+  "scores_as_of": "2026-10-29",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
   "excluded": [
     {
       "ticker": "SHC.JO",
-      "reason": "illiquid (ADV R3.7m)"
+      "reason": "illiquid (ADV R4.6m)"
     },
     {
       "ticker": "CNP.JO",
-      "reason": "illiquid (ADV R0.6m)"
+      "reason": "illiquid (ADV R0.5m)"
+    },
+    {
+      "ticker": "PHP.JO",
+      "reason": "illiquid (ADV R4.5m)"
     },
     {
       "ticker": "KRO.JO",
-      "reason": "illiquid (ADV R1.1m)"
+      "reason": "illiquid (ADV R0.7m)"
     },
     {
       "ticker": "APH.JO",
@@ -30,15 +34,19 @@
     },
     {
       "ticker": "SSU.JO",
-      "reason": "illiquid (ADV R3.5m)"
+      "reason": "illiquid (ADV R3.1m)"
     },
     {
       "ticker": "HCI.JO",
-      "reason": "illiquid (ADV R4.8m)"
+      "reason": "illiquid (ADV R4.6m)"
+    },
+    {
+      "ticker": "AEL.JO",
+      "reason": "illiquid (ADV R3.8m)"
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R3.6m)"
+      "reason": "illiquid (ADV R3.5m)"
     },
     {
       "ticker": "AFH.JO",
@@ -50,19 +58,19 @@
     },
     {
       "ticker": "OCE.JO",
-      "reason": "illiquid (ADV R3.7m)"
+      "reason": "illiquid (ADV R2.9m)"
     },
     {
       "ticker": "THA.JO",
-      "reason": "illiquid (ADV R1.6m)"
+      "reason": "illiquid (ADV R0.8m)"
     },
     {
       "ticker": "ISO.JO",
-      "reason": "illiquid (ADV R3.1m)"
+      "reason": "illiquid (ADV R3.0m)"
     },
     {
       "ticker": "TSG.JO",
-      "reason": "illiquid (ADV R2.7m)"
+      "reason": "illiquid (ADV R3.3m)"
     },
     {
       "ticker": "ACS.JO",
@@ -70,7 +78,7 @@
     },
     {
       "ticker": "CAA.JO",
-      "reason": "illiquid (ADV R1.2m)"
+      "reason": "illiquid (ADV R1.7m)"
     },
     {
       "ticker": "MKR.JO",
@@ -78,7 +86,11 @@
     },
     {
       "ticker": "EMI.JO",
-      "reason": "illiquid (ADV R2.7m)"
+      "reason": "illiquid (ADV R2.5m)"
+    },
+    {
+      "ticker": "SEA.JO",
+      "reason": "illiquid (ADV R4.7m)"
     },
     {
       "ticker": "PWR.JO",
@@ -86,11 +98,11 @@
     },
     {
       "ticker": "RCL.JO",
-      "reason": "illiquid (ADV R0.7m)"
+      "reason": "illiquid (ADV R0.6m)"
     },
     {
       "ticker": "LSK.JO",
-      "reason": "illiquid (ADV R1.8m)"
+      "reason": "illiquid (ADV R0.8m)"
     },
     {
       "ticker": "RBO.JO",
