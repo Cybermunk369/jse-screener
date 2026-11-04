@@ -1,9 +1,9 @@
 {
-  "generated_utc": "2026-11-03 23:59:05",
-  "generated_sast": "2026-11-04 01:59:05",
+  "generated_utc": "2026-11-04 21:24:54",
+  "generated_sast": "2026-11-04 23:24:54",
   "tickers_requested": 131,
-  "tickers_loaded": 104,
-  "scores_as_of": "2026-11-02",
+  "tickers_loaded": 105,
+  "scores_as_of": "2026-11-03",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
@@ -22,7 +22,7 @@
     },
     {
       "ticker": "KRO.JO",
-      "reason": "illiquid (ADV R0.8m)"
+      "reason": "illiquid (ADV R0.9m)"
     },
     {
       "ticker": "APH.JO",
@@ -34,19 +34,19 @@
     },
     {
       "ticker": "SSU.JO",
-      "reason": "illiquid (ADV R1.9m)"
+      "reason": "illiquid (ADV R2.0m)"
     },
     {
       "ticker": "HCI.JO",
-      "reason": "illiquid (ADV R4.7m)"
+      "reason": "illiquid (ADV R4.8m)"
     },
     {
       "ticker": "AEL.JO",
-      "reason": "illiquid (ADV R4.5m)"
+      "reason": "illiquid (ADV R4.4m)"
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R3.6m)"
+      "reason": "illiquid (ADV R3.9m)"
     },
     {
       "ticker": "AFH.JO",
@@ -54,27 +54,23 @@
     },
     {
       "ticker": "CCD.JO",
-      "reason": "illiquid (ADV R3.2m)"
+      "reason": "illiquid (ADV R3.1m)"
     },
     {
       "ticker": "OCE.JO",
-      "reason": "illiquid (ADV R4.2m)"
-    },
-    {
-      "ticker": "DIB.JO",
-      "reason": "illiquid (ADV R4.6m)"
+      "reason": "illiquid (ADV R4.0m)"
     },
     {
       "ticker": "THA.JO",
-      "reason": "illiquid (ADV R0.9m)"
+      "reason": "illiquid (ADV R1.1m)"
     },
     {
       "ticker": "ISO.JO",
-      "reason": "illiquid (ADV R2.9m)"
+      "reason": "illiquid (ADV R3.0m)"
     },
     {
       "ticker": "TSG.JO",
-      "reason": "illiquid (ADV R2.6m)"
+      "reason": "illiquid (ADV R2.7m)"
     },
     {
       "ticker": "ACS.JO",
@@ -82,7 +78,7 @@
     },
     {
       "ticker": "CAA.JO",
-      "reason": "illiquid (ADV R4.5m)"
+      "reason": "illiquid (ADV R4.6m)"
     },
     {
       "ticker": "MKR.JO",
@@ -106,11 +102,11 @@
     },
     {
       "ticker": "LSK.JO",
-      "reason": "illiquid (ADV R1.2m)"
+      "reason": "illiquid (ADV R1.1m)"
     },
     {
       "ticker": "RBO.JO",
-      "reason": "illiquid (ADV R1.0m)"
+      "reason": "illiquid (ADV R0.8m)"
     },
     {
       "ticker": "WVR.JO",
