@@ -1,32 +1,32 @@
 {
-  "generated_utc": "2026-11-06 00:11:32",
-  "generated_sast": "2026-11-06 02:11:32",
+  "generated_utc": "2026-11-06 20:59:10",
+  "generated_sast": "2026-11-06 22:59:10",
   "tickers_requested": 131,
-  "tickers_loaded": 105,
-  "scores_as_of": "2026-11-03",
+  "tickers_loaded": 106,
+  "scores_as_of": "2026-11-06",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
   "excluded": [
     {
       "ticker": "SHC.JO",
-      "reason": "bad price history (101x jump in one day)"
+      "reason": "illiquid (ADV R4.1m)"
     },
     {
       "ticker": "CNP.JO",
-      "reason": "illiquid (ADV R0.5m)"
+      "reason": "illiquid (ADV R0.8m)"
     },
     {
       "ticker": "PHP.JO",
-      "reason": "illiquid (ADV R4.4m)"
+      "reason": "illiquid (ADV R4.3m)"
     },
     {
       "ticker": "KRO.JO",
-      "reason": "illiquid (ADV R0.9m)"
+      "reason": "illiquid (ADV R1.3m)"
     },
     {
       "ticker": "APH.JO",
-      "reason": "illiquid (ADV R0.4m)"
+      "reason": "illiquid (ADV R0.3m)"
     },
     {
       "ticker": "OPA.JO",
@@ -34,15 +34,11 @@
     },
     {
       "ticker": "SSU.JO",
-      "reason": "illiquid (ADV R2.0m)"
-    },
-    {
-      "ticker": "HCI.JO",
-      "reason": "illiquid (ADV R4.8m)"
+      "reason": "illiquid (ADV R2.4m)"
     },
     {
       "ticker": "AEL.JO",
-      "reason": "illiquid (ADV R4.4m)"
+      "reason": "illiquid (ADV R4.2m)"
     },
     {
       "ticker": "ITE.JO",
@@ -50,15 +46,15 @@
     },
     {
       "ticker": "AFH.JO",
-      "reason": "illiquid (ADV R2.4m)"
+      "reason": "illiquid (ADV R2.5m)"
     },
     {
       "ticker": "CCD.JO",
       "reason": "illiquid (ADV R3.1m)"
     },
     {
-      "ticker": "OCE.JO",
-      "reason": "illiquid (ADV R4.0m)"
+      "ticker": "DIB.JO",
+      "reason": "illiquid (ADV R4.6m)"
     },
     {
       "ticker": "THA.JO",
@@ -66,11 +62,11 @@
     },
     {
       "ticker": "ISO.JO",
-      "reason": "illiquid (ADV R3.0m)"
+      "reason": "illiquid (ADV R1.7m)"
     },
     {
       "ticker": "TSG.JO",
-      "reason": "illiquid (ADV R2.7m)"
+      "reason": "illiquid (ADV R2.6m)"
     },
     {
       "ticker": "ACS.JO",
@@ -78,19 +74,19 @@
     },
     {
       "ticker": "CAA.JO",
-      "reason": "illiquid (ADV R4.6m)"
+      "reason": "illiquid (ADV R4.5m)"
     },
     {
       "ticker": "MKR.JO",
-      "reason": "illiquid (ADV R0.3m)"
+      "reason": "illiquid (ADV R0.2m)"
     },
     {
       "ticker": "EMI.JO",
-      "reason": "illiquid (ADV R2.5m)"
+      "reason": "illiquid (ADV R1.5m)"
     },
     {
       "ticker": "SEA.JO",
-      "reason": "illiquid (ADV R4.3m)"
+      "reason": "illiquid (ADV R3.9m)"
     },
     {
       "ticker": "PWR.JO",
@@ -102,11 +98,11 @@
     },
     {
       "ticker": "LSK.JO",
-      "reason": "illiquid (ADV R1.1m)"
+      "reason": "illiquid (ADV R1.3m)"
     },
     {
       "ticker": "RBO.JO",
-      "reason": "illiquid (ADV R0.8m)"
+      "reason": "illiquid (ADV R0.6m)"
     },
     {
       "ticker": "WVR.JO",
