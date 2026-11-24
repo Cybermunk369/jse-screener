@@ -1,9 +1,9 @@
 {
-  "generated_utc": "2026-11-24 04:17:48",
-  "generated_sast": "2026-11-24 06:17:48",
+  "generated_utc": "2026-11-24 23:59:52",
+  "generated_sast": "2026-11-25 01:59:52",
   "tickers_requested": 131,
   "tickers_loaded": 111,
-  "scores_as_of": "2026-11-20",
+  "scores_as_of": "2026-11-23",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
@@ -14,11 +14,11 @@
     },
     {
       "ticker": "PHP.JO",
-      "reason": "illiquid (ADV R4.2m)"
+      "reason": "illiquid (ADV R4.0m)"
     },
     {
       "ticker": "KRO.JO",
-      "reason": "illiquid (ADV R1.8m)"
+      "reason": "illiquid (ADV R1.9m)"
     },
     {
       "ticker": "APH.JO",
@@ -30,11 +30,11 @@
     },
     {
       "ticker": "HCI.JO",
-      "reason": "illiquid (ADV R4.1m)"
+      "reason": "illiquid (ADV R4.0m)"
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R1.3m)"
+      "reason": "illiquid (ADV R1.2m)"
     },
     {
       "ticker": "AFH.JO",
@@ -50,7 +50,7 @@
     },
     {
       "ticker": "ISO.JO",
-      "reason": "illiquid (ADV R1.6m)"
+      "reason": "illiquid (ADV R1.7m)"
     },
     {
       "ticker": "ACS.JO",
@@ -66,7 +66,7 @@
     },
     {
       "ticker": "SEA.JO",
-      "reason": "illiquid (ADV R2.5m)"
+      "reason": "illiquid (ADV R2.6m)"
     },
     {
       "ticker": "PWR.JO",
