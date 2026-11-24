@@ -1,17 +1,13 @@
 {
-  "generated_utc": "2026-11-21 00:47:51",
-  "generated_sast": "2026-11-21 02:47:51",
+  "generated_utc": "2026-11-24 02:26:32",
+  "generated_sast": "2026-11-24 04:26:32",
   "tickers_requested": 131,
-  "tickers_loaded": 109,
-  "scores_as_of": "2026-11-19",
+  "tickers_loaded": 111,
+  "scores_as_of": "2026-11-20",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
   "excluded": [
-    {
-      "ticker": "SHC.JO",
-      "reason": "illiquid (ADV R4.9m)"
-    },
     {
       "ticker": "CNP.JO",
       "reason": "illiquid (ADV R0.4m)"
@@ -22,7 +18,7 @@
     },
     {
       "ticker": "KRO.JO",
-      "reason": "illiquid (ADV R1.9m)"
+      "reason": "illiquid (ADV R1.8m)"
     },
     {
       "ticker": "APH.JO",
@@ -30,15 +26,15 @@
     },
     {
       "ticker": "SSU.JO",
-      "reason": "illiquid (ADV R3.0m)"
+      "reason": "illiquid (ADV R4.7m)"
     },
     {
       "ticker": "HCI.JO",
-      "reason": "illiquid (ADV R3.8m)"
+      "reason": "illiquid (ADV R4.1m)"
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R1.8m)"
+      "reason": "illiquid (ADV R1.3m)"
     },
     {
       "ticker": "AFH.JO",
@@ -46,19 +42,15 @@
     },
     {
       "ticker": "CCD.JO",
-      "reason": "illiquid (ADV R0.8m)"
+      "reason": "illiquid (ADV R0.7m)"
     },
     {
       "ticker": "THA.JO",
-      "reason": "illiquid (ADV R1.6m)"
+      "reason": "illiquid (ADV R1.7m)"
     },
     {
       "ticker": "ISO.JO",
-      "reason": "illiquid (ADV R1.5m)"
-    },
-    {
-      "ticker": "TSG.JO",
-      "reason": "illiquid (ADV R3.7m)"
+      "reason": "illiquid (ADV R1.6m)"
     },
     {
       "ticker": "ACS.JO",
@@ -70,15 +62,15 @@
     },
     {
       "ticker": "EMI.JO",
-      "reason": "illiquid (ADV R1.2m)"
+      "reason": "illiquid (ADV R1.5m)"
     },
     {
       "ticker": "SEA.JO",
-      "reason": "illiquid (ADV R2.3m)"
+      "reason": "illiquid (ADV R2.5m)"
     },
     {
       "ticker": "PWR.JO",
-      "reason": "illiquid (ADV R0.0m)"
+      "reason": "stale price (5d unchanged)"
     },
     {
       "ticker": "RCL.JO",
