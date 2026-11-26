@@ -1,20 +1,20 @@
 {
-  "generated_utc": "2026-11-26 02:11:37",
-  "generated_sast": "2026-11-26 04:11:37",
+  "generated_utc": "2026-11-26 23:56:57",
+  "generated_sast": "2026-11-27 01:56:57",
   "tickers_requested": 131,
-  "tickers_loaded": 110,
-  "scores_as_of": "2026-11-24",
+  "tickers_loaded": 109,
+  "scores_as_of": "2026-11-25",
   "track_snapshot_written": null,
   "min_adv_rand": 5000000,
   "failures": [],
   "excluded": [
     {
       "ticker": "CNP.JO",
-      "reason": "illiquid (ADV R0.4m)"
+      "reason": "illiquid (ADV R0.3m)"
     },
     {
       "ticker": "PHP.JO",
-      "reason": "illiquid (ADV R0.6m)"
+      "reason": "illiquid (ADV R0.5m)"
     },
     {
       "ticker": "KRO.JO",
@@ -30,23 +30,27 @@
     },
     {
       "ticker": "HCI.JO",
-      "reason": "illiquid (ADV R4.1m)"
+      "reason": "illiquid (ADV R3.9m)"
     },
     {
       "ticker": "ITE.JO",
-      "reason": "illiquid (ADV R1.2m)"
+      "reason": "illiquid (ADV R1.3m)"
     },
     {
       "ticker": "AFH.JO",
-      "reason": "illiquid (ADV R0.5m)"
+      "reason": "illiquid (ADV R0.6m)"
     },
     {
       "ticker": "CCD.JO",
-      "reason": "illiquid (ADV R0.7m)"
+      "reason": "illiquid (ADV R0.6m)"
+    },
+    {
+      "ticker": "BAT.JO",
+      "reason": "illiquid (ADV R4.8m)"
     },
     {
       "ticker": "THA.JO",
-      "reason": "illiquid (ADV R1.7m)"
+      "reason": "illiquid (ADV R1.9m)"
     },
     {
       "ticker": "ISO.JO",
@@ -62,11 +66,11 @@
     },
     {
       "ticker": "EMI.JO",
-      "reason": "illiquid (ADV R1.7m)"
+      "reason": "illiquid (ADV R1.6m)"
     },
     {
       "ticker": "SEA.JO",
-      "reason": "illiquid (ADV R2.5m)"
+      "reason": "illiquid (ADV R2.6m)"
     },
     {
       "ticker": "PWR.JO",
@@ -82,11 +86,11 @@
     },
     {
       "ticker": "RBO.JO",
-      "reason": "illiquid (ADV R0.4m)"
+      "reason": "illiquid (ADV R0.3m)"
     },
     {
       "ticker": "SBP.JO",
-      "reason": "illiquid (ADV R1.0m)"
+      "reason": "illiquid (ADV R1.3m)"
     },
     {
       "ticker": "WVR.JO",
