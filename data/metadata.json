@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-11-27 23:37:39",
-  "generated_sast": "2026-11-28 01:37:39",
+  "generated_utc": "2026-11-28 01:57:14",
+  "generated_sast": "2026-11-28 03:57:14",
   "tickers_requested": 131,
   "tickers_loaded": 108,
   "scores_as_of": "2026-11-26",
